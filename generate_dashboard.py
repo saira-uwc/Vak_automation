@@ -3,15 +3,20 @@
 Generate dashboard data (docs/data.json) from test results.
 
 Accumulates run history so the dashboard shows trends over time.
+Copies TTS audio to docs/audio/ for playback on GitHub Pages.
 """
 
+import base64
 import json
 import hashlib
+import shutil
 from datetime import datetime
 from pathlib import Path
 
 DOCS_DIR = Path(__file__).parent / "docs"
+AUDIO_DIR = DOCS_DIR / "audio"
 DATA_FILE = DOCS_DIR / "data.json"
+TEST_OUTPUT_DIR = Path(__file__).parent / "test_output"
 
 
 def load_existing_data():
@@ -24,7 +29,27 @@ def load_existing_data():
     return {"runs": [], "current": None}
 
 
-def build_run_summary(results: list[dict]) -> dict:
+def copy_audio_files(results: list[dict]) -> dict[str, str]:
+    """Copy TTS output audio to docs/audio/, return filename->relative URL map."""
+    AUDIO_DIR.mkdir(parents=True, exist_ok=True)
+    audio_map = {}
+
+    for r in results:
+        fname = r.get("audio_filename", "")
+        if not fname:
+            continue
+
+        # Try to copy from test_output
+        src = TEST_OUTPUT_DIR / fname
+        if src.exists():
+            dst = AUDIO_DIR / fname
+            shutil.copy2(src, dst)
+            audio_map[fname] = f"audio/{fname}"
+
+    return audio_map
+
+
+def build_run_summary(results: list[dict], audio_map: dict[str, str]) -> dict:
     """Build a run summary from test results."""
     ts = results[0]["timestamp"] if results else datetime.now().isoformat()
     run_id = hashlib.md5(ts.encode()).hexdigest()[:8]
@@ -110,6 +135,10 @@ def build_run_summary(results: list[dict]) -> dict:
             except ValueError:
                 pass
 
+        # Audio URL from copied files
+        fname = r.get("audio_filename", "")
+        audio_url = audio_map.get(fname, "")
+
         test_entry = {
             "id": f"T{i+1:03d}",
             "name": test_name,
@@ -117,8 +146,8 @@ def build_run_summary(results: list[dict]) -> dict:
             "status": r["status"],
             "duration_ms": float(lat) if lat else 0,
             "audio_bytes": size_bytes,
-            "output_format": "wav" if "TTS" in category or "Pipeline" in category else "-",
-            "audio_url": "",
+            "output_format": "wav" if size_bytes > 0 else "-",
+            "audio_url": audio_url,
             "error": r.get("error", ""),
             "notes": notes,
             "input": r.get("input", ""),
@@ -155,10 +184,13 @@ def generate_dashboard(results: list[dict]):
     """Generate docs/data.json from test results."""
     DOCS_DIR.mkdir(exist_ok=True)
 
-    existing = load_existing_data()
-    run = build_run_summary(results)
+    # Copy audio files to docs/audio/
+    audio_map = copy_audio_files(results)
 
-    # Add to history (keep last 50 runs)
+    existing = load_existing_data()
+    run = build_run_summary(results, audio_map)
+
+    # Add to history (keep last 100 runs for calendar)
     run_summary = {
         "run_id": run["run_id"],
         "timestamp": run["timestamp"],
@@ -173,7 +205,7 @@ def generate_dashboard(results: list[dict]):
     # Avoid duplicate run_ids
     runs = [r for r in runs if r["run_id"] != run["run_id"]]
     runs.append(run_summary)
-    runs = runs[-50:]  # keep last 50
+    runs = runs[-100:]  # keep last 100
 
     data = {
         "current": run,
@@ -182,6 +214,8 @@ def generate_dashboard(results: list[dict]):
 
     DATA_FILE.write_text(json.dumps(data, indent=2, ensure_ascii=False))
     print(f"Dashboard data saved: {DATA_FILE}")
+    if audio_map:
+        print(f"Audio files copied: {len(audio_map)} files to docs/audio/")
 
 
 if __name__ == "__main__":
