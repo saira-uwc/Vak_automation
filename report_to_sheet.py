@@ -24,6 +24,7 @@ from config import (
     TEST_AUDIO_DIR, TEST_OUTPUT_DIR,
 )
 from clients import ASRClient, TranslateClient, TTSClient
+from generate_dashboard import generate_dashboard
 
 # ── Google Apps Script Web App URL ──
 # After deploying the Apps Script, paste the URL here:
@@ -339,6 +340,9 @@ def main():
     report_path = TEST_OUTPUT_DIR / "latest_report.json"
     report_path.write_text(json.dumps(all_results, indent=2, ensure_ascii=False))
     print(f"Local report saved: {report_path}")
+
+    # Generate dashboard data
+    generate_dashboard(all_results)
 
 
 if __name__ == "__main__":
