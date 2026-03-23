@@ -244,17 +244,26 @@ def send_email(html: str, subject: str):
         "body": html,
     }
 
-    resp = httpx.post(web_app_url, json=payload, timeout=30, follow_redirects=True)
+    resp = httpx.post(web_app_url, json=payload, timeout=60, follow_redirects=True)
     if resp.status_code == 200:
-        body = resp.json()
-        if body.get("ok"):
-            print(f"Email sent to: {recipients}")
+        try:
+            body = resp.json()
+            if body.get("ok"):
+                print(f"Email sent to: {recipients}")
+                return True
+            else:
+                print(f"Email send failed: {body.get('error', 'unknown')}")
+                return False
+        except Exception:
+            # Apps Script may return HTML on success (redirect page)
+            text = resp.text[:200]
+            if "error" in text.lower():
+                print(f"Email may have failed. Response: {text}")
+                return False
+            print(f"Email likely sent (non-JSON response). Recipients: {recipients}")
             return True
-        else:
-            print(f"Email send failed: {body.get('error', 'unknown')}")
-            return False
     else:
-        print(f"Email HTTP error: {resp.status_code}")
+        print(f"Email HTTP error: {resp.status_code} - {resp.text[:200]}")
         return False
 
 
@@ -267,6 +276,9 @@ def main():
         sys.exit(1)
 
     results = load_latest_results()
+    # If no local report, reconstruct from dashboard data
+    if not results and data.get("current", {}).get("tests"):
+        results = data["current"]["tests"]
     html, subject = generate_email_html(data, results)
 
     if preview:
