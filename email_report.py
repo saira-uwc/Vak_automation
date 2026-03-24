@@ -200,7 +200,7 @@ def generate_email_html(data: dict, results: list[dict]) -> tuple[str, str]:
       <a href="{dashboard_url}" style="display:inline-block;background:#7c3aed;color:#fff;text-decoration:none;padding:12px 28px;border-radius:8px;font-weight:600;font-size:14px;margin:6px;">
         📊 View Full Dashboard
       </a>
-      <a href="{dashboard_url}#test-details" style="display:inline-block;background:#f59e0b;color:#fff;text-decoration:none;padding:12px 28px;border-radius:8px;font-weight:600;font-size:14px;margin:6px;">
+      <a href="https://docs.google.com/spreadsheets/d/1ZTzLCCaw13sGsdeo5AQBak51z_NpfFnUQmPZfH2wXu4/edit?gid=382470529#gid=382470529" style="display:inline-block;background:#f59e0b;color:#fff;text-decoration:none;padding:12px 28px;border-radius:8px;font-weight:600;font-size:14px;margin:6px;">
         📋 View Test Cases
       </a>
     </div>
