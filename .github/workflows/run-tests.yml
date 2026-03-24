@@ -55,14 +55,6 @@ jobs:
           git commit -m "Auto-update dashboard ($(date '+%Y-%m-%d %H:%M UTC'))"
           git push
 
-      - name: Send email report
-        if: github.event.action == 'run-tests' || github.event.inputs.send_email == 'true'
-        env:
-          EMAIL_WEB_APP_URL: ${{ secrets.EMAIL_WEB_APP_URL }}
-          EMAIL_RECIPIENTS: ${{ secrets.EMAIL_RECIPIENTS }}
-          DASHBOARD_URL: https://saira-uwc.github.io/Vak_automation/
-        run: python email_report.py
-
   email-only:
     runs-on: ubuntu-latest
     if: github.event.action == 'send-email'
