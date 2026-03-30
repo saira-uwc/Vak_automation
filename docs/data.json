@@ -1,14 +1,14 @@
 {
   "current": {
-    "run_id": "272e3d6e",
-    "timestamp": "2026-03-29 15:04:37 IST",
+    "run_id": "91e0c082",
+    "timestamp": "2026-03-30 09:33:13 IST",
     "total": 16,
     "passed": 5,
     "failed": 11,
     "errors": 11,
     "pass_rate": 31.2,
-    "avg_latency": 3587,
-    "total_ms": 35870,
+    "avg_latency": 3324,
+    "total_ms": 33242,
     "categories": [
       {
         "name": "ASR",
@@ -17,9 +17,9 @@
         "fail": 0,
         "error": 0,
         "pass_rate": 100.0,
-        "avg_latency": 5326,
-        "min_latency": 5326,
-        "max_latency": 5326
+        "avg_latency": 5000,
+        "min_latency": 5000,
+        "max_latency": 5000
       },
       {
         "name": "Translate",
@@ -28,9 +28,9 @@
         "fail": 6,
         "error": 6,
         "pass_rate": 14.3,
-        "avg_latency": 182,
-        "min_latency": 182,
-        "max_latency": 182
+        "avg_latency": 256,
+        "min_latency": 256,
+        "max_latency": 256
       },
       {
         "name": "TTS",
@@ -39,9 +39,9 @@
         "fail": 0,
         "error": 0,
         "pass_rate": 100.0,
-        "avg_latency": 2289,
-        "min_latency": 2042,
-        "max_latency": 2432
+        "avg_latency": 1667,
+        "min_latency": 1257,
+        "max_latency": 2089
       },
       {
         "name": "Pipeline",
@@ -50,9 +50,9 @@
         "fail": 5,
         "error": 5,
         "pass_rate": 0.0,
-        "avg_latency": 4699,
-        "min_latency": 4144,
-        "max_latency": 4939
+        "avg_latency": 4597,
+        "min_latency": 4568,
+        "max_latency": 4683
       }
     ],
     "tests": [
@@ -61,12 +61,12 @@
         "name": "ASR - hinglish_arti.wav",
         "category": "ASR",
         "status": "PASS",
-        "duration_ms": 5326.2,
+        "duration_ms": 5000.4,
         "audio_bytes": 0,
         "output_format": "-",
         "audio_url": "",
         "error": "",
-        "notes": "हेलो गुड मॉर्निंग मैम हाँ मैं एसिस्ट यू एक्चुअली मेरा ऑर्डर कल आना था लेकिन तिलना एडिटिंग रिसीव एनी ",
+        "notes": "हेलो गुड मॉर्निंग मॉम हाँ मैं एसिस्ट यू एक्चुअली मेरा ऑर्डर कल आना था लेकिन तिल्लमा डिजिटल रिसीव इन ",
         "input": "hinglish_arti.wav",
         "source_lang": "Hindi",
         "target_lang": "-"
@@ -166,7 +166,7 @@
         "name": "Supported Languages",
         "category": "Translate",
         "status": "PASS",
-        "duration_ms": 182.1,
+        "duration_ms": 255.9,
         "audio_bytes": 0,
         "output_format": "-",
         "audio_url": "",
@@ -181,7 +181,7 @@
         "name": "TTS - tts_report_en.wav",
         "category": "TTS",
         "status": "PASS",
-        "duration_ms": 2432.0,
+        "duration_ms": 2089.2,
         "audio_bytes": 70334,
         "output_format": "wav",
         "audio_url": "audio/tts_report_en.wav",
@@ -196,7 +196,7 @@
         "name": "TTS - tts_report_hi.wav",
         "category": "TTS",
         "status": "PASS",
-        "duration_ms": 2392.1,
+        "duration_ms": 1257.1,
         "audio_bytes": 57412,
         "output_format": "wav",
         "audio_url": "audio/tts_report_hi.wav",
@@ -211,7 +211,7 @@
         "name": "TTS - tts_report_emotion.wav",
         "category": "TTS",
         "status": "PASS",
-        "duration_ms": 2042.2,
+        "duration_ms": 1655.4,
         "audio_bytes": 42294,
         "output_format": "wav",
         "audio_url": "audio/tts_report_emotion.wav",
@@ -226,7 +226,7 @@
         "name": "Pipeline hi→en",
         "category": "Pipeline",
         "status": "FAIL",
-        "duration_ms": 4923.5,
+        "duration_ms": 4571.4,
         "audio_bytes": 0,
         "output_format": "-",
         "audio_url": "",
@@ -235,7 +235,7 @@
         "input": "hinglish_arti.wav",
         "source_lang": "hi",
         "target_lang": "en",
-        "asr_latency_ms": 4582.5,
+        "asr_latency_ms": 4435.4,
         "translate_latency_ms": 0,
         "tts_latency_ms": 0,
         "asr_text": "हेलो गुड मॉर्निंग मैम हाँ मैं एसिस्ट यू एक्चुअली मेरा ऑर्डर कल आना था लेकिन तिलना एडिटिंग रिसीव एनी ऑर्डर ओके एंड व्हाट डीड यू ऑर्डर एंड व्हेन वास इट ऑर्डर मैंने एक कीबोर्ड ऑर्डर किया था लास्ट वीक इट आस एक्चुअली एक्सपेक्टेड डिलीवरी डेट कल था लेकिन आज तक नहीं आया सो कैन आई गेट मेरा रिफंड बैक राइट मैम लेट मी जस्ट चेक इन ओके आई कैन सी दैट इट बी डेलिवर लाइक इन नेक्स्ट टू आर्स इफ इट नॉट डन देन वी कैन प्रोसेस द रिफंड ओके ओके थैंक यू मैम थैंक यू फॉर कॉलिंग",
@@ -246,7 +246,7 @@
         "name": "Pipeline hi→mr",
         "category": "Pipeline",
         "status": "FAIL",
-        "duration_ms": 4747.3,
+        "duration_ms": 4569.9,
         "audio_bytes": 0,
         "output_format": "-",
         "audio_url": "",
@@ -255,7 +255,7 @@
         "input": "hinglish_arti.wav",
         "source_lang": "hi",
         "target_lang": "mr",
-        "asr_latency_ms": 4569.8,
+        "asr_latency_ms": 4438.6,
         "translate_latency_ms": 0,
         "tts_latency_ms": 0,
         "asr_text": "हेलो गुड मॉर्निंग मैम हाँ मैं एसिस्ट यू एक्चुअली मेरा ऑर्डर कल आना था लेकिन तिलना एडिटिंग रिसीव एनी ऑर्डर ओके एंड व्हाट डीड यू ऑर्डर एंड व्हेन वास इट ऑर्डर मैंने एक कीबोर्ड ऑर्डर किया था लास्ट वीक इट आस एक्चुअली एक्सपेक्टेड डिलीवरी डेट कल था लेकिन आज तक नहीं आया सो कैन आई गेट मेरा रिफंड बैक राइट मैम लेट मी जस्ट चेक इन ओके आई कैन सी दैट इट बी डेलिवर लाइक इन नेक्स्ट टू आर्स इफ इट नॉट डन देन वी कैन प्रोसेस द रिफंड ओके ओके थैंक यू मैम थैंक यू फॉर कॉलिंग",
@@ -266,7 +266,7 @@
         "name": "Pipeline hi→bn",
         "category": "Pipeline",
         "status": "FAIL",
-        "duration_ms": 4144.0,
+        "duration_ms": 4592.9,
         "audio_bytes": 0,
         "output_format": "-",
         "audio_url": "",
@@ -275,7 +275,7 @@
         "input": "hinglish_arti.wav",
         "source_lang": "hi",
         "target_lang": "bn",
-        "asr_latency_ms": 3974.5,
+        "asr_latency_ms": 4455.2,
         "translate_latency_ms": 0,
         "tts_latency_ms": 0,
         "asr_text": "हेलो गुड मॉर्निंग मैम हाँ मैं एसिस्ट यू एक्चुअली मेरा ऑर्डर कल आना था लेकिन तिलना एडिटिंग रिसीव एनी ऑर्डर ओके एंड व्हाट डीड यू ऑर्डर एंड व्हेन वास इट ऑर्डर मैंने एक कीबोर्ड ऑर्डर किया था लास्ट वीक इट आस एक्चुअली एक्सपेक्टेड डिलीवरी डेट कल था लेकिन आज तक नहीं आया सो कैन आई गेट मेरा रिफंड बैक राइट मैम लेट मी जस्ट चेक इन ओके आई कैन सी दैट इट बी डेलिवर लाइक इन नेक्स्ट टू आर्स इफ इट नॉट डन देन वी कैन प्रोसेस द रिफंड ओके ओके थैंक यू मैम थैंक यू फॉर कॉलिंग",
@@ -286,7 +286,7 @@
         "name": "Pipeline hi→ta",
         "category": "Pipeline",
         "status": "FAIL",
-        "duration_ms": 4939.1,
+        "duration_ms": 4567.5,
         "audio_bytes": 0,
         "output_format": "-",
         "audio_url": "",
@@ -295,7 +295,7 @@
         "input": "hinglish_arti.wav",
         "source_lang": "hi",
         "target_lang": "ta",
-        "asr_latency_ms": 4594.9,
+        "asr_latency_ms": 4449.1,
         "translate_latency_ms": 0,
         "tts_latency_ms": 0,
         "asr_text": "हेलो गुड मॉर्निंग मैम हाँ मैं एसिस्ट यू एक्चुअली मेरा ऑर्डर कल आना था लेकिन तिलना एडिटिंग रिसीव एनी ऑर्डर ओके एंड व्हाट डीड यू ऑर्डर एंड व्हेन वास इट ऑर्डर मैंने एक कीबोर्ड ऑर्डर किया था लास्ट वीक इट आस एक्चुअली एक्सपेक्टेड डिलीवरी डेट कल था लेकिन आज तक नहीं आया सो कैन आई गेट मेरा रिफंड बैक राइट मैम लेट मी जस्ट चेक इन ओके आई कैन सी दैट इट बी डेलिवर लाइक इन नेक्स्ट टू आर्स इफ इट नॉट डन देन वी कैन प्रोसेस द रिफंड ओके ओके थैंक यू मैम थैंक यू फॉर कॉलिंग",
@@ -306,7 +306,7 @@
         "name": "Pipeline hi→te",
         "category": "Pipeline",
         "status": "FAIL",
-        "duration_ms": 4741.6,
+        "duration_ms": 4682.6,
         "audio_bytes": 0,
         "output_format": "-",
         "audio_url": "",
@@ -315,7 +315,7 @@
         "input": "hinglish_arti.wav",
         "source_lang": "hi",
         "target_lang": "te",
-        "asr_latency_ms": 4559.6,
+        "asr_latency_ms": 4425.8,
         "translate_latency_ms": 0,
         "tts_latency_ms": 0,
         "asr_text": "हेलो गुड मॉर्निंग मैम हाँ मैं एसिस्ट यू एक्चुअली मेरा ऑर्डर कल आना था लेकिन तिलना एडिटिंग रिसीव एनी ऑर्डर ओके एंड व्हाट डीड यू ऑर्डर एंड व्हेन वास इट ऑर्डर मैंने एक कीबोर्ड ऑर्डर किया था लास्ट वीक इट आस एक्चुअली एक्सपेक्टेड डिलीवरी डेट कल था लेकिन आज तक नहीं आया सो कैन आई गेट मेरा रिफंड बैक राइट मैम लेट मी जस्ट चेक इन ओके आई कैन सी दैट इट बी डेलिवर लाइक इन नेक्स्ट टू आर्स इफ इट नॉट डन देन वी कैन प्रोसेस द रिफंड ओके ओके थैंक यू मैम थैंक यू फॉर कॉलिंग",
@@ -566,6 +566,15 @@
       "failed": 11,
       "pass_rate": 31.2,
       "avg_latency": 3587
+    },
+    {
+      "run_id": "91e0c082",
+      "timestamp": "2026-03-30 09:33:13 IST",
+      "total": 16,
+      "passed": 5,
+      "failed": 11,
+      "pass_rate": 31.2,
+      "avg_latency": 3324
     }
   ]
 }
