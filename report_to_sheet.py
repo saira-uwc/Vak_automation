@@ -9,6 +9,7 @@ Usage:
 
 import base64
 import json
+import subprocess
 import sys
 import time
 import traceback
@@ -343,6 +344,36 @@ def main():
 
     # Generate dashboard data
     generate_dashboard(all_results)
+
+    # Auto-push dashboard to GitHub Pages
+    if not dry_run:
+        push_dashboard()
+
+
+def push_dashboard():
+    """Auto-commit and push docs/ to GitHub so dashboard updates."""
+    try:
+        repo_root = Path(__file__).parent
+        subprocess.run(["git", "add", "docs/"], cwd=repo_root, check=True, capture_output=True)
+        result = subprocess.run(
+            ["git", "status", "--porcelain", "docs/"],
+            cwd=repo_root, capture_output=True, text=True,
+        )
+        if not result.stdout.strip():
+            print("Dashboard: no changes to push.")
+            return
+        ts = datetime.now(IST).strftime("%Y-%m-%d %H:%M IST")
+        subprocess.run(
+            ["git", "commit", "-m", f"Auto-update dashboard ({ts})"],
+            cwd=repo_root, check=True, capture_output=True,
+        )
+        subprocess.run(
+            ["git", "push", "origin", "main"],
+            cwd=repo_root, check=True, capture_output=True, timeout=30,
+        )
+        print("Dashboard pushed to GitHub Pages.")
+    except Exception as e:
+        print(f"Dashboard push failed: {e}")
 
 
 if __name__ == "__main__":
