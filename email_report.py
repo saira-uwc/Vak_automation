@@ -275,10 +275,18 @@ def main():
         print("No dashboard data found. Run report_to_sheet.py first.")
         sys.exit(1)
 
+    current = data.get("current", {})
+    failed = current.get("failed", 0)
+
+    # Only send email if there are failures in the last run
+    if not preview and failed == 0:
+        print(f"Last run: {current.get('passed', 0)} passed, 0 failed. All good — skipping email.")
+        return
+
     results = load_latest_results()
     # If no local report, reconstruct from dashboard data
-    if not results and data.get("current", {}).get("tests"):
-        results = data["current"]["tests"]
+    if not results and current.get("tests"):
+        results = current["tests"]
     html, subject = generate_email_html(data, results)
 
     if preview:
@@ -287,6 +295,7 @@ def main():
         print(f"Email preview saved: {preview_path}")
         print(f"Subject: {subject}")
     else:
+        print(f"Last run had {failed} failure(s) — sending report email.")
         send_email(html, subject)
 
 
