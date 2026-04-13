@@ -21,6 +21,7 @@ class TTSClient:
     def synthesize(
         self,
         text: str,
+        language: str = "en",
         voice: str = "Rajesh",
         model: str = "zero-indic",
         response_format: str = "wav",
@@ -37,6 +38,7 @@ class TTSClient:
                 "input": text,
                 "voice": voice,
                 "model": model,
+                "language": language,
                 "response_format": response_format,
             },
             timeout=self.timeout,

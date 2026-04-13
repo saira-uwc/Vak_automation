@@ -147,11 +147,11 @@ def run_individual_tests():
     # ── TTS Tests ──
     tts = TTSClient(TTS_BASE_URL, TTS_API_KEY)
     tts_cases = [
-        ("Hello, welcome to Shunyalabs.", "Rajesh", "tts_report_en.wav"),
-        ("नमस्कार, आप कैसे हैं?", "Rajesh", "tts_report_hi.wav"),
-        ("<Happy> This is a happy message!", "Rajesh", "tts_report_emotion.wav"),
+        ("Hello, welcome to Shunyalabs.", "en", "Rajesh", "tts_report_en.wav"),
+        ("नमस्कार, आप कैसे हैं?", "hi", "Rajesh", "tts_report_hi.wav"),
+        ("<Happy> This is a happy message!", "en", "Rajesh", "tts_report_emotion.wav"),
     ]
-    for text, voice, fname in tts_cases:
+    for text, lang, voice, fname in tts_cases:
         out_path = TEST_OUTPUT_DIR / fname
         row = {
             "timestamp": run_ts,
@@ -171,7 +171,7 @@ def run_individual_tests():
         }
         try:
             t0 = time.time()
-            r = tts.synthesize(text, voice=voice, output_path=out_path)
+            r = tts.synthesize(text, language=lang, voice=voice, output_path=out_path)
             latency = round((time.time() - t0) * 1000, 1)
             row["status"] = "PASS" if len(r.audio_bytes) > 1000 else "FAIL"
             row["latency_ms"] = latency
@@ -254,7 +254,7 @@ def run_pipeline_tests():
                 # Step 3: TTS
                 out_path = TEST_OUTPUT_DIR / f"pipeline_{src}_{tgt}_{audio_file.stem}.wav"
                 t3 = time.time()
-                tts_result = tts.synthesize(tr_result.translated_text, output_path=out_path)
+                tts_result = tts.synthesize(tr_result.translated_text, language=tgt, output_path=out_path)
                 row["tts_latency_ms"] = round((time.time() - t3) * 1000, 1)
 
                 total_latency = round((time.time() - total_t0) * 1000, 1)
