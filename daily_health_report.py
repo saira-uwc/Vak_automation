@@ -128,7 +128,9 @@ def build_project_section(project: dict, ydays_runs: list[dict], fetch_error: st
         return {
             "name": project["name"],
             "status": "ERROR",
-            "runs": 0,
+            "total_runs": 0,
+            "failed_runs": 0,
+            "failed_times": [],
             "total": 0,
             "passed": 0,
             "failed": 0,
@@ -140,7 +142,9 @@ def build_project_section(project: dict, ydays_runs: list[dict], fetch_error: st
         return {
             "name": project["name"],
             "status": "NO_DATA",
-            "runs": 0,
+            "total_runs": 0,
+            "failed_runs": 0,
+            "failed_times": [],
             "total": 0,
             "passed": 0,
             "failed": 0,
@@ -149,6 +153,8 @@ def build_project_section(project: dict, ydays_runs: list[dict], fetch_error: st
             "error": "",
         }
     total_runs = len(ydays_runs)
+    failed_runs = [r for r in ydays_runs if r["failed"] > 0]
+    failed_times = [r["_dt"].strftime("%I:%M %p") for r in failed_runs]
     total = sum(r["total"] for r in ydays_runs)
     passed = sum(r["passed"] for r in ydays_runs)
     failed = sum(r["failed"] for r in ydays_runs)
@@ -156,7 +162,9 @@ def build_project_section(project: dict, ydays_runs: list[dict], fetch_error: st
     return {
         "name": project["name"],
         "status": "OK",
-        "runs": total_runs,
+        "total_runs": total_runs,
+        "failed_runs": len(failed_runs),
+        "failed_times": failed_times,
         "total": total,
         "passed": passed,
         "failed": failed,
@@ -173,15 +181,17 @@ def render_html(sections: list[dict], yesterday: datetime) -> tuple[str, str]:
     overall_failed = sum(s["failed"] for s in sections)
     overall_rate = round(overall_passed / overall_total * 100, 1) if overall_total else 0
     projects_with_failures = sum(1 for s in sections if s["failed"] > 0)
+    total_runs_all = sum(s["total_runs"] for s in sections)
+    failed_runs_all = sum(s["failed_runs"] for s in sections)
 
     rows = ""
     for s in sections:
         if s["status"] == "ERROR":
             badge = '<span style="background:#fef2f2;color:#991b1b;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:600;">ERROR</span>'
-            stats_cell = f'<td colspan="4" style="padding:12px 16px;border-bottom:1px solid #f0f0f0;font-size:12px;color:#991b1b;">{s["error"]}</td>'
+            stats_cell = f'<td colspan="6" style="padding:12px 16px;border-bottom:1px solid #f0f0f0;font-size:12px;color:#991b1b;">{s["error"]}</td>'
         elif s["status"] == "NO_DATA":
             badge = '<span style="background:#f3f4f6;color:#6b7280;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:600;">NO RUNS</span>'
-            stats_cell = '<td colspan="4" style="padding:12px 16px;border-bottom:1px solid #f0f0f0;font-size:12px;color:#888;">No runs on this date</td>'
+            stats_cell = '<td colspan="6" style="padding:12px 16px;border-bottom:1px solid #f0f0f0;font-size:12px;color:#888;">No runs on this date</td>'
         else:
             if s["failed"] == 0:
                 badge = f'<span style="background:#dcfce7;color:#166534;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:600;">{s["pass_rate"]}% PASS</span>'
@@ -189,8 +199,18 @@ def render_html(sections: list[dict], yesterday: datetime) -> tuple[str, str]:
                 badge = f'<span style="background:#fef3c7;color:#92400e;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:600;">{s["pass_rate"]}% PASS</span>'
             else:
                 badge = f'<span style="background:#fef2f2;color:#991b1b;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:600;">{s["pass_rate"]}% PASS</span>'
+
+            failed_runs_cell = (
+                f'<span style="color:#ef4444;font-weight:700;">{s["failed_runs"]}</span>'
+                if s["failed_runs"] > 0
+                else '<span style="color:#22c55e;font-weight:600;">0</span>'
+            )
+            failed_times_html = ", ".join(s["failed_times"]) if s["failed_times"] else "—"
+
             stats_cell = (
-                f'<td style="padding:12px 16px;border-bottom:1px solid #f0f0f0;text-align:center;font-size:13px;">{s["runs"]}</td>'
+                f'<td style="padding:12px 16px;border-bottom:1px solid #f0f0f0;text-align:center;font-size:13px;font-weight:600;">{s["total_runs"]}</td>'
+                f'<td style="padding:12px 16px;border-bottom:1px solid #f0f0f0;text-align:center;font-size:13px;">{failed_runs_cell}</td>'
+                f'<td style="padding:12px 16px;border-bottom:1px solid #f0f0f0;text-align:center;font-size:11px;color:#991b1b;max-width:160px;">{failed_times_html}</td>'
                 f'<td style="padding:12px 16px;border-bottom:1px solid #f0f0f0;text-align:center;font-size:13px;font-weight:600;">{s["total"]}</td>'
                 f'<td style="padding:12px 16px;border-bottom:1px solid #f0f0f0;text-align:center;color:#22c55e;font-weight:600;font-size:13px;">{s["passed"]}</td>'
                 f'<td style="padding:12px 16px;border-bottom:1px solid #f0f0f0;text-align:center;color:#ef4444;font-weight:600;font-size:13px;">{s["failed"]}</td>'
@@ -217,26 +237,34 @@ def render_html(sections: list[dict], yesterday: datetime) -> tuple[str, str]:
       <p style="margin:8px 0 0;font-size:13px;opacity:0.8;">Date: {date_str}</p>
     </div>
 
-    <div style="display:flex;justify-content:center;gap:14px;padding:24px 32px;flex-wrap:wrap;">
-      <div style="flex:1;min-width:120px;border:2px solid #e5e7eb;border-radius:12px;padding:16px;text-align:center;">
-        <div style="font-size:11px;font-weight:600;color:#888;text-transform:uppercase;">Projects</div>
-        <div style="font-size:28px;font-weight:700;color:#333;margin-top:4px;">{len(sections)}</div>
+    <div style="display:flex;justify-content:center;gap:10px;padding:24px 32px;flex-wrap:wrap;">
+      <div style="flex:1;min-width:110px;border:2px solid #e5e7eb;border-radius:12px;padding:14px;text-align:center;">
+        <div style="font-size:10px;font-weight:600;color:#888;text-transform:uppercase;">Projects</div>
+        <div style="font-size:24px;font-weight:700;color:#333;margin-top:4px;">{len(sections)}</div>
       </div>
-      <div style="flex:1;min-width:120px;border:2px solid #e5e7eb;border-radius:12px;padding:16px;text-align:center;">
-        <div style="font-size:11px;font-weight:600;color:#888;text-transform:uppercase;">Total Tests</div>
-        <div style="font-size:28px;font-weight:700;color:#333;margin-top:4px;">{overall_total}</div>
+      <div style="flex:1;min-width:110px;border:2px solid #e5e7eb;border-radius:12px;padding:14px;text-align:center;">
+        <div style="font-size:10px;font-weight:600;color:#888;text-transform:uppercase;">Total Runs</div>
+        <div style="font-size:24px;font-weight:700;color:#333;margin-top:4px;">{total_runs_all}</div>
       </div>
-      <div style="flex:1;min-width:120px;border:2px solid #dcfce7;border-radius:12px;padding:16px;text-align:center;">
-        <div style="font-size:11px;font-weight:600;color:#888;text-transform:uppercase;">Passed</div>
-        <div style="font-size:28px;font-weight:700;color:#22c55e;margin-top:4px;">{overall_passed}</div>
+      <div style="flex:1;min-width:110px;border:2px solid #fecaca;border-radius:12px;padding:14px;text-align:center;">
+        <div style="font-size:10px;font-weight:600;color:#888;text-transform:uppercase;">Failed Runs</div>
+        <div style="font-size:24px;font-weight:700;color:#ef4444;margin-top:4px;">{failed_runs_all}</div>
       </div>
-      <div style="flex:1;min-width:120px;border:2px solid #fecaca;border-radius:12px;padding:16px;text-align:center;">
-        <div style="font-size:11px;font-weight:600;color:#888;text-transform:uppercase;">Failed</div>
-        <div style="font-size:28px;font-weight:700;color:#ef4444;margin-top:4px;">{overall_failed}</div>
+      <div style="flex:1;min-width:110px;border:2px solid #e5e7eb;border-radius:12px;padding:14px;text-align:center;">
+        <div style="font-size:10px;font-weight:600;color:#888;text-transform:uppercase;">Total Tests</div>
+        <div style="font-size:24px;font-weight:700;color:#333;margin-top:4px;">{overall_total}</div>
       </div>
-      <div style="flex:1;min-width:120px;border:2px solid #e5e7eb;border-radius:12px;padding:16px;text-align:center;">
-        <div style="font-size:11px;font-weight:600;color:#888;text-transform:uppercase;">Pass Rate</div>
-        <div style="font-size:24px;font-weight:700;color:{('#22c55e' if overall_rate>=95 else '#f59e0b' if overall_rate>=80 else '#ef4444')};margin-top:6px;">{overall_rate}%</div>
+      <div style="flex:1;min-width:110px;border:2px solid #dcfce7;border-radius:12px;padding:14px;text-align:center;">
+        <div style="font-size:10px;font-weight:600;color:#888;text-transform:uppercase;">Passed</div>
+        <div style="font-size:24px;font-weight:700;color:#22c55e;margin-top:4px;">{overall_passed}</div>
+      </div>
+      <div style="flex:1;min-width:110px;border:2px solid #fecaca;border-radius:12px;padding:14px;text-align:center;">
+        <div style="font-size:10px;font-weight:600;color:#888;text-transform:uppercase;">Failed</div>
+        <div style="font-size:24px;font-weight:700;color:#ef4444;margin-top:4px;">{overall_failed}</div>
+      </div>
+      <div style="flex:1;min-width:110px;border:2px solid #e5e7eb;border-radius:12px;padding:14px;text-align:center;">
+        <div style="font-size:10px;font-weight:600;color:#888;text-transform:uppercase;">Pass Rate</div>
+        <div style="font-size:22px;font-weight:700;color:{('#22c55e' if overall_rate>=95 else '#f59e0b' if overall_rate>=80 else '#ef4444')};margin-top:6px;">{overall_rate}%</div>
       </div>
     </div>
 
@@ -247,8 +275,10 @@ def render_html(sections: list[dict], yesterday: datetime) -> tuple[str, str]:
           <tr style="background:#f9fafb;">
             <th style="padding:10px 16px;text-align:left;font-size:12px;font-weight:600;color:#666;">Project</th>
             <th style="padding:10px 16px;text-align:center;font-size:12px;font-weight:600;color:#666;">Status</th>
-            <th style="padding:10px 16px;text-align:center;font-size:12px;font-weight:600;color:#666;">Runs</th>
-            <th style="padding:10px 16px;text-align:center;font-size:12px;font-weight:600;color:#666;">Total</th>
+            <th style="padding:10px 16px;text-align:center;font-size:12px;font-weight:600;color:#666;">Total Runs</th>
+            <th style="padding:10px 16px;text-align:center;font-size:12px;font-weight:600;color:#ef4444;">Failed Runs</th>
+            <th style="padding:10px 16px;text-align:center;font-size:12px;font-weight:600;color:#666;">Failure Times (IST)</th>
+            <th style="padding:10px 16px;text-align:center;font-size:12px;font-weight:600;color:#666;">Total Tests</th>
             <th style="padding:10px 16px;text-align:center;font-size:12px;font-weight:600;color:#22c55e;">Pass</th>
             <th style="padding:10px 16px;text-align:center;font-size:12px;font-weight:600;color:#ef4444;">Fail</th>
           </tr>
@@ -316,7 +346,7 @@ def main():
     html, subject = render_html(sections, yesterday)
     print(f"Subject: {subject}")
     for s in sections:
-        print(f"  {s['name']}: status={s['status']} runs={s['runs']} total={s['total']} pass={s['passed']} fail={s['failed']}")
+        print(f"  {s['name']}: status={s['status']} total_runs={s['total_runs']} failed_runs={s['failed_runs']} total={s['total']} pass={s['passed']} fail={s['failed']}")
 
     if preview:
         out = Path(__file__).parent / "digest_preview.html"
