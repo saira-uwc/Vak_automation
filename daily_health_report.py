@@ -77,14 +77,20 @@ def normalize_runs(raw, fmt: str) -> list[dict]:
     """Normalize different project formats into {timestamp, total, passed, failed, pass_rate}."""
     out = []
     if fmt == "playwright":
-        # raw is a list of {id, startedAt, summary:{total,passed,failed}, passRate}
+        # Two sub-formats observed:
+        #   (A) {id|runId, startedAt, summary:{total,passed,failed}, passRate}  (Console/Widget/Asksam)
+        #   (B) {runId, runDate, total, passed, failed, passRate}              (Website)
         for r in raw:
-            s = r.get("summary", {})
+            summary = r.get("summary") or {}
+            ts = r.get("startedAt") or r.get("runDate")
+            total = summary.get("total", r.get("total", 0))
+            passed = summary.get("passed", r.get("passed", 0))
+            failed = summary.get("failed", r.get("failed", 0))
             out.append({
-                "timestamp": r.get("startedAt"),
-                "total": s.get("total", 0),
-                "passed": s.get("passed", 0),
-                "failed": s.get("failed", 0),
+                "timestamp": ts,
+                "total": total,
+                "passed": passed,
+                "failed": failed,
                 "pass_rate": r.get("passRate", 0),
             })
     elif fmt == "vak":
