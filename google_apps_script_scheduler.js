@@ -69,3 +69,17 @@ function triggerRunTests() {
 function triggerSendEmail() {
   postDispatch("send-email");
 }
+
+/**
+ * Trigger: Send daily consolidated health report email.
+ * Aggregates yesterday's test runs from ALL automation projects:
+ *   - Asksam, Website, Widget, Console Dashboard, Vak BE
+ *
+ * Add a Time-driven trigger:
+ *   Function: triggerDailyDigest
+ *   Event source: Time-driven
+ *   Type: Day timer → 9am to 10am (IST)
+ */
+function triggerDailyDigest() {
+  postDispatch("daily-digest");
+}

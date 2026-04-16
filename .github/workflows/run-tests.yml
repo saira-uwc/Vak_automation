@@ -5,7 +5,7 @@ permissions:
 
 on:
   repository_dispatch:
-    types: [run-tests, send-email]
+    types: [run-tests, send-email, daily-digest]
   workflow_dispatch:
     inputs:
       send_email:
@@ -16,7 +16,7 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    if: github.event.action != 'send-email'
+    if: github.event.action != 'send-email' && github.event.action != 'daily-digest'
 
     steps:
       - uses: actions/checkout@v4
@@ -83,3 +83,24 @@ jobs:
           EMAIL_RECIPIENTS: ${{ secrets.EMAIL_RECIPIENTS }}
           DASHBOARD_URL: https://saira-uwc.github.io/Vak_automation/
         run: python email_report.py
+
+  daily-digest:
+    runs-on: ubuntu-latest
+    if: github.event.action == 'daily-digest'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Send daily consolidated health report
+        env:
+          EMAIL_WEB_APP_URL: ${{ secrets.EMAIL_WEB_APP_URL }}
+          EMAIL_RECIPIENTS: ${{ secrets.EMAIL_RECIPIENTS }}
+        run: python daily_health_report.py
