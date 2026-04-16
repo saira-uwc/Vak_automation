@@ -304,7 +304,7 @@ def render_html(sections: list[dict], yesterday: datetime) -> tuple[str, str]:
 </body></html>"""
 
     if overall_failed > 0:
-        subject = f"Daily QA Health Report – {date_str} – {projects_with_failures} project(s) with failures"
+        subject = f"Daily QA Health Report – {date_str} – {projects_with_failures}/{len(sections)} projects with failures"
     elif overall_total == 0:
         subject = f"Daily QA Health Report – {date_str} – No runs found"
     else:
