@@ -22,8 +22,8 @@ IST = timezone(timedelta(hours=5, minutes=30))
 PROJECTS = [
     {
         "name": "Asksam Automation",
-        "dashboard": "https://saira-uwc.github.io/asksam-playwright-reports/",
-        "runs_url": "https://saira-uwc.github.io/asksam-playwright-reports/history/runs.json",
+        "dashboard": "https://saira-uwc.github.io/asksam-automation-new/",
+        "runs_url": "https://saira-uwc.github.io/asksam-automation-new/history/runs.json",
         "format": "playwright",
     },
     {
