@@ -255,35 +255,41 @@ def render_html(sections: list[dict], yesterday: datetime) -> tuple[str, str]:
       <p style="margin:8px 0 0;font-size:13px;opacity:0.8;">Date: {date_str}</p>
     </div>
 
-    <div style="display:flex;justify-content:center;gap:10px;padding:24px 32px;flex-wrap:wrap;">
-      <div style="flex:1;min-width:110px;border:2px solid #e5e7eb;border-radius:12px;padding:14px;text-align:center;">
-        <div style="font-size:10px;font-weight:600;color:#888;text-transform:uppercase;">Projects</div>
-        <div style="font-size:24px;font-weight:700;color:#333;margin-top:4px;">{len(sections)}</div>
-      </div>
-      <div style="flex:1;min-width:110px;border:2px solid #e5e7eb;border-radius:12px;padding:14px;text-align:center;">
-        <div style="font-size:10px;font-weight:600;color:#888;text-transform:uppercase;">Total Runs</div>
-        <div style="font-size:24px;font-weight:700;color:#333;margin-top:4px;">{total_runs_all}</div>
-      </div>
-      <div style="flex:1;min-width:110px;border:2px solid #fecaca;border-radius:12px;padding:14px;text-align:center;">
-        <div style="font-size:10px;font-weight:600;color:#888;text-transform:uppercase;">Failed Runs</div>
-        <div style="font-size:24px;font-weight:700;color:#ef4444;margin-top:4px;">{failed_runs_all}</div>
-      </div>
-      <div style="flex:1;min-width:110px;border:2px solid #e5e7eb;border-radius:12px;padding:14px;text-align:center;">
-        <div style="font-size:10px;font-weight:600;color:#888;text-transform:uppercase;">Total Tests</div>
-        <div style="font-size:24px;font-weight:700;color:#333;margin-top:4px;">{overall_total}</div>
-      </div>
-      <div style="flex:1;min-width:110px;border:2px solid #dcfce7;border-radius:12px;padding:14px;text-align:center;">
-        <div style="font-size:10px;font-weight:600;color:#888;text-transform:uppercase;">Passed</div>
-        <div style="font-size:24px;font-weight:700;color:#22c55e;margin-top:4px;">{overall_passed}</div>
-      </div>
-      <div style="flex:1;min-width:110px;border:2px solid #fecaca;border-radius:12px;padding:14px;text-align:center;">
-        <div style="font-size:10px;font-weight:600;color:#888;text-transform:uppercase;">Failed</div>
-        <div style="font-size:24px;font-weight:700;color:#ef4444;margin-top:4px;">{overall_failed}</div>
-      </div>
-      <div style="flex:1;min-width:110px;border:2px solid #e5e7eb;border-radius:12px;padding:14px;text-align:center;">
-        <div style="font-size:10px;font-weight:600;color:#888;text-transform:uppercase;">Pass Rate</div>
-        <div style="font-size:22px;font-weight:700;color:{('#22c55e' if overall_rate>=95 else '#f59e0b' if overall_rate>=80 else '#ef4444')};margin-top:6px;">{overall_rate}%</div>
-      </div>
+    <div style="padding:20px 32px;">
+      <table role="presentation" cellspacing="0" cellpadding="0" style="width:100%;border-collapse:separate;border-spacing:8px 8px;">
+        <tr>
+          <td width="25%" style="border:2px solid #e5e7eb;border-radius:12px;padding:12px 6px;text-align:center;">
+            <div style="font-size:10px;font-weight:600;color:#888;text-transform:uppercase;">Projects</div>
+            <div style="font-size:22px;font-weight:700;color:#333;margin-top:4px;">{len(sections)}</div>
+          </td>
+          <td width="25%" style="border:2px solid #e5e7eb;border-radius:12px;padding:12px 6px;text-align:center;">
+            <div style="font-size:10px;font-weight:600;color:#888;text-transform:uppercase;">Total Runs</div>
+            <div style="font-size:22px;font-weight:700;color:#333;margin-top:4px;">{total_runs_all}</div>
+          </td>
+          <td width="25%" style="border:2px solid #fecaca;border-radius:12px;padding:12px 6px;text-align:center;">
+            <div style="font-size:10px;font-weight:600;color:#888;text-transform:uppercase;">Failed Runs</div>
+            <div style="font-size:22px;font-weight:700;color:#ef4444;margin-top:4px;">{failed_runs_all}</div>
+          </td>
+          <td width="25%" style="border:2px solid #e5e7eb;border-radius:12px;padding:12px 6px;text-align:center;">
+            <div style="font-size:10px;font-weight:600;color:#888;text-transform:uppercase;">Total Tests</div>
+            <div style="font-size:22px;font-weight:700;color:#333;margin-top:4px;">{overall_total}</div>
+          </td>
+        </tr>
+        <tr>
+          <td width="33%" style="border:2px solid #dcfce7;border-radius:12px;padding:12px 6px;text-align:center;">
+            <div style="font-size:10px;font-weight:600;color:#888;text-transform:uppercase;">Passed</div>
+            <div style="font-size:22px;font-weight:700;color:#22c55e;margin-top:4px;">{overall_passed}</div>
+          </td>
+          <td width="33%" style="border:2px solid #fecaca;border-radius:12px;padding:12px 6px;text-align:center;">
+            <div style="font-size:10px;font-weight:600;color:#888;text-transform:uppercase;">Failed</div>
+            <div style="font-size:22px;font-weight:700;color:#ef4444;margin-top:4px;">{overall_failed}</div>
+          </td>
+          <td width="34%" style="border:2px solid #e5e7eb;border-radius:12px;padding:12px 6px;text-align:center;">
+            <div style="font-size:10px;font-weight:600;color:#888;text-transform:uppercase;">Pass Rate</div>
+            <div style="font-size:22px;font-weight:700;color:{('#22c55e' if overall_rate>=95 else '#f59e0b' if overall_rate>=80 else '#ef4444')};margin-top:4px;">{overall_rate}%</div>
+          </td>
+        </tr>
+      </table>
     </div>
 
     <div style="margin:0 32px 24px;">
