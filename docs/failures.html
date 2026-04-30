@@ -298,14 +298,20 @@ function normalize(raw, fmt) {
     const ts = r.startedAt || r.runTimestamp || r.runDate;
     const total = summary.total ?? r.total ?? 0;
     const passed = summary.passed ?? r.passed ?? 0;
-    const failed = summary.failed ?? r.failed ?? 0;
+    const skipped = summary.skipped ?? r.skipped ?? 0;
+    const explicitFailed = summary.failed ?? r.failed ?? 0;
+    const timedOut = summary.timedOut ?? r.timedOut ?? 0;
+    // Treat any test that didn't pass and wasn't intentionally skipped as failed
+    // (covers timedOut, flaky, etc.). Matches what each project's own UI reports.
+    const failed = total > 0 ? Math.max(total - passed - skipped, 0) : (explicitFailed + timedOut);
     const passRate = r.passRate ?? 0;
     const failedItems = [];
     if (Array.isArray(r.tests)) {
       for (const t of r.tests) {
         const status = (t.status || "").toLowerCase();
-        if (status === "failed" || status === "fail") {
-          failedItems.push({ title: t.title || t.testPoint || t.name || "(unnamed)", module: t.moduleLabel || t.module || t.moduleName || "", error: (t.error || t.comment || "").split("\n")[0].slice(0, 220) });
+        // Anything that isn't passing or skipped is a failure (failed, timedout, flaky, etc.)
+        if (status && status !== "passed" && status !== "pass" && status !== "skipped" && status !== "skip") {
+          failedItems.push({ title: t.title || t.testPoint || t.name || "(unnamed)", module: t.moduleLabel || t.module || t.moduleName || "", error: (t.error || t.comment || "").split("\n")[0].slice(0, 220), status });
         }
       }
     }

@@ -96,14 +96,19 @@ def normalize_runs(raw, fmt: str) -> list[dict]:
     out = []
     if fmt == "playwright":
         # Two sub-formats observed:
-        #   (A) {id|runId, startedAt, summary:{total,passed,failed}, passRate}  (Console/Widget/Asksam)
+        #   (A) {id|runId, startedAt, summary:{total,passed,failed,skipped,timedOut}, passRate}  (Console/Widget/Asksam)
         #   (B) {runId, runDate, total, passed, failed, passRate}              (Website)
         for r in raw:
             summary = r.get("summary") or {}
             ts = r.get("startedAt") or r.get("runDate")
             total = summary.get("total", r.get("total", 0))
             passed = summary.get("passed", r.get("passed", 0))
-            failed = summary.get("failed", r.get("failed", 0))
+            skipped = summary.get("skipped", r.get("skipped", 0))
+            explicit_failed = summary.get("failed", r.get("failed", 0))
+            timed_out = summary.get("timedOut", r.get("timedOut", 0))
+            # Treat any test that didn't pass and wasn't intentionally skipped as failed
+            # (covers timedOut, flaky, etc.) so our counts match each project's own dashboard.
+            failed = max(total - passed - skipped, 0) if total else explicit_failed + timed_out
             out.append({
                 "timestamp": ts,
                 "total": total,
