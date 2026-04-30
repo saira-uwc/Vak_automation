@@ -4,128 +4,259 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>QA Failures Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
 <style>
   * { box-sizing: border-box; }
   :root {
-    --bg: #f7f7f9;
-    --card: #ffffff;
-    --line: #ececf2;
-    --text: #1f2937;
-    --muted: #6b7280;
-    --faint: #9ca3af;
-    --brand: #7c3aed;
-    --ok: #16a34a;
+    --bg-base: #0a0e1a;
+    --bg-grad: radial-gradient(ellipse 80% 60% at 30% -10%, rgba(124, 58, 237, 0.15), transparent 60%),
+               radial-gradient(ellipse 70% 50% at 100% 0%, rgba(220, 38, 38, 0.10), transparent 55%),
+               #0a0e1a;
+    --surface: #111727;
+    --surface-2: #161e30;
+    --surface-3: #1c2640;
+    --line: #1f2a44;
+    --line-strong: #2a3856;
+    --text: #f1f5f9;
+    --text-2: #cbd5e1;
+    --muted: #94a3b8;
+    --faint: #64748b;
+    --brand: #a78bfa;
+    --brand-2: #c4b5fd;
+    --brand-glow: rgba(167, 139, 250, 0.22);
+    --ok: #10b981;
+    --ok-soft: rgba(16, 185, 129, 0.12);
+    --ok-line: rgba(16, 185, 129, 0.28);
     --warn: #f59e0b;
-    --err: #dc2626;
-    --err-soft: #fef2f2;
-    --err-line: #fecaca;
-    --ok-soft: #ecfdf5;
-    --ok-line: #bbf7d0;
+    --warn-soft: rgba(245, 158, 11, 0.12);
+    --warn-line: rgba(245, 158, 11, 0.32);
+    --err: #ef4444;
+    --err-bright: #f87171;
+    --err-soft: rgba(239, 68, 68, 0.10);
+    --err-line: rgba(239, 68, 68, 0.32);
+    --shadow-card: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 1px 2px rgba(0, 0, 0, 0.4), 0 0 0 1px var(--line);
+    --shadow-elev: 0 4px 20px rgba(0, 0, 0, 0.4);
   }
-  body { margin: 0; padding: 0; background: var(--bg); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif; color: var(--text); font-size: 14px; line-height: 1.45; }
-  .wrap { max-width: 1180px; margin: 0 auto; padding: 20px 20px 64px; }
+  html, body { background: var(--bg-base); }
+  body {
+    margin: 0; padding: 0;
+    background: var(--bg-grad);
+    background-attachment: fixed;
+    color: var(--text);
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 14px; line-height: 1.5;
+    -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+  .mono { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace; }
+  .wrap { max-width: 1200px; margin: 0 auto; padding: 28px 24px 80px; }
 
-  /* Compact header */
-  .topbar { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; padding-bottom: 14px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
-  .topbar h1 { margin: 0; font-size: 19px; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 10px; }
-  .topbar h1 .dot { width: 9px; height: 9px; background: var(--err); border-radius: 50%; box-shadow: 0 0 0 4px rgba(220,38,38,0.12); }
-  .topbar .meta { font-size: 12px; color: var(--faint); }
+  /* Hero */
+  .hero { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; margin-bottom: 22px; flex-wrap: wrap; }
+  .hero-left h1 {
+    margin: 0; font-size: 30px; font-weight: 800; letter-spacing: -0.02em;
+    background: linear-gradient(180deg, #ffffff 0%, #cbd5e1 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .hero-left h1 .badge-dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: var(--err-bright);
+    box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.18), 0 0 18px var(--err);
+    animation: pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%, 100% { box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.14), 0 0 14px var(--err); } 50% { box-shadow: 0 0 0 7px rgba(239, 68, 68, 0.22), 0 0 22px var(--err); } }
+  .hero-left p { margin: 8px 0 0; color: var(--muted); font-size: 14px; }
+  .hero-right { text-align: right; font-size: 12px; color: var(--faint); }
+  .hero-right .label { text-transform: uppercase; font-size: 10px; letter-spacing: 0.8px; color: var(--faint); font-weight: 700; }
+  .hero-right .value { color: var(--text-2); font-size: 13px; margin-top: 2px; font-weight: 500; font-variant-numeric: tabular-nums; }
 
   /* Sticky controls */
-  .controls { position: sticky; top: 0; z-index: 10; background: var(--bg); padding: 12px 0; display: flex; gap: 14px; align-items: center; flex-wrap: wrap; border-bottom: 1px solid var(--line); margin-bottom: 16px; }
-  .controls .lbl { font-size: 11px; font-weight: 700; letter-spacing: 0.6px; color: var(--faint); text-transform: uppercase; }
-  .pills { display: flex; gap: 4px; background: #ececf2; padding: 3px; border-radius: 8px; }
-  .pill { background: transparent; border: 0; color: var(--muted); padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.12s; }
-  .pill:hover { color: var(--text); }
-  .pill.active { background: #fff; color: var(--brand); box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
-  .refresh { margin-left: auto; background: #fff; border: 1px solid var(--line); color: var(--muted); padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; }
-  .refresh:hover { color: var(--text); border-color: #d4d4dc; }
+  .controls {
+    position: sticky; top: 0; z-index: 30;
+    background: rgba(10, 14, 26, 0.85);
+    backdrop-filter: saturate(180%) blur(12px);
+    -webkit-backdrop-filter: saturate(180%) blur(12px);
+    margin: 0 -24px 22px; padding: 12px 24px;
+    border-bottom: 1px solid var(--line);
+    display: flex; gap: 14px; align-items: center; flex-wrap: wrap;
+  }
+  .controls .lbl { font-size: 10px; font-weight: 700; letter-spacing: 1px; color: var(--faint); text-transform: uppercase; }
+  .pills { display: flex; gap: 2px; background: var(--surface); border: 1px solid var(--line); padding: 3px; border-radius: 10px; }
+  .pill { background: transparent; border: 0; color: var(--muted); padding: 7px 14px; border-radius: 7px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.15s; font-family: inherit; }
+  .pill:hover { color: var(--text); background: rgba(255, 255, 255, 0.04); }
+  .pill.active { background: linear-gradient(180deg, rgba(167, 139, 250, 0.2), rgba(167, 139, 250, 0.08)); color: var(--brand-2); box-shadow: 0 0 0 1px rgba(167, 139, 250, 0.4) inset, 0 4px 14px rgba(167, 139, 250, 0.18); }
+  .refresh { margin-left: auto; background: var(--surface); border: 1px solid var(--line); color: var(--muted); padding: 7px 14px; border-radius: 10px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all 0.15s; display: inline-flex; align-items: center; gap: 6px; }
+  .refresh:hover { color: var(--text); border-color: var(--line-strong); }
+  .refresh .arrow { display: inline-block; transition: transform 0.4s ease; }
+  .refresh.spinning .arrow { animation: spin 0.6s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
 
-  /* Summary stats */
-  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px; }
-  .stat { background: var(--card); border-radius: 10px; padding: 12px 14px; border: 1px solid var(--line); }
-  .stat .l { font-size: 11px; font-weight: 700; letter-spacing: 0.6px; color: var(--faint); text-transform: uppercase; }
-  .stat .v { font-size: 22px; font-weight: 700; margin-top: 4px; line-height: 1.1; }
-  .stat .v.danger { color: var(--err); }
-  .stat .v.ok { color: var(--ok); }
-  .stat .v.warn { color: var(--warn); }
-  @media (max-width: 720px) { .stats { grid-template-columns: repeat(2, 1fr); } }
+  /* Stats */
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 22px; }
+  .stat { background: var(--surface); border-radius: 14px; padding: 16px 18px; box-shadow: var(--shadow-card); position: relative; overflow: hidden; }
+  .stat::before { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(255,255,255,0.04), transparent 40%); pointer-events: none; }
+  .stat .l { font-size: 10px; font-weight: 700; letter-spacing: 0.8px; color: var(--faint); text-transform: uppercase; display: flex; align-items: center; gap: 6px; }
+  .stat .l .ic { width: 6px; height: 6px; border-radius: 50%; background: var(--faint); }
+  .stat .v { font-size: 30px; font-weight: 800; margin-top: 6px; line-height: 1; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+  .stat .v .of { font-size: 16px; font-weight: 600; color: var(--faint); margin-left: 6px; }
+  .stat .sub { font-size: 11px; color: var(--faint); margin-top: 6px; font-weight: 500; }
+  .stat.danger .v { color: var(--err-bright); }
+  .stat.danger .l .ic { background: var(--err); box-shadow: 0 0 8px var(--err); }
+  .stat.ok .v { color: var(--ok); }
+  .stat.ok .l .ic { background: var(--ok); box-shadow: 0 0 8px var(--ok); }
+  .stat.brand .v { color: var(--brand-2); }
+  .stat.brand .l .ic { background: var(--brand); box-shadow: 0 0 8px var(--brand); }
+  @media (max-width: 720px) { .stats { grid-template-columns: repeat(2, 1fr); } .stat .v { font-size: 26px; } }
 
   /* Healthy strip */
-  .healthy-strip { background: var(--ok-soft); border: 1px solid var(--ok-line); border-radius: 10px; padding: 10px 14px; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 12px; }
-  .healthy-strip .h-label { font-weight: 700; color: var(--ok); letter-spacing: 0.4px; text-transform: uppercase; font-size: 11px; }
-  .healthy-strip .h-pill { background: #fff; border: 1px solid var(--ok-line); color: #15803d; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; }
-  .healthy-strip .h-pill .num { color: var(--faint); margin-left: 4px; font-weight: 500; }
+  .healthy {
+    background: linear-gradient(180deg, rgba(16, 185, 129, 0.06), rgba(16, 185, 129, 0.02));
+    border: 1px solid var(--ok-line);
+    border-radius: 14px; padding: 12px 16px; margin-bottom: 22px;
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  }
+  .healthy .h-label { font-size: 11px; font-weight: 700; letter-spacing: 0.6px; color: var(--ok); text-transform: uppercase; }
+  .healthy .h-pill {
+    background: var(--surface); border: 1px solid var(--ok-line);
+    color: var(--text-2); padding: 5px 12px; border-radius: 999px;
+    font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; gap: 8px;
+  }
+  .healthy .h-pill::before { content: "✓"; color: var(--ok); font-weight: 800; }
+  .healthy .h-pill .num { color: var(--faint); font-weight: 500; font-size: 11px; }
 
   /* Project card */
-  .proj { background: var(--card); border-radius: 12px; border: 1px solid var(--line); margin-bottom: 14px; overflow: hidden; }
-  .proj.fetch-error { border-color: #f3f4f6; background: #fafafa; }
-  .proj-head { padding: 14px 18px 12px; display: flex; align-items: flex-start; gap: 12px; cursor: pointer; user-select: none; }
-  .proj-head:hover { background: #fafafa; }
-  .proj-icon { width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 13px; font-weight: 700; }
-  .proj-icon.danger { background: var(--err-soft); color: var(--err); border: 1px solid var(--err-line); }
-  .proj-icon.warn { background: #fff7ed; color: var(--warn); border: 1px solid #fed7aa; }
-  .proj-icon.error { background: #f3f4f6; color: var(--muted); border: 1px solid #e5e7eb; }
+  .proj { background: var(--surface); border-radius: 14px; box-shadow: var(--shadow-card); margin-bottom: 14px; overflow: hidden; transition: border-color 0.15s; }
+  .proj.danger { box-shadow: var(--shadow-card), 0 0 30px rgba(239, 68, 68, 0.06); }
+  .proj.fetch-error { background: rgba(244, 63, 94, 0.04); }
+  .proj-head {
+    padding: 16px 20px; display: flex; align-items: center; gap: 14px;
+    cursor: pointer; user-select: none; transition: background 0.15s;
+  }
+  .proj-head:hover { background: rgba(255, 255, 255, 0.02); }
+  .proj-icon {
+    width: 38px; height: 38px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    font-family: "JetBrains Mono", monospace; font-size: 14px; font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  .proj-icon.danger {
+    background: linear-gradient(180deg, rgba(239, 68, 68, 0.18), rgba(239, 68, 68, 0.06));
+    color: var(--err-bright); border: 1px solid var(--err-line);
+    box-shadow: 0 0 18px rgba(239, 68, 68, 0.22) inset, 0 0 8px rgba(239, 68, 68, 0.18);
+  }
+  .proj-icon.warn {
+    background: linear-gradient(180deg, rgba(245, 158, 11, 0.18), rgba(245, 158, 11, 0.06));
+    color: var(--warn); border: 1px solid var(--warn-line);
+  }
+  .proj-icon.error { background: var(--surface-2); color: var(--muted); border: 1px solid var(--line); }
   .proj-title-row { flex: 1; min-width: 0; }
-  .proj-title { font-size: 15px; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-  .proj-title .dlink { font-size: 11px; color: var(--brand); text-decoration: none; font-weight: 500; opacity: 0.7; }
-  .proj-title .dlink:hover { opacity: 1; text-decoration: underline; }
-  .proj-summary { font-size: 12px; color: var(--muted); margin-top: 2px; }
-  .proj-summary strong { color: var(--err); }
-  .proj-collapse { color: var(--faint); font-size: 11px; padding-top: 4px; transition: transform 0.15s; }
+  .proj-title { font-size: 16px; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 10px; flex-wrap: wrap; letter-spacing: -0.01em; }
+  .proj-title .dlink { font-size: 11px; color: var(--brand); text-decoration: none; font-weight: 500; opacity: 0.75; transition: opacity 0.15s; padding: 2px 6px; border-radius: 4px; }
+  .proj-title .dlink:hover { opacity: 1; background: var(--brand-glow); }
+  .proj-summary { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .proj-summary strong { color: var(--err-bright); font-weight: 700; }
+  .proj-summary .every { color: var(--err-bright); font-weight: 700; padding: 1px 6px; background: var(--err-soft); border-radius: 4px; margin-left: 6px; font-size: 11px; }
+  .proj-collapse { color: var(--faint); font-size: 12px; transition: transform 0.2s; }
   .proj.collapsed .proj-collapse { transform: rotate(-90deg); }
-  .proj-body { padding: 0 18px 16px; border-top: 1px solid #f3f4f6; }
+  .proj-body { padding: 0 20px 20px; }
   .proj.collapsed .proj-body { display: none; }
+  .proj-body-divider { height: 1px; background: var(--line); margin: 0 -20px 16px; }
 
-  /* 30-day heat strip */
-  .heat { display: flex; gap: 3px; margin: 12px 0 4px; align-items: stretch; }
-  .heat-cell { flex: 1; min-width: 8px; height: 24px; border-radius: 3px; background: #f1f1f5; cursor: default; position: relative; }
-  .heat-cell.has-run.all-pass { background: #bbf7d0; }
-  .heat-cell.has-run.some-fail { background: #fecaca; }
-  .heat-cell.has-run.all-fail { background: #dc2626; }
-  .heat-cell.is-today { box-shadow: 0 0 0 2px var(--brand); z-index: 1; }
-  .heat-cell:hover { transform: scaleY(1.15); }
-  .heat-axis { display: flex; justify-content: space-between; font-size: 10px; color: var(--faint); margin-top: 6px; }
+  /* Heat strip */
+  .heat-wrap { background: var(--surface-2); border-radius: 10px; padding: 14px 16px; margin-bottom: 16px; border: 1px solid var(--line); }
+  .heat-label { font-size: 10px; font-weight: 700; letter-spacing: 0.8px; color: var(--faint); text-transform: uppercase; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+  .heat-legend { display: inline-flex; gap: 10px; align-items: center; font-weight: 500; text-transform: none; letter-spacing: 0; }
+  .heat-legend .lg { display: inline-flex; align-items: center; gap: 4px; }
+  .heat-legend .lg .sw { width: 10px; height: 10px; border-radius: 2px; }
+  .heat { display: flex; gap: 3px; align-items: stretch; }
+  .heat-cell { flex: 1; min-width: 9px; height: 28px; border-radius: 4px; background: #1a2236; cursor: default; position: relative; transition: transform 0.12s; }
+  .heat-cell.has-run.all-pass { background: linear-gradient(180deg, #10b981, #059669); box-shadow: 0 0 6px rgba(16, 185, 129, 0.35); }
+  .heat-cell.has-run.some-fail { background: linear-gradient(180deg, #f59e0b, #d97706); box-shadow: 0 0 6px rgba(245, 158, 11, 0.35); }
+  .heat-cell.has-run.all-fail { background: linear-gradient(180deg, #ef4444, #b91c1c); box-shadow: 0 0 8px rgba(239, 68, 68, 0.45); }
+  .heat-cell.is-today { box-shadow: 0 0 0 2px var(--brand), 0 0 12px var(--brand-glow); z-index: 2; }
+  .heat-cell:hover { transform: scaleY(1.18); }
+  .heat-axis { display: flex; justify-content: space-between; font-size: 10px; color: var(--faint); margin-top: 8px; font-weight: 500; }
 
-  /* Date group */
-  .day { margin-top: 14px; padding-top: 12px; border-top: 1px dashed #f3f4f6; }
-  .day:first-child { border-top: 0; padding-top: 8px; margin-top: 6px; }
-  .day-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 8px; }
-  .day-date { font-size: 13px; font-weight: 700; color: var(--text); }
-  .day-rel { font-size: 11px; color: var(--faint); font-weight: 500; }
-  .day-count { margin-left: auto; font-size: 11px; font-weight: 700; color: var(--err); background: var(--err-soft); padding: 2px 8px; border-radius: 999px; }
+  /* Day group */
+  .day { margin-top: 18px; padding-top: 14px; border-top: 1px dashed var(--line); }
+  .day:first-child { border-top: 0; padding-top: 0; margin-top: 4px; }
+  .day-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 10px; }
+  .day-date { font-size: 14px; font-weight: 700; color: var(--text); letter-spacing: -0.01em; }
+  .day-rel {
+    font-size: 10px; font-weight: 700; color: var(--brand-2); letter-spacing: 0.6px; text-transform: uppercase;
+    background: var(--brand-glow); padding: 2px 8px; border-radius: 999px;
+  }
+  .day-rel.faint { color: var(--faint); background: rgba(148, 163, 184, 0.08); }
+  .day-count {
+    margin-left: auto; font-size: 11px; font-weight: 700; color: var(--err-bright);
+    background: var(--err-soft); padding: 3px 10px; border-radius: 999px;
+    border: 1px solid var(--err-line);
+  }
 
   /* Run row */
-  .run { padding: 9px 12px; background: #fafafb; border: 1px solid var(--line); border-radius: 8px; margin-bottom: 6px; }
-  .run-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 13px; }
-  .run-time { font-weight: 700; color: var(--err); min-width: 78px; font-variant-numeric: tabular-nums; }
+  .run {
+    background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px;
+    padding: 11px 14px; margin-bottom: 8px; transition: border-color 0.15s;
+  }
+  .run:hover { border-color: var(--line-strong); }
+  .run-head { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; font-size: 13px; }
+  .run-time { font-family: "JetBrains Mono", monospace; font-weight: 600; color: var(--err-bright); min-width: 84px; font-size: 13px; letter-spacing: -0.02em; }
   .run-counts { color: var(--text); font-weight: 500; }
-  .run-counts .x { color: var(--err); font-weight: 700; }
-  .run-pass { font-size: 11px; color: var(--faint); }
-  .run-extra { font-size: 11px; color: var(--muted); margin-left: auto; }
-  .fails-preview { margin-top: 6px; padding-left: 0; font-size: 12px; color: var(--muted); }
+  .run-counts .x { color: var(--err-bright); font-weight: 800; font-size: 14px; }
+  .run-counts .of { color: var(--muted); }
+  .run-pass { font-size: 11px; color: var(--faint); font-variant-numeric: tabular-nums; padding: 2px 8px; background: var(--surface-3); border-radius: 4px; }
+  .run-extra { font-size: 11px; color: var(--muted); margin-left: auto; padding: 2px 8px; background: var(--surface-3); border-radius: 4px; }
+
+  .fails-preview { margin-top: 10px; font-size: 12px; }
   .fails-preview ul { margin: 0; padding: 0; list-style: none; }
-  .fails-preview li { padding: 3px 0; border-top: 1px dashed transparent; }
-  .fails-preview .ftitle { color: var(--text); font-weight: 500; }
-  .fails-preview .fmod { color: var(--brand); font-size: 11px; margin-left: 6px; opacity: 0.75; }
-  .fails-preview .ferr { color: var(--faint); font-size: 11px; margin-top: 1px; word-break: break-word; max-height: 32px; overflow: hidden; }
-  .fails-more { color: var(--brand); font-size: 11px; cursor: pointer; margin-top: 4px; font-weight: 600; user-select: none; }
-  .fails-more:hover { text-decoration: underline; }
+  .fails-preview li { padding: 7px 0; border-top: 1px solid var(--line); }
+  .fails-preview li:first-child { border-top: 0; padding-top: 4px; }
+  .fails-preview .ftitle { color: var(--text-2); font-weight: 600; font-size: 12px; }
+  .fails-preview .fmod {
+    color: var(--brand-2); font-size: 10px; margin-left: 8px;
+    padding: 1px 7px; background: var(--brand-glow); border-radius: 4px;
+    font-weight: 600; letter-spacing: 0.2px;
+  }
+  .fails-preview .ferr {
+    color: var(--faint); font-size: 11px; margin-top: 3px; word-break: break-word;
+    line-height: 1.4; font-family: "JetBrains Mono", monospace;
+    max-height: 36px; overflow: hidden;
+  }
+  .fails-more {
+    color: var(--brand); font-size: 11px; cursor: pointer; margin-top: 8px;
+    font-weight: 700; user-select: none; display: inline-flex; align-items: center; gap: 4px;
+    padding: 4px 8px; border-radius: 6px; transition: background 0.15s;
+  }
+  .fails-more:hover { background: var(--brand-glow); }
 
-  .empty-line { padding: 12px 18px 14px; font-size: 12px; color: var(--muted); }
-  .empty-line.ok { color: #15803d; }
+  .empty-line { padding: 16px 20px; font-size: 13px; color: var(--muted); }
+  .empty-line.ok { color: var(--ok); }
 
-  .loading { text-align: center; padding: 60px 20px; color: var(--faint); font-size: 13px; }
-  .loading::before { content: "⏳"; display: block; font-size: 22px; margin-bottom: 10px; }
-  .footer { margin-top: 28px; text-align: center; font-size: 11px; color: var(--faint); }
+  .loading { text-align: center; padding: 80px 20px; color: var(--faint); font-size: 14px; }
+  .loading .spinner {
+    display: inline-block; width: 28px; height: 28px;
+    border: 2px solid var(--line-strong); border-top-color: var(--brand);
+    border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 14px;
+  }
+  .footer { margin-top: 36px; text-align: center; font-size: 11px; color: var(--faint); }
+  .footer a { color: var(--brand); text-decoration: none; }
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="topbar">
-    <h1><span class="dot"></span>QA Failures Dashboard</h1>
-    <div class="meta" id="lastFetched">Loading…</div>
-  </div>
+  <header class="hero">
+    <div class="hero-left">
+      <h1><span class="badge-dot"></span>QA Failures Dashboard</h1>
+      <p>Live view across all automation projects — every failed run, when it happened, and what broke.</p>
+    </div>
+    <div class="hero-right">
+      <div class="label">Last fetched</div>
+      <div class="value" id="lastFetched">Loading…</div>
+    </div>
+  </header>
 
   <div class="controls">
     <span class="lbl">Window</span>
@@ -135,14 +266,13 @@
       <button class="pill" data-days="90">90 days</button>
       <button class="pill" data-days="0">All time</button>
     </div>
-    <button class="refresh" id="refreshBtn">↻ Refresh</button>
+    <button class="refresh" id="refreshBtn"><span class="arrow">↻</span> Refresh</button>
   </div>
 
   <div class="stats" id="statsBar"></div>
+  <div id="content"><div class="loading"><div class="spinner"></div>Loading project feeds…</div></div>
 
-  <div id="content"><div class="loading">Loading project feeds…</div></div>
-
-  <div class="footer">Data refreshes when you reload • Click a project header to collapse/expand</div>
+  <div class="footer">Data fetched live on each reload • Click a project header to collapse/expand</div>
 </div>
 
 <script>
@@ -158,7 +288,7 @@ const PROJECTS = [
 ];
 
 const IST_OFFSET_MS = 5.5 * 3600 * 1000;
-const PREVIEW_FAILS = 3; // show this many failed items inline before "show more"
+const PREVIEW_FAILS = 3;
 let currentWindow = 30;
 let cache = null;
 
@@ -198,13 +328,13 @@ function fmtTime(date) {
 function todayKey() { return dateKeyIST(new Date()); }
 function relativeDay(key) {
   const t = todayKey();
-  if (key === t) return "Today";
+  if (key === t) return { label: "Today", strong: true };
   const yest = dateKeyIST(new Date(Date.now() - 86400000));
-  if (key === yest) return "Yesterday";
+  if (key === yest) return { label: "Yesterday", strong: true };
   const target = new Date(key + "T00:00:00+05:30");
   const days = Math.round((Date.now() - target.getTime()) / 86400000);
-  if (days >= 2 && days <= 7) return days + " days ago";
-  return "";
+  if (days >= 2 && days <= 7) return { label: days + " days ago", strong: false };
+  return null;
 }
 
 function normalize(raw, fmt) {
@@ -260,21 +390,29 @@ async function fetchAll() {
 }
 
 function buildHeatmap(runsInWindow) {
-  // 30-day heat strip ending today (IST)
   const days = 30;
   const today = todayKey();
   const cells = [];
   for (let i = days - 1; i >= 0; i--) {
     const d = new Date(Date.now() - i * 86400000);
-    const k = dateKeyIST(d);
-    cells.push({ key: k, date: d, runs: [] });
+    cells.push({ key: dateKeyIST(d), date: d, runs: [] });
   }
   const byKey = new Map(cells.map((c) => [c.key, c]));
   for (const r of runsInWindow) {
     const k = dateKeyIST(r._date);
     if (byKey.has(k)) byKey.get(k).runs.push(r);
   }
-  let html = `<div class="heat" title="Last 30 days — green: all passed · red: had failures · gray: no run">`;
+  let html = `<div class="heat-wrap">
+    <div class="heat-label">
+      <span>Last 30 days · IST</span>
+      <span class="heat-legend">
+        <span class="lg"><span class="sw" style="background:#1a2236;"></span> No run</span>
+        <span class="lg"><span class="sw" style="background:linear-gradient(180deg,#10b981,#059669);"></span> All pass</span>
+        <span class="lg"><span class="sw" style="background:linear-gradient(180deg,#f59e0b,#d97706);"></span> Some fail</span>
+        <span class="lg"><span class="sw" style="background:linear-gradient(180deg,#ef4444,#b91c1c);"></span> All fail</span>
+      </span>
+    </div>
+    <div class="heat">`;
   for (const c of cells) {
     let cls = "heat-cell";
     if (c.runs.length) {
@@ -294,25 +432,21 @@ function buildHeatmap(runsInWindow) {
     html += `<div class="${cls}" title="${esc(tip)}"></div>`;
   }
   html += `</div>`;
-  const oldest = cells[0].key;
-  const newest = cells[cells.length - 1].key;
-  html += `<div class="heat-axis"><span>${esc(oldest)}</span><span>${esc(newest)} (today)</span></div>`;
+  html += `<div class="heat-axis"><span>${esc(cells[0].key)}</span><span>${esc(cells[cells.length - 1].key)} · today</span></div>`;
+  html += `</div>`;
   return html;
 }
 
 function severity(failedRuns, totalRuns) {
   if (totalRuns === 0) return "error";
   if (failedRuns === 0) return "ok";
-  const pct = failedRuns / totalRuns;
-  if (pct >= 0.5) return "danger";
-  return "warn";
+  return failedRuns / totalRuns >= 0.5 ? "danger" : "warn";
 }
 
 function render() {
   if (!cache) return;
   const cutoff = currentWindow > 0 ? Date.now() - currentWindow * 86400000 : 0;
-
-  let totalFailedRuns = 0, totalFailedTests = 0, projectsWithFailures = 0, projectsWithErrors = 0, healthyProjects = [];
+  let totalFailedRuns = 0, totalFailedTests = 0, projectsWithFailures = 0, projectsWithErrors = 0, healthy = [];
   const failingHtml = [];
 
   for (const entry of cache) {
@@ -324,8 +458,8 @@ function render() {
           <div class="proj-head">
             <div class="proj-icon error">!</div>
             <div class="proj-title-row">
-              <div class="proj-title">${esc(project.name)} <a class="dlink" href="${esc(project.dashboard)}" target="_blank" rel="noopener">↗ dashboard</a></div>
-              <div class="proj-summary">Could not load feed — ${esc(error)}</div>
+              <div class="proj-title">${esc(project.name)} <a class="dlink" href="${esc(project.dashboard)}" target="_blank" rel="noopener">↗ open dashboard</a></div>
+              <div class="proj-summary">Could not load feed — <span class="mono">${esc(error)}</span></div>
             </div>
           </div>
         </div>`);
@@ -334,17 +468,13 @@ function render() {
 
     const inWindow = runs.filter((r) => !cutoff || r._date.getTime() >= cutoff);
     const failedRuns = inWindow.filter((r) => r.failed > 0);
-    const failedTests = failedRuns.reduce((s, r) => s + r.failed, 0);
+    const failedTestsCount = failedRuns.reduce((s, r) => s + r.failed, 0);
     totalFailedRuns += failedRuns.length;
-    totalFailedTests += failedTests;
+    totalFailedTests += failedTestsCount;
     if (failedRuns.length) projectsWithFailures++;
 
-    if (failedRuns.length === 0) {
-      healthyProjects.push({ project, runs: inWindow.length });
-      continue;
-    }
+    if (failedRuns.length === 0) { healthy.push({ project, runs: inWindow.length }); continue; }
 
-    // Group failed runs by IST date
     const byDate = new Map();
     for (const r of failedRuns) {
       const k = dateKeyIST(r._date);
@@ -352,7 +482,7 @@ function render() {
       byDate.get(k).push(r);
     }
     const dateKeys = [...byDate.keys()].sort().reverse();
-    const dateGroupsHtml = dateKeys.map((k) => {
+    const dayGroups = dateKeys.map((k) => {
       const list = byDate.get(k);
       const rel = relativeDay(k);
       const runsHtml = list.map((r) => renderRun(r)).join("");
@@ -360,7 +490,7 @@ function render() {
         <div class="day">
           <div class="day-head">
             <span class="day-date">${esc(fmtFullDate(list[0]._date))}</span>
-            ${rel ? `<span class="day-rel">${esc(rel)}</span>` : ""}
+            ${rel ? `<span class="day-rel ${rel.strong ? "" : "faint"}">${esc(rel.label)}</span>` : ""}
             <span class="day-count">${list.length} failed run${list.length === 1 ? "" : "s"}</span>
           </div>
           ${runsHtml}
@@ -368,38 +498,39 @@ function render() {
     }).join("");
 
     const sev = severity(failedRuns.length, inWindow.length);
-    const heat = buildHeatmap(inWindow);
+    const everyFailed = failedRuns.length === inWindow.length && inWindow.length > 1;
 
     failingHtml.push(`
-      <div class="proj">
+      <div class="proj ${sev === "danger" ? "danger" : ""}">
         <div class="proj-head">
           <div class="proj-icon ${sev === "danger" ? "danger" : "warn"}">${failedRuns.length}</div>
           <div class="proj-title-row">
-            <div class="proj-title">${esc(project.name)} <a class="dlink" href="${esc(project.dashboard)}" target="_blank" rel="noopener">↗ dashboard</a></div>
-            <div class="proj-summary"><strong>${failedRuns.length}</strong> of ${inWindow.length} run${inWindow.length === 1 ? "" : "s"} failed · ${failedTests} test${failedTests === 1 ? "" : "s"} failed${failedRuns.length === inWindow.length && inWindow.length > 1 ? " · <strong>every run failed</strong>" : ""}</div>
+            <div class="proj-title">${esc(project.name)} <a class="dlink" href="${esc(project.dashboard)}" target="_blank" rel="noopener">↗ open dashboard</a></div>
+            <div class="proj-summary"><strong>${failedRuns.length}</strong> of ${inWindow.length} run${inWindow.length === 1 ? "" : "s"} failed · ${failedTestsCount} test${failedTestsCount === 1 ? "" : "s"} failed${everyFailed ? `<span class="every">every run failed</span>` : ""}</div>
           </div>
           <div class="proj-collapse">▼</div>
         </div>
         <div class="proj-body">
-          ${heat}
-          ${dateGroupsHtml}
+          <div class="proj-body-divider"></div>
+          ${buildHeatmap(inWindow)}
+          ${dayGroups}
         </div>
       </div>`);
   }
 
   // Stats bar
   document.getElementById("statsBar").innerHTML = `
-    <div class="stat"><div class="l">Window</div><div class="v">${currentWindow > 0 ? "Last " + currentWindow + " days" : "All time"}</div></div>
-    <div class="stat"><div class="l">Projects with failures</div><div class="v ${projectsWithFailures > 0 ? "danger" : "ok"}">${projectsWithFailures} <span style="color:var(--faint);font-weight:500;font-size:14px;">/ ${PROJECTS.length}</span></div></div>
-    <div class="stat"><div class="l">Failed runs</div><div class="v ${totalFailedRuns > 0 ? "danger" : "ok"}">${totalFailedRuns}</div></div>
-    <div class="stat"><div class="l">Failed tests</div><div class="v ${totalFailedTests > 0 ? "danger" : "ok"}">${totalFailedTests}</div></div>
+    <div class="stat brand"><div class="l"><span class="ic"></span>Window</div><div class="v">${currentWindow > 0 ? currentWindow + "d" : "∞"}</div><div class="sub">${currentWindow > 0 ? "Last " + currentWindow + " days" : "All time"}</div></div>
+    <div class="stat ${projectsWithFailures > 0 ? "danger" : "ok"}"><div class="l"><span class="ic"></span>Projects with failures</div><div class="v">${projectsWithFailures}<span class="of">/ ${PROJECTS.length}</span></div><div class="sub">${projectsWithFailures === 0 ? "all healthy" : "need attention"}</div></div>
+    <div class="stat ${totalFailedRuns > 0 ? "danger" : "ok"}"><div class="l"><span class="ic"></span>Failed runs</div><div class="v">${totalFailedRuns}</div><div class="sub">across all projects</div></div>
+    <div class="stat ${totalFailedTests > 0 ? "danger" : "ok"}"><div class="l"><span class="ic"></span>Failed tests</div><div class="v">${totalFailedTests}</div><div class="sub">total individual failures</div></div>
   `;
 
-  // Healthy projects strip
+  // Healthy strip
   let healthyHtml = "";
-  if (healthyProjects.length) {
-    const items = healthyProjects.map((h) => `<span class="h-pill">✓ ${esc(h.project.name)}<span class="num">${h.runs} run${h.runs === 1 ? "" : "s"}</span></span>`).join("");
-    healthyHtml = `<div class="healthy-strip"><span class="h-label">All passing (${healthyProjects.length})</span>${items}</div>`;
+  if (healthy.length) {
+    const items = healthy.map((h) => `<span class="h-pill">${esc(h.project.name)} <span class="num">${h.runs} run${h.runs === 1 ? "" : "s"}</span></span>`).join("");
+    healthyHtml = `<div class="healthy"><span class="h-label">All passing · ${healthy.length}</span>${items}</div>`;
   }
 
   document.getElementById("content").innerHTML = healthyHtml + (failingHtml.length ? failingHtml.join("") : `<div class="proj"><div class="empty-line ok">🎉 No failures across any project in this window.</div></div>`);
@@ -418,15 +549,13 @@ function renderRun(r) {
   if (r.failedItems.length) {
     const visible = r.failedItems.slice(0, PREVIEW_FAILS);
     const hidden = r.failedItems.slice(PREVIEW_FAILS);
-    const visibleHtml = visible.map((f) => `<li>
+    const renderItem = (f, hide) => `<li${hide ? ' class="hidden-fail" style="display:none;"' : ""}>
       <div><span class="ftitle">${esc(f.title)}</span>${f.module ? ` <span class="fmod">${esc(f.module)}</span>` : ""}</div>
       ${f.error ? `<div class="ferr">${esc(f.error)}</div>` : ""}
-    </li>`).join("");
-    const hiddenHtml = hidden.length ? hidden.map((f) => `<li class="hidden-fail" style="display:none;">
-      <div><span class="ftitle">${esc(f.title)}</span>${f.module ? ` <span class="fmod">${esc(f.module)}</span>` : ""}</div>
-      ${f.error ? `<div class="ferr">${esc(f.error)}</div>` : ""}
-    </li>`).join("") : "";
-    const moreLink = hidden.length ? `<div class="fails-more" data-action="toggle-more">Show ${hidden.length} more failed item${hidden.length === 1 ? "" : "s"}</div>` : "";
+    </li>`;
+    const visibleHtml = visible.map((f) => renderItem(f, false)).join("");
+    const hiddenHtml = hidden.map((f) => renderItem(f, true)).join("");
+    const moreLink = hidden.length ? `<div class="fails-more" data-action="toggle-more"><span class="chev">▾</span> Show ${hidden.length} more</div>` : "";
     preview = `<div class="fails-preview"><ul>${visibleHtml}${hiddenHtml}</ul>${moreLink}</div>`;
   }
 
@@ -434,7 +563,7 @@ function renderRun(r) {
     <div class="run">
       <div class="run-head">
         <span class="run-time">${esc(time)}</span>
-        <span class="run-counts"><span class="x">${r.failed}</span> / ${r.total} failed</span>
+        <span class="run-counts"><span class="x">${r.failed}</span><span class="of"> / ${r.total}</span> failed</span>
         <span class="run-pass">${r.passRate}% pass</span>
         ${extra ? `<span class="run-extra">${esc(extra)}</span>` : ""}
       </div>
@@ -456,9 +585,9 @@ function bindHandlers() {
       const hidden = ul.querySelectorAll(".hidden-fail");
       const isShown = hidden.length && hidden[0].style.display !== "none";
       hidden.forEach((li) => { li.style.display = isShown ? "none" : "block"; });
-      b.textContent = isShown
-        ? `Show ${hidden.length} more failed item${hidden.length === 1 ? "" : "s"}`
-        : `Hide`;
+      b.innerHTML = isShown
+        ? `<span class="chev">▾</span> Show ${hidden.length} more`
+        : `<span class="chev">▴</span> Hide`;
     });
   });
 }
@@ -468,11 +597,14 @@ function esc(s) {
 }
 
 async function load() {
-  document.getElementById("content").innerHTML = '<div class="loading">Loading project feeds…</div>';
+  const refreshBtn = document.getElementById("refreshBtn");
+  refreshBtn.classList.add("spinning");
+  document.getElementById("content").innerHTML = '<div class="loading"><div class="spinner"></div>Loading project feeds…</div>';
   document.getElementById("lastFetched").textContent = "Loading…";
   cache = await fetchAll();
-  document.getElementById("lastFetched").textContent = "Last fetched: " + new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }) + " IST";
+  document.getElementById("lastFetched").textContent = new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata", day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: true }) + " IST";
   render();
+  setTimeout(() => refreshBtn.classList.remove("spinning"), 400);
 }
 
 document.querySelectorAll(".pill").forEach((p) => {
