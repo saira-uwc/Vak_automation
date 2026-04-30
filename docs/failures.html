@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QA Failures Dashboard</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 0; background: #f5f5f7; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: #1f2937; }
+  .container { max-width: 1100px; margin: 24px auto; padding: 0 16px 64px; }
+  .header { background: linear-gradient(135deg, #7c3aed, #a855f7); color: #fff; border-radius: 16px; padding: 28px 32px; box-shadow: 0 4px 16px rgba(124,58,237,0.25); }
+  .header h1 { margin: 0; font-size: 26px; font-weight: 700; }
+  .header p { margin: 6px 0 0; font-size: 14px; opacity: 0.9; }
+  .header .last-fetched { margin-top: 10px; font-size: 12px; opacity: 0.8; }
+  .controls { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin: 20px 0 16px; }
+  .controls .label { font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; margin-right: 4px; }
+  .pill { background: #fff; border: 1px solid #e5e7eb; color: #374151; padding: 7px 14px; border-radius: 999px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.15s; }
+  .pill:hover { border-color: #c4b5fd; }
+  .pill.active { background: #7c3aed; border-color: #7c3aed; color: #fff; }
+  .refresh-btn { background: #fff; border: 1px solid #e5e7eb; color: #374151; padding: 7px 14px; border-radius: 999px; font-size: 13px; font-weight: 500; cursor: pointer; margin-left: auto; }
+  .refresh-btn:hover { border-color: #c4b5fd; }
+  .summary-bar { background: #fff; border-radius: 12px; padding: 16px 20px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); display: flex; gap: 24px; flex-wrap: wrap; }
+  .summary-stat { display: flex; flex-direction: column; }
+  .summary-stat .label { font-size: 11px; font-weight: 600; color: #888; text-transform: uppercase; letter-spacing: 0.5px; }
+  .summary-stat .value { font-size: 22px; font-weight: 700; margin-top: 4px; }
+  .summary-stat .value.danger { color: #ef4444; }
+  .summary-stat .value.warn { color: #f59e0b; }
+  .summary-stat .value.ok { color: #22c55e; }
+  .project { background: #fff; border-radius: 12px; margin-bottom: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); overflow: hidden; }
+  .project-header { padding: 14px 20px; display: flex; align-items: center; gap: 12px; cursor: pointer; user-select: none; border-bottom: 1px solid transparent; transition: background 0.1s; }
+  .project-header:hover { background: #fafafa; }
+  .project.expanded .project-header { border-bottom-color: #f0f0f0; }
+  .project .chevron { transition: transform 0.2s; color: #9ca3af; font-size: 12px; }
+  .project.expanded .chevron { transform: rotate(90deg); }
+  .project-name { font-size: 15px; font-weight: 600; color: #1f2937; flex: 1; }
+  .project-meta { font-size: 12px; color: #9ca3af; }
+  .badge { padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 700; }
+  .badge.clean { background: #dcfce7; color: #166534; }
+  .badge.warn { background: #fef3c7; color: #92400e; }
+  .badge.danger { background: #fef2f2; color: #991b1b; }
+  .badge.error { background: #f3f4f6; color: #6b7280; }
+  .project-body { display: none; padding: 4px 20px 16px; }
+  .project.expanded .project-body { display: block; }
+  .date-group { margin-top: 14px; padding-top: 12px; border-top: 1px solid #f3f4f6; }
+  .date-group:first-child { border-top: 0; padding-top: 4px; margin-top: 8px; }
+  .date-header { font-size: 13px; font-weight: 700; color: #4b5563; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+  .date-header .count { font-weight: 600; color: #ef4444; font-size: 12px; }
+  .run { background: #fef9f9; border: 1px solid #fee2e2; border-radius: 8px; padding: 10px 14px; margin-bottom: 8px; }
+  .run-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 13px; }
+  .run-time { font-weight: 600; color: #991b1b; min-width: 90px; }
+  .run-counts { color: #6b7280; }
+  .run-counts strong { color: #ef4444; }
+  .run-pass-rate { color: #6b7280; margin-left: auto; font-size: 12px; }
+  .run-extra { font-size: 12px; color: #6b7280; margin-top: 4px; padding-left: 0; }
+  .run-detail-toggle { font-size: 12px; color: #7c3aed; cursor: pointer; margin-top: 6px; user-select: none; }
+  .run-detail-toggle:hover { text-decoration: underline; }
+  .run-detail { display: none; margin-top: 8px; padding: 8px 12px; background: #fff; border-radius: 6px; border: 1px solid #fee2e2; font-size: 12px; }
+  .run-detail.open { display: block; }
+  .run-detail ul { margin: 0; padding-left: 18px; }
+  .run-detail li { margin-bottom: 4px; }
+  .run-detail .err { color: #6b7280; font-size: 11px; margin-left: 4px; font-style: italic; word-break: break-word; }
+  .empty { padding: 16px 20px; font-size: 13px; color: #6b7280; }
+  .empty.clean { color: #166534; }
+  .empty.error { color: #991b1b; }
+  .dashboard-link { font-size: 11px; color: #7c3aed; text-decoration: none; margin-left: 6px; }
+  .dashboard-link:hover { text-decoration: underline; }
+  .loading { text-align: center; padding: 40px; color: #9ca3af; }
+  .footer { margin-top: 24px; text-align: center; font-size: 11px; color: #9ca3af; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>QA Failures Dashboard</h1>
+    <p>Failed runs across all automation projects — when they failed, how often, and what failed</p>
+    <div class="last-fetched" id="lastFetched">Loading…</div>
+  </div>
+
+  <div class="controls">
+    <span class="label">Window:</span>
+    <button class="pill" data-days="7">Last 7 days</button>
+    <button class="pill active" data-days="30">Last 30 days</button>
+    <button class="pill" data-days="90">Last 90 days</button>
+    <button class="pill" data-days="0">All time</button>
+    <button class="refresh-btn" id="refreshBtn">↻ Refresh</button>
+  </div>
+
+  <div class="summary-bar" id="summaryBar"></div>
+  <div id="projects"><div class="loading">Loading projects…</div></div>
+
+  <div class="footer">
+    Data refreshes when you reload. Click a project to see failed runs grouped by date.
+  </div>
+</div>
+
+<script>
+const PROJECTS = [
+  { name: "Asksam Automation",       dashboard: "https://saira-uwc.github.io/asksam-automation-new/",                     runs: "https://saira-uwc.github.io/asksam-automation-new/history/runs.json", format: "playwright" },
+  { name: "Website Automation",      dashboard: "https://saira-uwc.github.io/Shunyalabs_website/",                        runs: "https://saira-uwc.github.io/Shunyalabs_website/history/runs.json",     format: "playwright" },
+  { name: "Widget Automation",       dashboard: "https://saira-uwc.github.io/Shunyalabs_widget/",                         runs: "https://saira-uwc.github.io/Shunyalabs_widget/history/runs.json",      format: "playwright" },
+  { name: "Console Dashboard",       dashboard: "https://saira-uwc.github.io/Shunyalabs_console/",                        runs: "https://saira-uwc.github.io/Shunyalabs_console/history/runs.json",     format: "playwright" },
+  { name: "Vak BE Automation",       dashboard: "https://saira-uwc.github.io/Vak_automation/",                            runs: "https://saira-uwc.github.io/Vak_automation/data.json",                 format: "vak" },
+  { name: "Concurrent (Zero Indic)", dashboard: "https://yamini-pal-singh.github.io/automation-testing/Concurrent-Report.html", runs: "https://yamini-pal-singh.github.io/automation-testing/concurrent-runs.json", format: "playwright" },
+  { name: "Long Audio (Zero Indic)", dashboard: "https://yamini-pal-singh.github.io/automation-testing/Long-Audio-Report.html", runs: "https://yamini-pal-singh.github.io/automation-testing/long-audio-runs.json", format: "playwright" },
+  { name: "Playground",              dashboard: "https://yamini-pal-singh.github.io/playground-testing/Playground-Report.html", runs: "https://yamini-pal-singh.github.io/playground-testing/playground-runs.json", format: "playwright" },
+];
+
+const IST_OFFSET_MS = 5.5 * 3600 * 1000;
+let currentWindow = 30; // days; 0 = all
+let cache = null; // {project, runs, error}[]
+
+// --- Timestamp parsing ---
+function parseToDate(ts) {
+  if (!ts) return null;
+  if (/Z$/.test(ts)) {
+    const d = new Date(ts);
+    return isNaN(d) ? null : d;
+  }
+  if (/\bIST\b/.test(ts)) {
+    const m = ts.replace(/\s*IST\s*$/, "").match(/^(\d{4})-(\d{2})-(\d{2})\s+(\d{2}):(\d{2}):(\d{2})$/);
+    if (!m) return null;
+    return new Date(Date.UTC(+m[1], +m[2] - 1, +m[3], +m[4], +m[5], +m[6]) - IST_OFFSET_MS);
+  }
+  // M/D/YYYY, h:mm:ss AM/PM (Concurrent / Long Audio) — interpret as IST
+  const m1 = ts.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4}),\s*(\d{1,2}):(\d{2}):(\d{2})\s*(AM|PM)/i);
+  if (m1) {
+    let [, M, D, Y, h, mn, s, ap] = m1;
+    h = +h; if (ap.toUpperCase() === "PM" && h < 12) h += 12; if (ap.toUpperCase() === "AM" && h === 12) h = 0;
+    return new Date(Date.UTC(+Y, +M - 1, +D, h, +mn, +s) - IST_OFFSET_MS);
+  }
+  // "YYYY-MM-DD HH:MM:SS" (Playground) — interpret as IST
+  const m2 = ts.match(/^(\d{4})-(\d{2})-(\d{2})\s+(\d{2}):(\d{2}):(\d{2})$/);
+  if (m2) return new Date(Date.UTC(+m2[1], +m2[2] - 1, +m2[3], +m2[4], +m2[5], +m2[6]) - IST_OFFSET_MS);
+  // Date only "YYYY-MM-DD" (Website fallback)
+  const m3 = ts.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (m3) return new Date(Date.UTC(+m3[1], +m3[2] - 1, +m3[3], 0, 0, 0) - IST_OFFSET_MS);
+  const d = new Date(ts);
+  return isNaN(d) ? null : d;
+}
+
+function fmtISTDate(date) {
+  return date.toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata", weekday: "short", day: "2-digit", month: "short", year: "numeric" });
+}
+function fmtISTTime(date) {
+  return date.toLocaleTimeString("en-IN", { timeZone: "Asia/Kolkata", hour: "2-digit", minute: "2-digit", hour12: true });
+}
+function dateKeyIST(date) {
+  return new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Kolkata", year: "numeric", month: "2-digit", day: "2-digit" }).format(date);
+}
+
+// --- Normalization (mirrors Python normalizers) ---
+function normalize(raw, fmt) {
+  const out = [];
+  if (fmt === "vak") {
+    for (const r of raw.runs || []) {
+      out.push({
+        timestamp: r.timestamp,
+        total: r.total || 0,
+        passed: r.passed || 0,
+        failed: r.failed || 0,
+        passRate: r.pass_rate || 0,
+        avgLatency: r.avg_latency,
+        failedItems: [],
+      });
+    }
+    return out;
+  }
+  // playwright (formats A and B)
+  for (const r of raw) {
+    const summary = r.summary || {};
+    const ts = r.startedAt || r.runTimestamp || r.runDate;
+    const total = summary.total ?? r.total ?? 0;
+    const passed = summary.passed ?? r.passed ?? 0;
+    const failed = summary.failed ?? r.failed ?? 0;
+    const passRate = r.passRate ?? 0;
+    const failedItems = [];
+    // tests[] (Asksam / Website / Widget)
+    if (Array.isArray(r.tests)) {
+      for (const t of r.tests) {
+        const status = (t.status || "").toLowerCase();
+        if (status === "failed" || status === "fail") {
+          failedItems.push({
+            title: t.title || t.testPoint || t.name || "(unnamed)",
+            module: t.moduleLabel || t.module || t.moduleName || "",
+            error: (t.error || t.comment || "").split("\n")[0].slice(0, 240),
+          });
+        }
+      }
+    }
+    // suites[] (Playground)
+    if (failedItems.length === 0 && Array.isArray(r.suites)) {
+      for (const s of r.suites) {
+        const status = (s.status || "").toLowerCase();
+        if (status === "fail" || status === "failed") {
+          failedItems.push({
+            title: s.name || "(unnamed suite)",
+            module: s.category || "",
+            error: s.failure_reason || "",
+          });
+        }
+      }
+    }
+    out.push({
+      timestamp: ts,
+      total,
+      passed,
+      failed,
+      passRate,
+      timeSavedPercent: r.timeSavedPercent,
+      avgLatencyMs: r.avgLatencyMs,
+      failedItems,
+    });
+  }
+  return out;
+}
+
+// --- Fetch all projects ---
+async function fetchAll() {
+  const results = await Promise.all(PROJECTS.map(async (p) => {
+    try {
+      const resp = await fetch(p.runs, { cache: "no-cache" });
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+      const raw = await resp.json();
+      const runs = normalize(raw, p.format).map((r) => ({ ...r, _date: parseToDate(r.timestamp) })).filter((r) => r._date);
+      runs.sort((a, b) => b._date - a._date);
+      return { project: p, runs, error: null };
+    } catch (e) {
+      return { project: p, runs: [], error: String(e.message || e) };
+    }
+  }));
+  return results;
+}
+
+// --- Render ---
+function render() {
+  if (!cache) return;
+  const cutoff = currentWindow > 0 ? Date.now() - currentWindow * 24 * 3600 * 1000 : 0;
+  let totalFailedRuns = 0;
+  let totalFailedTests = 0;
+  let projectsWithFailures = 0;
+  let projectsWithErrors = 0;
+
+  const projectsHtml = cache.map((entry) => {
+    const { project, runs, error } = entry;
+
+    if (error) {
+      projectsWithErrors++;
+      return `
+        <div class="project">
+          <div class="project-header">
+            <span class="chevron">▶</span>
+            <span class="project-name">${esc(project.name)}<a class="dashboard-link" href="${esc(project.dashboard)}" target="_blank" rel="noopener">↗</a></span>
+            <span class="badge error">FETCH ERROR</span>
+          </div>
+          <div class="empty error">Could not load feed: ${esc(error)}</div>
+        </div>`;
+    }
+
+    const inWindow = runs.filter((r) => !cutoff || r._date.getTime() >= cutoff);
+    const failedRuns = inWindow.filter((r) => r.failed > 0);
+    if (failedRuns.length) projectsWithFailures++;
+    totalFailedRuns += failedRuns.length;
+    totalFailedTests += failedRuns.reduce((s, r) => s + r.failed, 0);
+
+    if (failedRuns.length === 0) {
+      const emptyMsg = inWindow.length === 0
+        ? `No runs in this window`
+        : `All ${inWindow.length} run${inWindow.length === 1 ? "" : "s"} passed ✓`;
+      return `
+        <div class="project">
+          <div class="project-header">
+            <span class="chevron">▶</span>
+            <span class="project-name">${esc(project.name)}<a class="dashboard-link" href="${esc(project.dashboard)}" target="_blank" rel="noopener">↗</a></span>
+            <span class="project-meta">${inWindow.length} run${inWindow.length === 1 ? "" : "s"}</span>
+            <span class="badge ${inWindow.length === 0 ? "error" : "clean"}">${inWindow.length === 0 ? "NO RUNS" : "ALL PASS"}</span>
+          </div>
+          <div class="empty ${inWindow.length === 0 ? "" : "clean"}">${emptyMsg}</div>
+        </div>`;
+    }
+
+    // Group failed runs by IST date
+    const byDate = new Map();
+    for (const r of failedRuns) {
+      const k = dateKeyIST(r._date);
+      if (!byDate.has(k)) byDate.set(k, []);
+      byDate.get(k).push(r);
+    }
+    const dateKeys = [...byDate.keys()].sort().reverse();
+    const dateGroupsHtml = dateKeys.map((k) => {
+      const list = byDate.get(k);
+      const dateLabel = fmtISTDate(list[0]._date);
+      const runsHtml = list.map((r, idx) => renderRun(r, project.format, project.name + "-" + k + "-" + idx)).join("");
+      return `
+        <div class="date-group">
+          <div class="date-header">
+            <span>${esc(dateLabel)}</span>
+            <span class="count">${list.length} failed run${list.length === 1 ? "" : "s"}</span>
+          </div>
+          ${runsHtml}
+        </div>`;
+    }).join("");
+
+    const totalFailedHere = failedRuns.reduce((s, r) => s + r.failed, 0);
+    const totalRunsHere = inWindow.length;
+    return `
+      <div class="project expanded">
+        <div class="project-header">
+          <span class="chevron">▶</span>
+          <span class="project-name">${esc(project.name)}<a class="dashboard-link" href="${esc(project.dashboard)}" target="_blank" rel="noopener">↗</a></span>
+          <span class="project-meta">${failedRuns.length} of ${totalRunsHere} run${totalRunsHere === 1 ? "" : "s"} failed · ${totalFailedHere} test${totalFailedHere === 1 ? "" : "s"}</span>
+          <span class="badge danger">${failedRuns.length} FAILED</span>
+        </div>
+        <div class="project-body">${dateGroupsHtml}</div>
+      </div>`;
+  }).join("");
+
+  document.getElementById("projects").innerHTML = projectsHtml;
+  renderSummary(totalFailedRuns, totalFailedTests, projectsWithFailures, projectsWithErrors);
+  bindHandlers();
+}
+
+function renderRun(r, fmt, runId) {
+  const time = fmtISTTime(r._date);
+  let extra = "";
+  if (r.avgLatencyMs != null) extra = `avg latency ${(r.avgLatencyMs / 1000).toFixed(1)}s`;
+  else if (r.timeSavedPercent != null) extra = `time saved ${r.timeSavedPercent}%`;
+  else if (r.avgLatency != null) extra = `avg latency ${(r.avgLatency / 1000).toFixed(1)}s`;
+  const detailHtml = r.failedItems.length
+    ? `<div class="run-detail-toggle" data-run="${esc(runId)}">▾ Show ${r.failedItems.length} failed item${r.failedItems.length === 1 ? "" : "s"}</div>
+       <div class="run-detail" id="detail-${esc(runId)}">
+         <ul>${r.failedItems.slice(0, 50).map((f) => `<li><strong>${esc(f.title)}</strong>${f.module ? ` <span style="color:#9ca3af;">[${esc(f.module)}]</span>` : ""}${f.error ? `<div class="err">${esc(f.error)}</div>` : ""}</li>`).join("")}${r.failedItems.length > 50 ? `<li style="color:#9ca3af;">+${r.failedItems.length - 50} more…</li>` : ""}</ul>
+       </div>`
+    : "";
+  return `
+    <div class="run">
+      <div class="run-row">
+        <span class="run-time">${esc(time)}</span>
+        <span class="run-counts"><strong>${r.failed}</strong> / ${r.total} failed</span>
+        <span class="run-pass-rate">${r.passRate}% pass${extra ? ` · ${esc(extra)}` : ""}</span>
+      </div>
+      ${detailHtml}
+    </div>`;
+}
+
+function renderSummary(failedRuns, failedTests, projectsWithFailures, errorCount) {
+  const window = currentWindow > 0 ? `last ${currentWindow} days` : "all time";
+  document.getElementById("summaryBar").innerHTML = `
+    <div class="summary-stat"><span class="label">Window</span><span class="value">${esc(window)}</span></div>
+    <div class="summary-stat"><span class="label">Projects with failures</span><span class="value ${projectsWithFailures > 0 ? "danger" : "ok"}">${projectsWithFailures} / ${PROJECTS.length}</span></div>
+    <div class="summary-stat"><span class="label">Failed runs</span><span class="value ${failedRuns > 0 ? "danger" : "ok"}">${failedRuns}</span></div>
+    <div class="summary-stat"><span class="label">Failed tests</span><span class="value ${failedTests > 0 ? "danger" : "ok"}">${failedTests}</span></div>
+    ${errorCount > 0 ? `<div class="summary-stat"><span class="label">Feeds errored</span><span class="value warn">${errorCount}</span></div>` : ""}
+  `;
+}
+
+function bindHandlers() {
+  document.querySelectorAll(".project-header").forEach((h) => {
+    h.addEventListener("click", () => h.parentElement.classList.toggle("expanded"));
+  });
+  document.querySelectorAll(".run-detail-toggle").forEach((t) => {
+    t.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const id = t.getAttribute("data-run");
+      const detail = document.getElementById("detail-" + id);
+      const open = detail.classList.toggle("open");
+      t.textContent = open ? t.textContent.replace("▾", "▴") : t.textContent.replace("▴", "▾");
+    });
+  });
+}
+
+function esc(s) {
+  return String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+
+async function load() {
+  document.getElementById("projects").innerHTML = '<div class="loading">Loading projects…</div>';
+  document.getElementById("lastFetched").textContent = "Loading…";
+  cache = await fetchAll();
+  document.getElementById("lastFetched").textContent = "Last fetched: " + new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }) + " IST";
+  render();
+}
+
+document.querySelectorAll(".pill").forEach((p) => {
+  p.addEventListener("click", () => {
+    document.querySelectorAll(".pill").forEach((x) => x.classList.remove("active"));
+    p.classList.add("active");
+    currentWindow = +p.getAttribute("data-days");
+    render();
+  });
+});
+document.getElementById("refreshBtn").addEventListener("click", load);
+
+load();
+</script>
+</body>
+</html>
