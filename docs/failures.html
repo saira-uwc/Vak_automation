@@ -12,20 +12,25 @@
     --bg-card: #1a1b2a;
     --bg-card-hover: #1f2037;
     --border: #26283a;
+    --border-strong: #353851;
     --text-primary: #f8fafc;
     --text-muted: #9ca3af;
     --text-dimmed: #6b7280;
     --accent: #8b5cf6;
-    --accent-soft: rgba(139, 92, 246, 0.2);
+    --accent-soft: rgba(139, 92, 246, 0.18);
+    --accent-line: rgba(139, 92, 246, 0.4);
     --green: #22c55e;
-    --green-soft: rgba(34, 197, 94, 0.15);
+    --green-soft: rgba(34, 197, 94, 0.13);
+    --green-line: rgba(34, 197, 94, 0.32);
     --red: #ef4444;
-    --red-soft: rgba(239, 68, 68, 0.15);
+    --red-soft: rgba(239, 68, 68, 0.12);
+    --red-line: rgba(239, 68, 68, 0.32);
     --amber: #f59e0b;
-    --amber-soft: rgba(245, 158, 11, 0.15);
-    --radius: 16px;
+    --amber-soft: rgba(245, 158, 11, 0.12);
+    --amber-line: rgba(245, 158, 11, 0.32);
+    --radius: 14px;
     --radius-sm: 8px;
-    --shadow: 0 10px 30px rgba(0,0,0,.35);
+    --shadow: 0 6px 20px rgba(0,0,0,.30);
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
@@ -36,14 +41,13 @@
     line-height: 1.5;
   }
 
-  /* === Header (matches common theme) === */
+  /* === Header === */
   .header {
     position: sticky; top: 0; z-index: 100;
     background: rgba(12, 13, 20, 0.85);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
     border-bottom: 1px solid var(--border);
-    padding: 14px 28px;
+    padding: 12px 28px;
     display: flex; align-items: center; justify-content: space-between;
     flex-wrap: wrap; gap: 12px;
   }
@@ -52,271 +56,163 @@
     width: 36px; height: 36px; border-radius: 10px;
     background: linear-gradient(135deg, var(--accent), #6d28d9);
     display: flex; align-items: center; justify-content: center;
-    font-weight: 700; font-size: 16px; color: #fff;
+    font-weight: 700; font-size: 18px; color: #fff;
   }
-  .header h1 { font-size: 17px; font-weight: 700; }
-  .header-sub { font-size: 12px; color: var(--text-muted); }
+  .header h1 { font-size: 17px; font-weight: 700; line-height: 1.2; }
+  .header-sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
   .header-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-  .last-run {
-    font-size: 12px; color: var(--text-muted);
-    background: var(--bg-card); padding: 6px 12px; border-radius: 20px;
-    border: 1px solid var(--border);
-  }
+  .last-run { font-size: 12px; color: var(--text-muted); background: var(--bg-card); padding: 6px 12px; border-radius: 20px; border: 1px solid var(--border); }
   .last-run strong { color: var(--text-primary); font-weight: 600; }
   .pills { display: flex; gap: 4px; background: var(--bg-card); border: 1px solid var(--border); padding: 3px; border-radius: 20px; }
-  .pill-btn {
-    background: transparent; border: 0; color: var(--text-muted);
-    padding: 5px 12px; border-radius: 16px; font-size: 12px; font-weight: 600;
-    cursor: pointer; transition: all .15s; font-family: inherit;
-  }
+  .pill-btn { background: transparent; border: 0; color: var(--text-muted); padding: 5px 12px; border-radius: 16px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all .15s; font-family: inherit; }
   .pill-btn:hover { color: var(--text-primary); }
   .pill-btn.active { background: var(--accent-soft); color: var(--accent); }
-  .btn-refresh {
-    background: var(--accent); color: #fff; border: none;
-    padding: 7px 14px; border-radius: var(--radius-sm);
-    font-size: 12px; font-weight: 600; cursor: pointer;
-    transition: opacity .2s; display: inline-flex; align-items: center; gap: 6px;
-  }
+  .btn-refresh { background: var(--accent); color: #fff; border: none; padding: 7px 14px; border-radius: var(--radius-sm); font-size: 12px; font-weight: 600; cursor: pointer; transition: opacity .2s; display: inline-flex; align-items: center; gap: 6px; }
   .btn-refresh:hover { opacity: 0.9; }
   .btn-refresh .arrow { display: inline-block; transition: transform .4s; }
   .btn-refresh.spinning .arrow { animation: spin .6s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
 
   /* === Main === */
-  .main { padding: 24px 28px 60px; max-width: 1240px; margin: 0 auto; }
+  .main { padding: 22px 28px 60px; max-width: 1240px; margin: 0 auto; }
 
-  /* === Stats grid (matches common theme) === */
-  .stats-grid {
-    display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;
-    margin-bottom: 24px;
-  }
-  .stat-card {
-    background: var(--bg-card); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: 20px;
-    box-shadow: var(--shadow); transition: transform .2s, border-color .2s;
-  }
-  .stat-card:hover { transform: translateY(-2px); border-color: var(--accent); }
-  .stat-label {
-    font-size: 12px; font-weight: 600; text-transform: uppercase;
-    letter-spacing: .5px; color: var(--text-muted); margin-bottom: 8px;
-  }
-  .stat-value { font-size: 28px; font-weight: 700; }
+  /* === Compact stats row === */
+  .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 18px; }
+  .stat-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; box-shadow: var(--shadow); transition: border-color .2s; display: flex; align-items: center; gap: 14px; }
+  .stat-card:hover { border-color: var(--border-strong); }
+  .stat-ic { width: 10px; height: 10px; border-radius: 50%; background: var(--text-dimmed); flex-shrink: 0; }
+  .stat-ic.danger { background: var(--red); box-shadow: 0 0 8px var(--red); }
+  .stat-ic.ok { background: var(--green); box-shadow: 0 0 8px var(--green); }
+  .stat-ic.accent { background: var(--accent); box-shadow: 0 0 8px var(--accent); }
+  .stat-text { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+  .stat-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--text-muted); }
+  .stat-value { font-size: 24px; font-weight: 700; line-height: 1.1; margin-top: 2px; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+  .stat-value .of { font-size: 14px; font-weight: 600; color: var(--text-muted); margin-left: 3px; }
   .stat-value.green { color: var(--green); }
   .stat-value.red { color: var(--red); }
-  .stat-value.amber { color: var(--amber); }
   .stat-value.accent { color: var(--accent); }
-  .stat-sub { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+  .stat-sub { font-size: 11px; color: var(--text-dimmed); margin-top: 2px; }
+  @media (max-width: 760px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
 
   /* === Healthy strip === */
-  .healthy {
-    background: var(--bg-card); border: 1px solid var(--green);
-    border-radius: var(--radius); padding: 14px 18px;
-    margin-bottom: 24px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
-    box-shadow: var(--shadow);
-  }
-  .healthy-label { font-size: 12px; font-weight: 700; color: var(--green); text-transform: uppercase; letter-spacing: .5px; }
-  .healthy-pill {
-    background: var(--green-soft); color: var(--green);
-    padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;
-    display: inline-flex; align-items: center; gap: 6px;
-  }
+  .healthy { background: var(--bg-card); border: 1px solid var(--green-line); border-radius: var(--radius); padding: 10px 14px; margin-bottom: 18px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .healthy-label { font-size: 11px; font-weight: 700; color: var(--green); text-transform: uppercase; letter-spacing: .6px; }
+  .healthy-pill { background: var(--green-soft); color: var(--green); padding: 4px 11px; border-radius: 20px; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; }
   .healthy-pill::before { content: "✓"; font-weight: 700; }
   .healthy-pill .num { color: var(--text-muted); font-weight: 500; font-size: 11px; }
 
-  /* === Section title (matches common theme) === */
-  .section-title {
-    font-size: 16px; font-weight: 700; margin: 28px 0 16px;
-    display: flex; align-items: center; gap: 10px;
-  }
-  .section-title::before {
-    content: ''; width: 4px; height: 20px;
-    background: var(--accent); border-radius: 2px;
-  }
-  .section-title .count {
-    color: var(--text-muted); font-weight: 500; font-size: 13px;
-    margin-left: 4px;
-  }
+  /* === Section title === */
+  .section-title { font-size: 15px; font-weight: 700; margin: 22px 0 12px; display: flex; align-items: center; gap: 10px; }
+  .section-title::before { content: ''; width: 4px; height: 18px; background: var(--accent); border-radius: 2px; }
+  .section-title .count { color: var(--text-muted); font-weight: 500; font-size: 13px; margin-left: 4px; }
 
   /* === Project card === */
-  .proj {
-    background: var(--bg-card); border: 1px solid var(--border);
-    border-radius: var(--radius); margin-bottom: 16px; overflow: hidden;
-    box-shadow: var(--shadow); transition: border-color .2s;
-  }
-  .proj:hover { border-color: var(--bg-card-hover); }
-  .proj.danger:hover { border-color: var(--red); }
-  .proj.warn:hover { border-color: var(--amber); }
+  .proj { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 14px; overflow: hidden; box-shadow: var(--shadow); transition: border-color .2s; }
+  .proj.danger { border-color: rgba(239, 68, 68, 0.18); }
+  .proj.warn { border-color: rgba(245, 158, 11, 0.16); }
 
-  .proj-head {
-    padding: 18px 22px; display: flex; align-items: center; gap: 16px;
-    border-bottom: 1px solid var(--border); background: var(--bg-secondary);
-    flex-wrap: wrap;
-  }
-  .proj-num {
-    flex-shrink: 0; width: 48px; height: 48px; border-radius: 12px;
-    display: flex; align-items: center; justify-content: center;
-    font-family: 'Fira Code', monospace; font-size: 20px; font-weight: 700;
-  }
-  .proj-num.danger { background: var(--red-soft); color: var(--red); border: 1px solid rgba(239,68,68,0.32); }
-  .proj-num.warn { background: var(--amber-soft); color: var(--amber); border: 1px solid rgba(245,158,11,0.32); }
+  .proj-head { padding: 14px 18px; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 14px; border-bottom: 1px solid var(--border); background: var(--bg-secondary); }
+  .proj-num { width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-family: 'Fira Code', monospace; font-size: 18px; font-weight: 700; }
+  .proj-num.danger { background: var(--red-soft); color: var(--red); border: 1px solid var(--red-line); }
+  .proj-num.warn { background: var(--amber-soft); color: var(--amber); border: 1px solid var(--amber-line); }
   .proj-num.error { background: var(--bg-card); color: var(--text-muted); border: 1px solid var(--border); }
-  .proj-info { flex: 1; min-width: 0; }
-  .proj-name {
-    font-size: 17px; font-weight: 700; color: var(--text-primary);
-    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
-  }
-  .proj-name .dlink {
-    font-size: 12px; font-weight: 600; color: var(--accent);
-    text-decoration: none; padding: 3px 9px; border-radius: 6px;
-    background: var(--accent-soft); transition: opacity .15s;
-  }
+  .proj-info { min-width: 0; }
+  .proj-name { font-size: 16px; font-weight: 700; color: var(--text-primary); display: flex; align-items: center; gap: 10px; flex-wrap: wrap; line-height: 1.2; }
+  .proj-name .dlink { font-size: 11px; font-weight: 600; color: var(--accent); text-decoration: none; padding: 3px 8px; border-radius: 5px; background: var(--accent-soft); transition: opacity .15s; }
   .proj-name .dlink:hover { opacity: 0.85; }
-  .proj-summary { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+  .proj-summary { font-size: 12px; color: var(--text-muted); margin-top: 4px; line-height: 1.5; }
   .proj-summary .num { color: var(--text-primary); font-weight: 700; }
   .proj-summary .num.red { color: var(--red); }
-  .every-fail-tag {
-    color: var(--red); font-weight: 700; padding: 2px 8px;
-    background: var(--red-soft); border-radius: 6px; font-size: 11px;
-    margin-left: 8px; text-transform: uppercase; letter-spacing: .3px;
-  }
+  .every-fail-tag { color: var(--red); font-weight: 700; padding: 1px 7px; background: var(--red-soft); border: 1px solid var(--red-line); border-radius: 5px; font-size: 10px; margin-left: 6px; text-transform: uppercase; letter-spacing: .3px; }
 
-  /* Strip (compact 30-day) */
-  .strip-wrap { padding: 14px 22px 0; }
-  .strip-axis-top {
-    font-size: 11px; font-weight: 600; color: var(--text-dimmed);
-    text-transform: uppercase; letter-spacing: .5px; margin-bottom: 8px;
-  }
-  .strip { display: flex; gap: 3px; align-items: stretch; }
-  .strip-cell {
-    flex: 1; min-width: 8px; height: 22px; border-radius: 4px;
-    background: var(--border); transition: transform .12s;
-  }
+  /* Strip in header (compact, right-aligned) */
+  .strip-block { min-width: 160px; max-width: 260px; }
+  .strip-axis-top { font-size: 9px; font-weight: 700; color: var(--text-dimmed); text-transform: uppercase; letter-spacing: .6px; margin-bottom: 4px; text-align: right; }
+  .strip { display: flex; gap: 2px; align-items: stretch; }
+  .strip-cell { flex: 1; min-width: 5px; height: 16px; border-radius: 2px; background: var(--border); transition: transform .12s; }
   .strip-cell.has-run.all-pass { background: var(--green); }
   .strip-cell.has-run.some-fail { background: var(--amber); }
   .strip-cell.has-run.all-fail { background: var(--red); }
-  .strip-cell.is-today { box-shadow: 0 0 0 2px var(--accent); z-index: 1; }
-  .strip-cell:hover { transform: scaleY(1.3); }
-  .strip-axis {
-    display: flex; justify-content: space-between; padding-top: 6px;
-    font-size: 10px; color: var(--text-dimmed); font-weight: 500;
+  .strip-cell.is-today { box-shadow: 0 0 0 1.5px var(--accent); z-index: 1; }
+  .strip-cell:hover { transform: scaleY(1.4); }
+  .strip-axis { display: flex; justify-content: space-between; padding-top: 4px; font-size: 9px; color: var(--text-dimmed); font-weight: 500; }
+
+  @media (max-width: 720px) {
+    .proj-head { grid-template-columns: auto 1fr; }
+    .strip-block { grid-column: 1 / -1; max-width: none; }
+    .strip-axis-top { text-align: left; }
   }
 
-  /* Body: downtime day list */
-  .proj-body { padding: 12px 22px 22px; }
+  /* === Day table === */
+  .proj-body { padding: 4px 0 8px; }
+  .day-row { display: grid; grid-template-columns: 220px 1fr auto; align-items: start; gap: 14px; padding: 12px 18px; border-top: 1px solid var(--border); }
+  .day-row:first-child { border-top: 0; }
+  .day-row:hover { background: rgba(255,255,255,0.012); }
 
-  .day { padding: 14px 0; border-top: 1px solid var(--border); }
-  .day:first-child { border-top: 0; padding-top: 8px; }
-  .day-head { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
-  .day-bullet {
-    width: 10px; height: 10px; border-radius: 50%;
-    background: var(--red); box-shadow: 0 0 8px var(--red);
-    flex-shrink: 0;
+  .dr-date { display: flex; align-items: center; gap: 9px; padding-top: 7px; min-width: 0; }
+  .dr-bullet { width: 8px; height: 8px; border-radius: 50%; background: var(--red); box-shadow: 0 0 7px var(--red); flex-shrink: 0; }
+  .dr-date-text { display: flex; flex-direction: column; min-width: 0; }
+  .dr-day-name { font-size: 13px; font-weight: 700; color: var(--text-primary); letter-spacing: -0.01em; }
+  .dr-day-rel {
+    font-size: 9px; font-weight: 700; color: var(--accent);
+    background: var(--accent-soft); padding: 2px 7px; border-radius: 999px;
+    text-transform: uppercase; letter-spacing: .5px;
+    margin-top: 4px; align-self: flex-start;
   }
-  .day-date { font-size: 14px; font-weight: 700; color: var(--text-primary); }
-  .day-rel {
-    font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 12px;
-    background: var(--accent-soft); color: var(--accent);
-    text-transform: uppercase; letter-spacing: .3px;
-  }
-  .day-rel.faint { background: var(--bg-card-hover); color: var(--text-muted); }
-  .day-counts {
-    margin-left: auto; font-size: 12px; color: var(--red); font-weight: 700;
-    background: var(--red-soft); padding: 4px 10px; border-radius: 12px;
-  }
-  .day-counts .sub { color: var(--text-muted); font-weight: 500; margin-left: 3px; }
+  .dr-day-rel.faint { color: var(--text-muted); background: var(--bg-card-hover); }
 
-  /* Time pills */
-  .times { display: flex; gap: 8px; flex-wrap: wrap; padding-left: 22px; }
+  .dr-times { display: flex; flex-wrap: wrap; gap: 6px; padding-top: 4px; min-width: 0; }
   .time-pill {
     display: inline-flex; align-items: center; gap: 8px;
     background: var(--bg-secondary); border: 1px solid var(--border);
-    color: var(--text-primary); padding: 8px 14px;
-    border-radius: 10px; cursor: pointer;
-    transition: all .15s; user-select: none;
+    color: var(--text-primary); padding: 6px 11px;
+    border-radius: 7px; cursor: pointer; transition: all .15s; user-select: none;
+    line-height: 1;
   }
   .time-pill:hover { border-color: var(--accent); }
   .time-pill.is-open { border-color: var(--accent); background: var(--bg-card-hover); }
-  .time-pill .t-time {
-    font-family: 'Fira Code', monospace; font-weight: 600;
-    color: var(--red); font-size: 12px;
-  }
-  .time-pill .t-counts { font-size: 12px; color: var(--text-muted); font-weight: 500; }
+  .time-pill .t-time { font-family: 'Fira Code', monospace; font-weight: 600; color: var(--red); font-size: 11px; }
+  .time-pill .t-counts { font-size: 11px; color: var(--text-muted); font-weight: 500; }
   .time-pill .t-counts strong { color: var(--red); font-weight: 700; }
-  .time-pill .t-chevron { color: var(--text-dimmed); font-size: 10px; transition: transform .15s; }
+  .time-pill .t-chevron { color: var(--text-dimmed); font-size: 9px; transition: transform .15s; }
   .time-pill.is-open .t-chevron { transform: rotate(90deg); color: var(--accent); }
 
-  /* Run detail (uses run-card style) */
-  .run-detail {
-    margin: 12px 0 6px 22px;
-    background: var(--bg-secondary); border: 1px solid var(--border);
-    border-radius: var(--radius-sm); padding: 14px 16px;
-  }
-  .run-detail-row {
-    display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
-    font-size: 12px; margin-bottom: 10px; padding-bottom: 10px;
-    border-bottom: 1px solid var(--border);
-  }
-  .run-detail-row .label {
-    font-size: 10px; font-weight: 700; color: var(--text-dimmed);
-    letter-spacing: .5px; text-transform: uppercase;
-  }
+  .dr-counts { padding-top: 7px; text-align: right; min-width: 110px; }
+  .dr-counts .badge { display: inline-block; font-size: 11px; color: var(--red); font-weight: 700; background: var(--red-soft); padding: 3px 9px; border-radius: 999px; border: 1px solid var(--red-line); white-space: nowrap; }
+  .dr-counts .sub { font-size: 10px; color: var(--text-dimmed); margin-top: 4px; font-weight: 500; white-space: nowrap; }
+
+  /* Inline run detail row */
+  .day-detail { padding: 0 18px 14px 252px; }
+  .run-detail { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px 14px; margin-top: 8px; }
+  .run-detail-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; font-size: 12px; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+  .run-detail-row .label { font-size: 10px; font-weight: 700; color: var(--text-dimmed); letter-spacing: .5px; text-transform: uppercase; }
   .run-detail-row .pass-rate { font-family: 'Fira Code', monospace; color: var(--text-muted); font-size: 11px; }
-  .run-detail-row .extra-chip {
-    font-size: 11px; padding: 3px 9px; border-radius: 12px;
-    background: var(--accent-soft); color: var(--accent);
-    font-family: 'Fira Code', monospace;
-  }
-
+  .run-detail-row .extra-chip { font-size: 11px; padding: 3px 9px; border-radius: 12px; background: var(--accent-soft); color: var(--accent); font-family: 'Fira Code', monospace; }
   .fails-list { margin: 0; padding: 0; list-style: none; }
-  .fails-list li { padding: 8px 0; border-top: 1px dashed var(--border); }
+  .fails-list li { padding: 7px 0; border-top: 1px dashed var(--border); }
   .fails-list li:first-child { border-top: 0; padding-top: 0; }
-  .ftitle { color: var(--text-primary); font-weight: 600; font-size: 13px; }
-  .fmod {
-    color: var(--accent); font-size: 10px; margin-left: 8px;
-    padding: 2px 7px; background: var(--accent-soft); border-radius: 6px;
-    font-weight: 600; letter-spacing: .2px;
-  }
-  .ferr {
-    color: var(--text-muted); font-size: 11px; margin-top: 4px;
-    word-break: break-word; line-height: 1.5;
-    font-family: 'Fira Code', monospace; max-height: 38px; overflow: hidden;
-  }
-  .fno-detail {
-    color: var(--text-dimmed); font-style: italic; font-size: 12px;
-    padding: 4px 0;
+  .ftitle { color: var(--text-primary); font-weight: 600; font-size: 12.5px; line-height: 1.45; }
+  .fmod { color: var(--accent); font-size: 10px; margin-left: 7px; padding: 1px 7px; background: var(--accent-soft); border-radius: 5px; font-weight: 600; letter-spacing: .2px; vertical-align: 1px; }
+  .ferr { color: var(--text-muted); font-size: 11px; margin-top: 3px; word-break: break-word; line-height: 1.45; font-family: 'Fira Code', monospace; max-height: 38px; overflow: hidden; }
+  .fno-detail { color: var(--text-dimmed); font-style: italic; font-size: 11.5px; padding: 4px 0; }
+  @media (max-width: 720px) {
+    .day-row { grid-template-columns: 1fr; gap: 8px; }
+    .day-detail { padding: 0 18px 14px; }
+    .dr-counts { text-align: left; }
   }
 
-  /* Show more button */
-  .show-more { padding: 14px 0 4px; text-align: center; }
-  .show-more button {
-    background: var(--bg-secondary); color: var(--accent); border: 1px solid var(--border);
-    padding: 8px 16px; border-radius: var(--radius-sm);
-    font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit;
-    transition: all .15s;
-  }
-  .show-more button:hover { border-color: var(--accent); }
+  .show-more { padding: 12px 18px 16px; text-align: center; border-top: 1px solid var(--border); }
+  .show-more button { background: transparent; color: var(--accent); border: 1px solid var(--border); padding: 7px 16px; border-radius: var(--radius-sm); font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all .15s; }
+  .show-more button:hover { border-color: var(--accent); background: var(--accent-soft); }
 
-  /* Loading & empty */
-  .loading { display: flex; align-items: center; justify-content: center; min-height: 300px; flex-direction: column; gap: 14px; }
-  .spinner { width: 36px; height: 36px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin .8s linear infinite; }
-  .empty-line { padding: 22px; text-align: center; color: var(--text-muted); font-size: 14px; }
+  .loading { display: flex; align-items: center; justify-content: center; min-height: 280px; flex-direction: column; gap: 14px; }
+  .spinner { width: 32px; height: 32px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin .8s linear infinite; }
+  .empty-line { padding: 20px; text-align: center; color: var(--text-muted); font-size: 14px; }
   .empty-line.ok { color: var(--green); font-weight: 600; }
 
-  .footer {
-    margin-top: 32px; text-align: center; font-size: 12px;
-    color: var(--text-dimmed);
-  }
+  .footer { margin-top: 30px; text-align: center; font-size: 11px; color: var(--text-dimmed); }
   .footer a { color: var(--accent); text-decoration: none; }
   .footer a:hover { text-decoration: underline; }
-
-  @media (max-width: 900px) {
-    .stats-grid { grid-template-columns: repeat(2, 1fr); }
-    .header { padding: 12px 16px; }
-    .main { padding: 18px 16px 60px; }
-  }
-  @media (max-width: 600px) {
-    .stats-grid { grid-template-columns: 1fr; }
-  }
 </style>
 </head>
 <body>
@@ -343,8 +239,8 @@
 
 <div class="main">
   <div class="stats-grid" id="statsGrid"></div>
-  <div id="content"><div class="loading"><div class="spinner"></div><span style="color:var(--text-muted);font-size:14px;">Loading project feeds...</span></div></div>
-  <div class="footer">Click any time pill to expand the failed tests for that run · <a href="./">Back to Vak Dashboard</a></div>
+  <div id="content"><div class="loading"><div class="spinner"></div><span style="color:var(--text-muted);font-size:13px;">Loading project feeds...</span></div></div>
+  <div class="footer">Click any time chip to see what tests failed in that run · <a href="./">Back to Vak Dashboard</a></div>
 </div>
 
 <script>
@@ -390,7 +286,7 @@ function parseToDate(ts) {
   return isNaN(d) ? null : d;
 }
 function dateKeyIST(date) { return new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Kolkata", year: "numeric", month: "2-digit", day: "2-digit" }).format(date); }
-function fmtFullDate(date) { return date.toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata", weekday: "long", day: "numeric", month: "short", year: "numeric" }); }
+function fmtShortDate(date) { return date.toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata", weekday: "short", day: "2-digit", month: "short" }); }
 function fmtTime(date) { return date.toLocaleTimeString("en-IN", { timeZone: "Asia/Kolkata", hour: "2-digit", minute: "2-digit", hour12: true }); }
 function todayKey() { return dateKeyIST(new Date()); }
 function relativeDay(key) {
@@ -400,7 +296,7 @@ function relativeDay(key) {
   if (key === yest) return { label: "Yesterday", strong: true };
   const target = new Date(key + "T00:00:00+05:30");
   const days = Math.round((Date.now() - target.getTime()) / 86400000);
-  if (days >= 2 && days <= 14) return { label: days + " days ago", strong: false };
+  if (days >= 2 && days <= 14) return { label: days + "d ago", strong: false };
   return null;
 }
 
@@ -499,7 +395,7 @@ function render() {
   if (!cache) return;
   const cutoff = currentWindow > 0 ? Date.now() - currentWindow * 86400000 : 0;
   const stripDays = Math.min(currentWindow, 30);
-  let totalDowntimeDays = 0, totalFailedRuns = 0, totalFailedTests = 0, projectsAffected = 0, healthy = [];
+  let totalFailedRuns = 0, totalFailedTests = 0, projectsAffected = 0, healthy = [];
   const failingHtml = [];
 
   for (const entry of cache) {
@@ -513,6 +409,7 @@ function render() {
               <div class="proj-name">${esc(project.name)}</div>
               <div class="proj-summary">Could not load feed — <span style="font-family:'Fira Code',monospace;">${esc(error)}</span></div>
             </div>
+            <div></div>
           </div>
         </div>`);
       continue;
@@ -539,39 +436,43 @@ function render() {
       byDate.get(k).push(r);
     }
     const dateKeys = [...byDate.keys()].sort().reverse();
-    totalDowntimeDays += dateKeys.length;
 
     const showAll = !!expandedDays[idx];
     const visibleDates = showAll ? dateKeys : dateKeys.slice(0, DEFAULT_VISIBLE_DAYS);
     const hiddenCount = dateKeys.length - visibleDates.length;
 
-    const daysHtml = visibleDates.map((k) => {
+    const dayRowsHtml = visibleDates.map((k) => {
       const list = byDate.get(k);
       const rel = relativeDay(k);
       const totalFailedThisDay = list.reduce((s, r) => s + r.failed, 0);
+      const date = list[0]._date;
       const timesHtml = list.map((r) => {
         const runKey = `${idx}-${r._id}`;
         const isOpen = openRuns.has(runKey);
         return `<span class="time-pill ${isOpen ? "is-open" : ""}" data-run="${esc(runKey)}">
           <span class="t-time">${esc(fmtTime(r._date))}</span>
-          <span class="t-counts"><strong>${r.failed}</strong>/${r.total} failed</span>
+          <span class="t-counts"><strong>${r.failed}</strong>/${r.total}</span>
           <span class="t-chevron">▸</span>
         </span>`;
       }).join("");
 
-      const detailsHtml = list.filter((r) => openRuns.has(`${idx}-${r._id}`)).map((r) => renderRunDetail(r)).join("");
+      const detailsHtml = list.filter((r) => openRuns.has(`${idx}-${r._id}`)).map((r) => `<div class="day-detail">${renderRunDetail(r)}</div>`).join("");
 
       return `
-        <div class="day">
-          <div class="day-head">
-            <span class="day-bullet"></span>
-            <span class="day-date">${esc(fmtFullDate(list[0]._date))}</span>
-            ${rel ? `<span class="day-rel ${rel.strong ? "" : "faint"}">${esc(rel.label)}</span>` : ""}
-            <span class="day-counts">${list.length} failed run${list.length === 1 ? "" : "s"}<span class="sub"> · ${totalFailedThisDay} test${totalFailedThisDay === 1 ? "" : "s"}</span></span>
+        <div class="day-row">
+          <div class="dr-date">
+            <span class="dr-bullet"></span>
+            <div class="dr-date-text">
+              <span class="dr-day-name">${esc(fmtShortDate(date))}</span>
+              ${rel ? `<span class="dr-day-rel ${rel.strong ? "" : "faint"}">${esc(rel.label)}</span>` : ""}
+            </div>
           </div>
-          <div class="times">${timesHtml}</div>
-          ${detailsHtml}
-        </div>`;
+          <div class="dr-times">${timesHtml}</div>
+          <div class="dr-counts">
+            <span class="badge">${list.length} fail${list.length === 1 ? "" : "s"}</span>
+            <div class="sub">${totalFailedThisDay} test${totalFailedThisDay === 1 ? "" : "s"} broken</div>
+          </div>
+        </div>${detailsHtml}`;
     }).join("");
 
     const showMoreBtn = hiddenCount > 0
@@ -590,40 +491,52 @@ function render() {
             <div class="proj-name">${esc(project.name)} <a class="dlink" href="${esc(project.dashboard)}" target="_blank" rel="noopener">↗ open dashboard</a></div>
             <div class="proj-summary">Down on <span class="num red">${dateKeys.length}</span> day${dateKeys.length === 1 ? "" : "s"} · <span class="num">${failedRuns.length}</span> of ${inWindow.length} run${inWindow.length === 1 ? "" : "s"} failed · <span class="num">${failedTestsCount}</span> test${failedTestsCount === 1 ? "" : "s"} broken${everyFailed ? `<span class="every-fail-tag">every run failed</span>` : ""}</div>
           </div>
-        </div>
-        <div class="strip-wrap">
-          <div class="strip-axis-top">Last ${stripDays} days · IST</div>
-          <div class="strip">${stripCells.map((c) => `<div class="${c.cls}" title="${esc(c.tip)}"></div>`).join("")}</div>
-          <div class="strip-axis"><span>${esc(stripCells[0].key)}</span><span>${esc(stripCells[stripCells.length - 1].key)} · today</span></div>
+          <div class="strip-block">
+            <div class="strip-axis-top">Last ${stripDays}d · IST</div>
+            <div class="strip">${stripCells.map((c) => `<div class="${c.cls}" title="${esc(c.tip)}"></div>`).join("")}</div>
+            <div class="strip-axis"><span>${esc(stripCells[0].key)}</span><span>today</span></div>
+          </div>
         </div>
         <div class="proj-body">
-          ${daysHtml}
-          ${showMoreBtn}
+          ${dayRowsHtml}
         </div>
+        ${showMoreBtn}
       </div>`);
   }
 
-  // Stats grid (matches common theme)
+  // Stats
   document.getElementById("statsGrid").innerHTML = `
     <div class="stat-card">
-      <div class="stat-label">Window</div>
-      <div class="stat-value accent">${currentWindow}d</div>
-      <div class="stat-sub">Last ${currentWindow} days · IST</div>
+      <span class="stat-ic accent"></span>
+      <div class="stat-text">
+        <div class="stat-label">Window</div>
+        <div class="stat-value accent">${currentWindow}d</div>
+        <div class="stat-sub">last ${currentWindow} days · IST</div>
+      </div>
     </div>
     <div class="stat-card">
-      <div class="stat-label">Projects with downtime</div>
-      <div class="stat-value ${projectsAffected > 0 ? "red" : "green"}">${projectsAffected}<span style="color:var(--text-muted);font-size:18px;font-weight:600;">/${PROJECTS.length}</span></div>
-      <div class="stat-sub">${projectsAffected === 0 ? "all healthy" : "need attention"}</div>
+      <span class="stat-ic ${projectsAffected > 0 ? "danger" : "ok"}"></span>
+      <div class="stat-text">
+        <div class="stat-label">Projects with downtime</div>
+        <div class="stat-value ${projectsAffected > 0 ? "red" : "green"}">${projectsAffected}<span class="of">/${PROJECTS.length}</span></div>
+        <div class="stat-sub">${projectsAffected === 0 ? "all healthy" : "need attention"}</div>
+      </div>
     </div>
     <div class="stat-card">
-      <div class="stat-label">Failed runs</div>
-      <div class="stat-value ${totalFailedRuns > 0 ? "red" : "green"}">${totalFailedRuns}</div>
-      <div class="stat-sub">across all projects</div>
+      <span class="stat-ic ${totalFailedRuns > 0 ? "danger" : "ok"}"></span>
+      <div class="stat-text">
+        <div class="stat-label">Failed runs</div>
+        <div class="stat-value ${totalFailedRuns > 0 ? "red" : "green"}">${totalFailedRuns}</div>
+        <div class="stat-sub">across all projects</div>
+      </div>
     </div>
     <div class="stat-card">
-      <div class="stat-label">Failed tests</div>
-      <div class="stat-value ${totalFailedTests > 0 ? "red" : "green"}">${totalFailedTests}</div>
-      <div class="stat-sub">total individual failures</div>
+      <span class="stat-ic ${totalFailedTests > 0 ? "danger" : "ok"}"></span>
+      <div class="stat-text">
+        <div class="stat-label">Failed tests</div>
+        <div class="stat-value ${totalFailedTests > 0 ? "red" : "green"}">${totalFailedTests}</div>
+        <div class="stat-sub">total individual failures</div>
+      </div>
     </div>
   `;
 
@@ -698,7 +611,7 @@ function esc(s) {
 async function load() {
   const refreshBtn = document.getElementById("refreshBtn");
   refreshBtn.classList.add("spinning");
-  document.getElementById("content").innerHTML = '<div class="loading"><div class="spinner"></div><span style="color:var(--text-muted);font-size:14px;">Loading project feeds...</span></div>';
+  document.getElementById("content").innerHTML = '<div class="loading"><div class="spinner"></div><span style="color:var(--text-muted);font-size:13px;">Loading project feeds...</span></div>';
   document.getElementById("lastRun").textContent = "Loading...";
   cache = await fetchAll();
   document.getElementById("lastRun").innerHTML = `Last fetched <strong>${new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata", day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit", hour12: true })} IST</strong>`;
