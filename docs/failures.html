@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>QA Downtime Dashboard</title>
+<title>QA Downtime Report</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
@@ -11,8 +11,8 @@
   * { box-sizing: border-box; }
   :root {
     --bg-base: #0a0e1a;
-    --bg-grad: radial-gradient(ellipse 80% 50% at 30% -10%, rgba(124, 58, 237, 0.13), transparent 55%),
-               radial-gradient(ellipse 60% 40% at 100% 0%, rgba(220, 38, 38, 0.10), transparent 55%),
+    --bg-grad: radial-gradient(ellipse 80% 50% at 30% -10%, rgba(124,58,237,0.13), transparent 55%),
+               radial-gradient(ellipse 60% 40% at 100% 0%, rgba(220,38,38,0.10), transparent 55%),
                #0a0e1a;
     --surface: #111727;
     --surface-2: #161e30;
@@ -25,34 +25,34 @@
     --faint: #64748b;
     --brand: #a78bfa;
     --brand-2: #c4b5fd;
-    --brand-glow: rgba(167, 139, 250, 0.22);
+    --brand-glow: rgba(167,139,250,0.22);
     --ok: #10b981;
-    --ok-soft: rgba(16, 185, 129, 0.12);
-    --ok-line: rgba(16, 185, 129, 0.30);
+    --ok-soft: rgba(16,185,129,0.10);
+    --ok-line: rgba(16,185,129,0.30);
     --warn: #f59e0b;
-    --warn-soft: rgba(245, 158, 11, 0.12);
-    --warn-line: rgba(245, 158, 11, 0.32);
+    --warn-soft: rgba(245,158,11,0.10);
+    --warn-line: rgba(245,158,11,0.32);
     --err: #ef4444;
     --err-bright: #f87171;
-    --err-soft: rgba(239, 68, 68, 0.10);
-    --err-line: rgba(239, 68, 68, 0.32);
-    --shadow-card: 0 1px 0 rgba(255, 255, 255, 0.03) inset, 0 0 0 1px var(--line);
+    --err-soft: rgba(239,68,68,0.10);
+    --err-line: rgba(239,68,68,0.32);
+    --shadow-card: 0 1px 0 rgba(255,255,255,0.03) inset, 0 0 0 1px var(--line);
   }
   body {
     margin: 0; padding: 0;
     background: var(--bg-grad); background-attachment: fixed;
     color: var(--text);
     font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    font-size: 13px; line-height: 1.5;
+    font-size: 14px; line-height: 1.55;
     -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
   }
   .mono { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace; }
-  .wrap { max-width: 1280px; margin: 0 auto; padding: 18px 20px 60px; }
+  .wrap { max-width: 920px; margin: 0 auto; padding: 22px 22px 80px; }
 
-  /* === Header (1 row) === */
-  .topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 4px 0 14px; border-bottom: 1px solid var(--line); margin-bottom: 14px; flex-wrap: wrap; }
-  .topbar h1 { margin: 0; font-size: 20px; font-weight: 800; letter-spacing: -0.02em; background: linear-gradient(180deg, #ffffff, #cbd5e1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: flex; align-items: center; gap: 10px; }
-  .topbar h1 .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--err-bright); box-shadow: 0 0 0 4px rgba(239,68,68,0.18), 0 0 14px var(--err); animation: pulse 2.4s ease-in-out infinite; }
+  /* === Header === */
+  .topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 4px 0 16px; border-bottom: 1px solid var(--line); margin-bottom: 16px; flex-wrap: wrap; }
+  .topbar h1 { margin: 0; font-size: 22px; font-weight: 800; letter-spacing: -0.02em; background: linear-gradient(180deg,#fff,#cbd5e1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: flex; align-items: center; gap: 10px; }
+  .topbar h1 .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--err-bright); box-shadow: 0 0 0 4px rgba(239,68,68,0.18), 0 0 14px var(--err); animation: pulse 2.4s ease-in-out infinite; }
   @keyframes pulse { 0%,100% { box-shadow: 0 0 0 3px rgba(239,68,68,0.12), 0 0 12px var(--err); } 50% { box-shadow: 0 0 0 6px rgba(239,68,68,0.20), 0 0 20px var(--err); } }
   .topbar .right { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
   .last-fetched { font-size: 11px; color: var(--faint); }
@@ -68,12 +68,12 @@
   @keyframes spin { to { transform: rotate(360deg); } }
 
   /* === Stats === */
-  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 14px; }
-  .stat { background: var(--surface); border-radius: 10px; padding: 11px 14px; box-shadow: var(--shadow-card); display: flex; align-items: center; gap: 12px; min-width: 0; }
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 18px; }
+  .stat { background: var(--surface); border-radius: 10px; padding: 12px 14px; box-shadow: var(--shadow-card); display: flex; align-items: center; gap: 12px; min-width: 0; }
   .stat .ic { width: 8px; height: 8px; border-radius: 50%; background: var(--faint); flex-shrink: 0; }
   .stat .text { display: flex; flex-direction: column; min-width: 0; }
   .stat .l { font-size: 10px; font-weight: 700; letter-spacing: 0.6px; color: var(--faint); text-transform: uppercase; }
-  .stat .v { font-size: 22px; font-weight: 800; line-height: 1.05; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; margin-top: 1px; }
+  .stat .v { font-size: 22px; font-weight: 800; line-height: 1.05; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; margin-top: 2px; }
   .stat .v .of { font-size: 13px; font-weight: 600; color: var(--faint); margin-left: 4px; }
   .stat.danger .v { color: var(--err-bright); }
   .stat.danger .ic { background: var(--err); box-shadow: 0 0 8px var(--err); }
@@ -83,130 +83,121 @@
   .stat.brand .ic { background: var(--brand); box-shadow: 0 0 8px var(--brand); }
   @media (max-width: 720px) { .stats { grid-template-columns: repeat(2, 1fr); } }
 
-  /* === Two-col layout === */
-  .twocol { display: grid; grid-template-columns: 1fr; gap: 14px; }
-  @media (min-width: 1080px) { .twocol { grid-template-columns: minmax(0, 1fr) 320px; } }
+  /* === Healthy strip === */
+  .healthy { background: linear-gradient(180deg, rgba(16,185,129,0.05), rgba(16,185,129,0.01)); border: 1px solid var(--ok-line); border-radius: 12px; padding: 11px 16px; margin-bottom: 18px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .healthy .h-label { font-size: 11px; font-weight: 700; letter-spacing: 0.6px; color: var(--ok); text-transform: uppercase; }
+  .healthy .h-pill { background: var(--surface); border: 1px solid var(--ok-line); color: var(--text-2); padding: 5px 12px; border-radius: 999px; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; gap: 7px; }
+  .healthy .h-pill::before { content: "✓"; color: var(--ok); font-weight: 800; }
+  .healthy .h-pill .num { color: var(--faint); font-weight: 500; font-size: 11px; }
 
-  /* === Calendar card === */
-  .card { background: var(--surface); border-radius: 12px; box-shadow: var(--shadow-card); margin-bottom: 14px; overflow: hidden; }
-  .card-head { padding: 12px 16px; border-bottom: 1px solid var(--line); background: var(--surface-2); display: flex; align-items: center; gap: 10px; }
-  .card-head .t { font-size: 13px; font-weight: 700; color: var(--text); letter-spacing: 0.1px; }
-  .card-head .t .sub { font-weight: 500; color: var(--muted); margin-left: 8px; font-size: 11px; }
-  .card-head .legend { margin-left: auto; display: inline-flex; gap: 12px; font-size: 10px; color: var(--faint); font-weight: 500; }
-  .card-head .legend .lg { display: inline-flex; align-items: center; gap: 5px; }
-  .card-head .legend .sw { width: 12px; height: 12px; border-radius: 3px; }
-
-  .cal { padding: 14px 16px; }
-  .cal-dow { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-bottom: 8px; }
-  .cal-dow .d { font-size: 10px; font-weight: 700; color: var(--faint); text-transform: uppercase; text-align: center; letter-spacing: 0.6px; }
-  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
-  .cal-day {
-    aspect-ratio: 1.45 / 1;
-    background: var(--surface-2);
-    border: 1px solid var(--line);
-    border-radius: 8px;
-    padding: 6px 8px;
-    cursor: pointer; user-select: none;
-    transition: all 0.12s; position: relative;
-    display: flex; flex-direction: column;
-    min-height: 64px;
+  /* === Project sections === */
+  .section-label {
+    font-size: 11px; font-weight: 700; letter-spacing: 1px; color: var(--faint);
+    text-transform: uppercase; margin: 24px 0 12px; padding-left: 4px;
   }
-  .cal-day.empty { background: transparent; border: 0; cursor: default; pointer-events: none; }
-  .cal-day:not(.empty):hover { border-color: var(--line-2); transform: translateY(-1px); }
-  .cal-day.is-today { border-color: var(--brand); box-shadow: 0 0 0 1px var(--brand) inset, 0 0 16px var(--brand-glow); }
-  .cal-day.is-active { box-shadow: 0 0 0 2px var(--brand) inset, 0 0 22px var(--brand-glow); }
-  .cal-day .date {
-    display: flex; justify-content: space-between; align-items: baseline;
-    font-size: 12px; font-weight: 700; color: var(--text-2);
-    letter-spacing: -0.02em; line-height: 1; margin-bottom: 6px;
+  .section-label .count { color: var(--err-bright); margin-left: 6px; }
+
+  .proj { background: var(--surface); border-radius: 14px; box-shadow: var(--shadow-card); margin-bottom: 14px; overflow: hidden; }
+
+  .proj-head { padding: 16px 20px 14px; display: flex; align-items: flex-start; gap: 16px; border-bottom: 1px solid var(--line); }
+  .proj-num {
+    flex-shrink: 0; width: 44px; height: 44px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: "JetBrains Mono", monospace; font-size: 18px; font-weight: 800;
+    letter-spacing: -0.02em;
   }
-  .cal-day.is-today .date { color: var(--brand-2); }
-  .cal-day .date .num { font-size: 13px; }
-  .cal-day .date .mo { font-size: 9px; color: var(--faint); font-weight: 600; }
-  .cal-day .meta { font-size: 10px; color: var(--faint); margin-top: auto; font-weight: 600; line-height: 1.2; }
+  .proj-num.danger { background: linear-gradient(180deg, rgba(239,68,68,0.20), rgba(239,68,68,0.05)); color: var(--err-bright); border: 1px solid var(--err-line); box-shadow: inset 0 0 18px rgba(239,68,68,0.16); }
+  .proj-num.warn { background: linear-gradient(180deg, rgba(245,158,11,0.18), rgba(245,158,11,0.04)); color: var(--warn); border: 1px solid var(--warn-line); }
+  .proj-num.error { background: var(--surface-2); color: var(--muted); border: 1px solid var(--line); }
+  .proj-info { flex: 1; min-width: 0; }
+  .proj-name { font-size: 17px; font-weight: 800; color: var(--text); letter-spacing: -0.01em; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .proj-name .dlink { font-size: 11px; font-weight: 600; color: var(--brand); text-decoration: none; padding: 3px 8px; border-radius: 5px; }
+  .proj-name .dlink:hover { background: var(--brand-glow); }
+  .proj-summary { font-size: 13px; color: var(--muted); margin-top: 4px; }
+  .proj-summary strong { color: var(--err-bright); font-weight: 700; }
+  .proj-summary .every { color: var(--err-bright); font-weight: 700; padding: 1px 7px; background: var(--err-soft); border-radius: 4px; margin-left: 6px; font-size: 11px; }
 
-  /* Day color tints */
-  .cal-day.sev-ok { background: linear-gradient(180deg, rgba(16,185,129,0.18), rgba(16,185,129,0.05)); border-color: rgba(16,185,129,0.32); }
-  .cal-day.sev-ok .meta { color: var(--ok); }
-  .cal-day.sev-warn { background: linear-gradient(180deg, rgba(245,158,11,0.20), rgba(245,158,11,0.06)); border-color: rgba(245,158,11,0.40); }
-  .cal-day.sev-warn .meta { color: var(--warn); }
-  .cal-day.sev-danger { background: linear-gradient(180deg, rgba(239,68,68,0.22), rgba(239,68,68,0.08)); border-color: rgba(239,68,68,0.42); }
-  .cal-day.sev-danger .meta { color: var(--err-bright); }
-  .cal-day.sev-norun { background: var(--surface-2); border-style: dashed; border-color: var(--line); }
-  .cal-day.sev-norun .meta { color: var(--faint); font-style: italic; }
+  /* Compact 30-day strip per project */
+  .strip { display: flex; gap: 2px; align-items: stretch; padding: 12px 20px 10px; }
+  .strip-cell { flex: 1; min-width: 7px; height: 18px; border-radius: 3px; background: #1a2236; transition: transform 0.12s; }
+  .strip-cell.has-run.all-pass { background: linear-gradient(180deg, #10b981, #059669); }
+  .strip-cell.has-run.some-fail { background: linear-gradient(180deg, #f59e0b, #d97706); }
+  .strip-cell.has-run.all-fail { background: linear-gradient(180deg, #ef4444, #b91c1c); }
+  .strip-cell.is-today { box-shadow: 0 0 0 1.5px var(--brand); z-index: 1; }
+  .strip-cell:hover { transform: scaleY(1.3); }
+  .strip-axis { display: flex; justify-content: space-between; padding: 0 20px 10px; font-size: 10px; color: var(--faint); font-weight: 500; }
 
-  .cal-day .proj-dots { display: flex; gap: 2px; margin-top: 4px; }
-  .cal-day .proj-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(148,163,184,0.18); }
-  .cal-day .proj-dot.ok { background: var(--ok); }
-  .cal-day .proj-dot.warn { background: var(--warn); }
-  .cal-day .proj-dot.fail { background: var(--err); }
+  /* Body: list of downtime days */
+  .proj-body { padding: 4px 20px 18px; }
 
-  /* Day detail panel */
-  .detail-card { background: var(--surface); border-radius: 12px; box-shadow: var(--shadow-card); margin-bottom: 14px; overflow: hidden; }
-  .detail-head { padding: 14px 16px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; background: linear-gradient(180deg, rgba(167,139,250,0.10), rgba(167,139,250,0.02)); border-bottom: 1px solid var(--line); }
-  .detail-head .nm { font-size: 16px; font-weight: 800; color: var(--text); letter-spacing: -0.01em; }
-  .detail-head .rel { font-size: 10px; font-weight: 700; color: var(--brand-2); letter-spacing: 0.6px; text-transform: uppercase; background: var(--brand-glow); padding: 3px 9px; border-radius: 999px; }
-  .detail-head .summary { font-size: 12px; color: var(--muted); margin-left: 4px; }
-  .detail-head .summary strong { color: var(--err-bright); font-weight: 700; }
-  .detail-head .summary.ok { color: var(--ok); }
-  .detail-head .close { background: var(--surface-2); border: 1px solid var(--line); color: var(--muted); width: 26px; height: 26px; border-radius: 6px; cursor: pointer; font-family: inherit; font-size: 14px; line-height: 1; display: flex; align-items: center; justify-content: center; margin-left: auto; }
-  .detail-head .close:hover { color: var(--text); border-color: var(--line-2); }
+  .day { padding: 12px 0; border-top: 1px solid var(--line); }
+  .day:first-child { border-top: 0; padding-top: 6px; }
+  .day-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 10px; flex-wrap: wrap; }
+  .day-bullet { width: 8px; height: 8px; border-radius: 50%; background: var(--err); box-shadow: 0 0 7px var(--err); flex-shrink: 0; align-self: center; }
+  .day-date { font-size: 14px; font-weight: 700; color: var(--text); letter-spacing: -0.01em; }
+  .day-rel {
+    font-size: 9px; font-weight: 700; color: var(--brand-2); letter-spacing: 0.6px; text-transform: uppercase;
+    background: var(--brand-glow); padding: 2px 7px; border-radius: 999px;
+  }
+  .day-rel.faint { color: var(--faint); background: rgba(148,163,184,0.08); }
+  .day-counts { margin-left: auto; font-size: 12px; color: var(--err-bright); font-weight: 700; }
+  .day-counts .sub { color: var(--faint); font-weight: 500; margin-left: 2px; }
 
-  .impacted { padding: 14px 16px; }
-  .imp-proj { padding: 12px 0; border-top: 1px solid var(--line); }
-  .imp-proj:first-child { border-top: 0; padding-top: 4px; }
-  .imp-head { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; flex-wrap: wrap; }
-  .imp-name { font-size: 14px; font-weight: 700; color: var(--text); letter-spacing: -0.01em; display: flex; align-items: center; gap: 8px; }
-  .imp-name .stat-dot { width: 8px; height: 8px; border-radius: 50%; }
-  .imp-name .stat-dot.warn { background: var(--warn); box-shadow: 0 0 6px var(--warn); }
-  .imp-name .stat-dot.danger { background: var(--err); box-shadow: 0 0 8px var(--err); }
-  .imp-summary { font-size: 11px; color: var(--muted); }
-  .imp-summary strong { color: var(--err-bright); font-weight: 700; }
-  .imp-link { font-size: 11px; color: var(--brand); text-decoration: none; padding: 2px 7px; border-radius: 4px; margin-left: auto; }
-  .imp-link:hover { background: var(--brand-glow); }
+  /* Time pills + drilldown */
+  .times { display: flex; gap: 6px; flex-wrap: wrap; padding-left: 22px; }
+  .time-pill {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--surface-2); border: 1px solid var(--err-line);
+    color: var(--err-bright); padding: 6px 12px;
+    border-radius: 7px; font-family: "JetBrains Mono", monospace;
+    font-weight: 600; font-size: 12px; cursor: pointer;
+    transition: all 0.12s; user-select: none;
+  }
+  .time-pill:hover { border-color: var(--err); background: rgba(239,68,68,0.10); }
+  .time-pill.is-open { background: rgba(239,68,68,0.12); border-color: var(--err); }
+  .time-pill .counts { font-family: "Inter", sans-serif; color: var(--text); font-weight: 500; font-size: 11px; }
+  .time-pill .counts strong { color: var(--err-bright); font-weight: 800; }
 
-  .run { background: var(--surface-2); border: 1px solid var(--line); border-radius: 8px; padding: 9px 12px; margin-bottom: 6px; }
-  .run-head { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; font-size: 12px; }
-  .run-time { font-family: "JetBrains Mono", monospace; font-weight: 600; color: var(--err-bright); min-width: 76px; font-size: 12px; letter-spacing: -0.02em; }
-  .run-counts { color: var(--text); font-weight: 500; }
-  .run-counts .x { color: var(--err-bright); font-weight: 800; font-size: 13px; }
-  .run-counts .of { color: var(--muted); }
-  .run-pass { font-size: 10px; color: var(--faint); font-variant-numeric: tabular-nums; padding: 2px 7px; background: var(--surface-3); border-radius: 4px; }
-  .run-extra { font-size: 10px; color: var(--muted); margin-left: auto; padding: 2px 7px; background: var(--surface-3); border-radius: 4px; }
-  .fails-preview { margin-top: 8px; font-size: 11px; }
-  .fails-preview ul { margin: 0; padding: 0; list-style: none; }
-  .fails-preview li { padding: 6px 0; border-top: 1px solid var(--line); }
-  .fails-preview li:first-child { border-top: 0; padding-top: 4px; }
-  .fails-preview .ftitle { color: var(--text-2); font-weight: 600; font-size: 11px; }
-  .fails-preview .fmod { color: var(--brand-2); font-size: 9px; margin-left: 6px; padding: 1px 6px; background: var(--brand-glow); border-radius: 4px; font-weight: 600; letter-spacing: 0.2px; }
-  .fails-preview .ferr { color: var(--faint); font-size: 10px; margin-top: 3px; word-break: break-word; line-height: 1.4; font-family: "JetBrains Mono", monospace; max-height: 32px; overflow: hidden; }
-  .fails-more { color: var(--brand); font-size: 10px; cursor: pointer; margin-top: 6px; font-weight: 700; user-select: none; display: inline-block; padding: 3px 7px; border-radius: 5px; }
-  .fails-more:hover { background: var(--brand-glow); }
+  .run-detail {
+    display: none; margin: 10px 0 4px 22px;
+    padding: 12px 14px; background: var(--surface-2); border: 1px solid var(--line); border-radius: 8px;
+  }
+  .run-detail.is-open { display: block; }
+  .run-detail-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; font-size: 12px; margin-bottom: 8px; }
+  .run-detail-row .label { font-size: 10px; font-weight: 700; color: var(--faint); letter-spacing: 0.6px; text-transform: uppercase; }
+  .run-detail-row .pass { font-size: 11px; color: var(--faint); }
+  .run-detail-row .extra { font-size: 11px; color: var(--muted); padding: 2px 7px; background: var(--surface-3); border-radius: 4px; }
 
-  /* Sidebar - downtime list */
-  .ts-list { padding: 6px 0; max-height: 720px; overflow-y: auto; }
-  .ts-item { padding: 10px 14px; border-bottom: 1px solid var(--line); cursor: pointer; transition: background 0.1s; }
-  .ts-item:last-child { border-bottom: 0; }
-  .ts-item:hover { background: rgba(255,255,255,0.025); }
-  .ts-item.is-active { background: rgba(167,139,250,0.08); }
-  .ts-row1 { display: flex; align-items: baseline; gap: 8px; }
-  .ts-date { font-size: 12px; font-weight: 700; color: var(--text); letter-spacing: -0.01em; }
-  .ts-rel { font-size: 9px; font-weight: 700; color: var(--brand-2); letter-spacing: 0.5px; text-transform: uppercase; padding: 2px 6px; background: var(--brand-glow); border-radius: 999px; }
-  .ts-rel.faint { color: var(--faint); background: rgba(148,163,184,0.08); }
-  .ts-count { margin-left: auto; font-size: 10px; font-weight: 700; color: var(--err-bright); background: var(--err-soft); padding: 2px 7px; border-radius: 999px; border: 1px solid var(--err-line); }
-  .ts-row2 { font-size: 11px; color: var(--muted); margin-top: 4px; line-height: 1.5; }
-  .ts-row2 .impacted-pill { display: inline-block; background: var(--surface-2); border: 1px solid var(--line); padding: 1px 6px; border-radius: 4px; margin-right: 4px; margin-top: 2px; color: var(--text-2); font-size: 10px; font-weight: 600; }
-  .ts-empty { padding: 30px 16px; text-align: center; color: var(--ok); font-size: 12px; font-weight: 600; }
+  .fails-list { margin: 0; padding: 0; list-style: none; }
+  .fails-list li { padding: 6px 0; border-top: 1px dashed var(--line); }
+  .fails-list li:first-child { border-top: 0; padding-top: 0; }
+  .ftitle { color: var(--text-2); font-weight: 600; font-size: 12px; }
+  .fmod { color: var(--brand-2); font-size: 9px; margin-left: 6px; padding: 1px 6px; background: var(--brand-glow); border-radius: 4px; font-weight: 600; letter-spacing: 0.2px; }
+  .ferr { color: var(--faint); font-size: 11px; margin-top: 3px; word-break: break-word; line-height: 1.4; font-family: "JetBrains Mono", monospace; max-height: 36px; overflow: hidden; }
+  .fno-detail { color: var(--faint); font-style: italic; font-size: 11px; }
 
+  .show-more {
+    padding: 10px 0 4px; text-align: center;
+  }
+  .show-more button {
+    background: var(--surface-2); border: 1px solid var(--line); color: var(--brand-2);
+    padding: 7px 14px; border-radius: 8px; font-size: 11px; font-weight: 700;
+    cursor: pointer; font-family: inherit;
+  }
+  .show-more button:hover { border-color: var(--line-2); background: var(--surface-3); }
+
+  .empty-line { padding: 20px; font-size: 13px; color: var(--muted); text-align: center; }
+  .empty-line.ok { color: var(--ok); font-weight: 600; }
   .loading { text-align: center; padding: 80px 20px; color: var(--faint); font-size: 13px; }
   .loading .spinner { display: inline-block; width: 26px; height: 26px; border: 2px solid var(--line-2); border-top-color: var(--brand); border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 12px; }
-  .footer { margin-top: 22px; text-align: center; font-size: 10px; color: var(--faint); }
+
+  .footer { margin-top: 30px; text-align: center; font-size: 11px; color: var(--faint); }
 </style>
 </head>
 <body>
 <div class="wrap">
   <header class="topbar">
-    <h1><span class="dot"></span>QA Downtime Dashboard</h1>
+    <h1><span class="dot"></span>QA Downtime Report</h1>
     <div class="right">
       <div class="last-fetched">Last fetched: <span class="v" id="lastFetched">…</span></div>
       <div class="pills">
@@ -221,20 +212,9 @@
 
   <div class="stats" id="statsBar"></div>
 
-  <div class="twocol">
-    <div>
-      <div class="card" id="calCard">
-        <div class="loading"><div class="spinner"></div>Loading…</div>
-      </div>
-      <div id="detailHost"></div>
-    </div>
-    <div class="card">
-      <div class="card-head"><span class="t">Downtime Days</span></div>
-      <div class="ts-list" id="downtimeList"></div>
-    </div>
-  </div>
+  <div id="content"><div class="loading"><div class="spinner"></div>Loading project feeds…</div></div>
 
-  <div class="footer">Click any day to see exactly which projects went down and what failed</div>
+  <div class="footer">Click any time pill to see exactly which tests failed in that run</div>
 </div>
 
 <script>
@@ -250,10 +230,11 @@ const PROJECTS = [
 ];
 
 const IST_OFFSET_MS = 5.5 * 3600 * 1000;
-const PREVIEW_FAILS = 3;
+const DEFAULT_VISIBLE_DAYS = 5;
 let currentWindow = 30;
 let cache = null;
-let activeDayKey = null;
+let expandedDays = {}; // projectIdx -> bool (show all days)
+let openRuns = new Set(); // "projectIdx-runIdx"
 
 function parseToDate(ts) {
   if (!ts) return null;
@@ -280,18 +261,16 @@ function parseToDate(ts) {
 }
 function dateKeyIST(date) { return new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Kolkata", year: "numeric", month: "2-digit", day: "2-digit" }).format(date); }
 function fmtFullDate(date) { return date.toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata", weekday: "long", day: "numeric", month: "short", year: "numeric" }); }
-function fmtShortDate(date) { return date.toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata", weekday: "short", day: "numeric", month: "short" }); }
 function fmtTime(date) { return date.toLocaleTimeString("en-IN", { timeZone: "Asia/Kolkata", hour: "2-digit", minute: "2-digit", hour12: true }); }
 function todayKey() { return dateKeyIST(new Date()); }
-function dateFromKey(k) { return new Date(k + "T00:00:00+05:30"); }
 function relativeDay(key) {
   const t = todayKey();
   if (key === t) return { label: "Today", strong: true };
   const yest = dateKeyIST(new Date(Date.now() - 86400000));
   if (key === yest) return { label: "Yesterday", strong: true };
-  const target = dateFromKey(key);
+  const target = new Date(key + "T00:00:00+05:30");
   const days = Math.round((Date.now() - target.getTime()) / 86400000);
-  if (days >= 2 && days <= 7) return { label: days + "d ago", strong: false };
+  if (days >= 2 && days <= 14) return { label: days + " days ago", strong: false };
   return null;
 }
 
@@ -340,6 +319,7 @@ async function fetchAll() {
       const raw = await resp.json();
       const runs = normalize(raw, p.format).map((r) => ({ ...r, _date: parseToDate(r.timestamp) })).filter((r) => r._date);
       runs.sort((a, b) => b._date - a._date);
+      runs.forEach((r, i) => { r._id = i; });
       return { idx, project: p, runs, error: null };
     } catch (e) {
       return { idx, project: p, runs: [], error: String(e.message || e) };
@@ -347,69 +327,40 @@ async function fetchAll() {
   }));
 }
 
-// Build day index: { dateKey -> { byProj: Map<idx, runs[]>, total, failedRuns, projectsWithFailures, severity } }
-function buildDayIndex(cutoff) {
-  const days = new Map();
-  for (const entry of cache) {
-    if (entry.error) continue;
-    for (const r of entry.runs) {
-      if (cutoff && r._date.getTime() < cutoff) continue;
-      const k = dateKeyIST(r._date);
-      if (!days.has(k)) days.set(k, { byProj: new Map(), total: 0, failedRuns: 0, failedTests: 0, projectsWithFailures: new Set(), projectsWithRuns: new Set() });
-      const day = days.get(k);
-      if (!day.byProj.has(entry.idx)) day.byProj.set(entry.idx, []);
-      day.byProj.get(entry.idx).push(r);
-      day.total++;
-      day.projectsWithRuns.add(entry.idx);
-      if (r.failed > 0) {
-        day.failedRuns++;
-        day.failedTests += r.failed;
-        day.projectsWithFailures.add(entry.idx);
-      }
-    }
-  }
-  for (const [, d] of days) {
-    if (d.failedRuns === 0) d.severity = "ok";
-    else if (d.failedRuns / d.total >= 0.5) d.severity = "danger";
-    else d.severity = "warn";
-  }
-  return days;
-}
-
-function buildCalendar(dayIndex, days) {
-  // Collect last N days. Calendar shows from the Monday of the oldest week to today.
+function buildStripCells(runsInWindow, days) {
+  const today = todayKey();
   const cells = [];
-  const todayKeyStr = todayKey();
-  const todayDate = new Date(todayKeyStr + "T12:00:00+05:30"); // safe noon IST
-  const oldest = new Date(todayDate.getTime() - (days - 1) * 86400000);
-  // Find Monday-of-week containing oldest day. (Use IST)
-  const dowOldest = parseInt(new Intl.DateTimeFormat("en-IN", { timeZone: "Asia/Kolkata", weekday: "short" }).format(oldest) === "Sun" ? 6 : 0); // not used directly
-  // Instead, compute IST day-of-week using date string trick
-  function istDow(date) {
-    const wk = new Intl.DateTimeFormat("en-US", { timeZone: "Asia/Kolkata", weekday: "short" }).format(date);
-    return ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].indexOf(wk);
+  for (let i = days - 1; i >= 0; i--) {
+    const d = new Date(Date.now() - i * 86400000);
+    cells.push({ key: dateKeyIST(d), runs: [] });
   }
-  // We want grid starting on Monday. Pad before oldest to align.
-  const oldestDow = istDow(oldest); // 0=Sun..6=Sat
-  const padBefore = (oldestDow + 6) % 7; // Monday=0
-  // Pad after today to fill week
-  const todayDow = istDow(todayDate);
-  const padAfter = 6 - ((todayDow + 6) % 7);
-  // Build cell list
-  const start = new Date(oldest.getTime() - padBefore * 86400000);
-  const end = new Date(todayDate.getTime() + padAfter * 86400000);
-  const totalCells = Math.round((end - start) / 86400000) + 1;
-  for (let i = 0; i < totalCells; i++) {
-    const d = new Date(start.getTime() + i * 86400000);
-    const key = dateKeyIST(d);
-    const inWindow = d >= oldest && d <= todayDate;
-    cells.push({ key, date: d, inWindow });
+  const byKey = new Map(cells.map((c) => [c.key, c]));
+  for (const r of runsInWindow) {
+    const k = dateKeyIST(r._date);
+    if (byKey.has(k)) byKey.get(k).runs.push(r);
   }
-  return cells;
+  return cells.map((c) => {
+    let cls = "strip-cell";
+    if (c.runs.length) {
+      cls += " has-run";
+      const failedCount = c.runs.filter((r) => r.failed > 0).length;
+      if (failedCount === 0) cls += " all-pass";
+      else if (failedCount === c.runs.length) cls += " all-fail";
+      else cls += " some-fail";
+    }
+    if (c.key === today) cls += " is-today";
+    const failedRuns = c.runs.filter((r) => r.failed > 0).length;
+    const tip = c.runs.length === 0
+      ? `${c.key} — no runs`
+      : failedRuns === 0
+        ? `${c.key} — ${c.runs.length} run${c.runs.length === 1 ? "" : "s"} all passed`
+        : `${c.key} — ${failedRuns}/${c.runs.length} runs failed`;
+    return { cls, tip, key: c.key };
+  });
 }
 
 function severity(failedRuns, totalRuns) {
-  if (totalRuns === 0) return "norun";
+  if (totalRuns === 0) return "error";
   if (failedRuns === 0) return "ok";
   return failedRuns / totalRuns >= 0.5 ? "danger" : "warn";
 }
@@ -417,226 +368,171 @@ function severity(failedRuns, totalRuns) {
 function render() {
   if (!cache) return;
   const cutoff = currentWindow > 0 ? Date.now() - currentWindow * 86400000 : 0;
-  const dayIndex = buildDayIndex(cutoff);
+  const stripDays = Math.min(currentWindow, 30);
+  let totalDowntimeDays = 0, totalFailedRuns = 0, totalFailedTests = 0, projectsAffected = 0, healthy = [];
+  const failingHtml = [];
 
-  // Stats
-  let totalFailedRuns = 0, totalFailedTests = 0;
-  const projectsWithFailures = new Set();
-  const downtimeDays = new Set();
-  for (const [k, d] of dayIndex) {
-    totalFailedRuns += d.failedRuns;
-    totalFailedTests += d.failedTests;
-    for (const p of d.projectsWithFailures) projectsWithFailures.add(p);
-    if (d.failedRuns > 0) downtimeDays.add(k);
-  }
-
-  document.getElementById("statsBar").innerHTML = `
-    <div class="stat brand"><span class="ic"></span><div class="text"><span class="l">Window</span><span class="v">${currentWindow}d</span></div></div>
-    <div class="stat ${downtimeDays.size > 0 ? "danger" : "ok"}"><span class="ic"></span><div class="text"><span class="l">Downtime days</span><span class="v">${downtimeDays.size}</span></div></div>
-    <div class="stat ${totalFailedRuns > 0 ? "danger" : "ok"}"><span class="ic"></span><div class="text"><span class="l">Failed runs</span><span class="v">${totalFailedRuns}</span></div></div>
-    <div class="stat ${projectsWithFailures.size > 0 ? "danger" : "ok"}"><span class="ic"></span><div class="text"><span class="l">Projects affected</span><span class="v">${projectsWithFailures.size}<span class="of">/${PROJECTS.length}</span></span></div></div>
-  `;
-
-  // Build calendar
-  const cells = buildCalendar(dayIndex, currentWindow);
-  const todayKeyStr = todayKey();
-
-  const dowHtml = ["MON","TUE","WED","THU","FRI","SAT","SUN"].map((d) => `<div class="d">${d}</div>`).join("");
-
-  const cellsHtml = cells.map((c) => {
-    if (!c.inWindow) return `<div class="cal-day empty"></div>`;
-    const day = dayIndex.get(c.key);
-    let sev = "norun";
-    let metaText = "no run";
-    let dotsHtml = "";
-    if (day) {
-      sev = severity(day.failedRuns, day.total);
-      if (sev === "ok") metaText = `${day.total} run${day.total === 1 ? "" : "s"} · all pass`;
-      else metaText = `<strong>${day.failedRuns}</strong> of ${day.total} failed · ${day.projectsWithFailures.size}p`;
-      // Compute project status dots (in PROJECTS order). Show only projects with runs that day.
-      const dots = PROJECTS.map((_p, idx) => {
-        const runs = day.byProj.get(idx);
-        if (!runs) return `<div class="proj-dot" title="${esc(_p.short)}: no run"></div>`;
-        const failedCount = runs.filter((r) => r.failed > 0).length;
-        const cls = failedCount === 0 ? "ok" : (failedCount === runs.length ? "fail" : "warn");
-        return `<div class="proj-dot ${cls}" title="${esc(_p.short)}: ${failedCount}/${runs.length} failed"></div>`;
-      }).join("");
-      dotsHtml = `<div class="proj-dots">${dots}</div>`;
-    }
-    const date = dateFromKey(c.key);
-    const dayNum = date.toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata", day: "numeric" });
-    const monAbbr = date.toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata", month: "short" });
-    const isToday = c.key === todayKeyStr;
-    const isActive = c.key === activeDayKey;
-    return `
-      <div class="cal-day sev-${sev}${isToday ? " is-today" : ""}${isActive ? " is-active" : ""}" data-key="${esc(c.key)}">
-        <div class="date"><span class="num">${esc(dayNum)}</span><span class="mo">${esc(monAbbr)}</span></div>
-        ${dotsHtml}
-        <div class="meta">${metaText}</div>
-      </div>`;
-  }).join("");
-
-  document.getElementById("calCard").innerHTML = `
-    <div class="card-head">
-      <span class="t">Downtime Calendar <span class="sub">last ${currentWindow} days · IST</span></span>
-      <span class="legend">
-        <span class="lg"><span class="sw" style="background:linear-gradient(180deg,rgba(16,185,129,0.4),rgba(16,185,129,0.1));border:1px solid rgba(16,185,129,0.32);"></span> All pass</span>
-        <span class="lg"><span class="sw" style="background:linear-gradient(180deg,rgba(245,158,11,0.4),rgba(245,158,11,0.12));border:1px solid rgba(245,158,11,0.4);"></span> Some failed</span>
-        <span class="lg"><span class="sw" style="background:linear-gradient(180deg,rgba(239,68,68,0.4),rgba(239,68,68,0.16));border:1px solid rgba(239,68,68,0.42);"></span> Mostly failed</span>
-        <span class="lg"><span class="sw" style="background:#1c2640;border:1px dashed var(--line);"></span> No run</span>
-      </span>
-    </div>
-    <div class="cal">
-      <div class="cal-dow">${dowHtml}</div>
-      <div class="cal-grid">${cellsHtml}</div>
-    </div>`;
-
-  // Sidebar: downtime days
-  const dKeys = [...dayIndex.keys()].filter((k) => dayIndex.get(k).failedRuns > 0).sort().reverse();
-  if (dKeys.length === 0) {
-    document.getElementById("downtimeList").innerHTML = `<div class="ts-empty">🎉 No downtime days in this window.</div>`;
-  } else {
-    document.getElementById("downtimeList").innerHTML = dKeys.map((k) => {
-      const day = dayIndex.get(k);
-      const rel = relativeDay(k);
-      const date = dateFromKey(k);
-      const projsAffected = [...day.projectsWithFailures].map((idx) => PROJECTS[idx].short);
-      const isActive = k === activeDayKey ? " is-active" : "";
-      return `
-        <div class="ts-item${isActive}" data-key="${esc(k)}">
-          <div class="ts-row1">
-            <span class="ts-date">${esc(fmtShortDate(date))}</span>
-            ${rel ? `<span class="ts-rel ${rel.strong ? "" : "faint"}">${esc(rel.label)}</span>` : ""}
-            <span class="ts-count">${day.failedRuns} fail${day.failedRuns === 1 ? "" : "s"}</span>
+  for (const entry of cache) {
+    const { project, runs, error, idx } = entry;
+    if (error) {
+      failingHtml.push(`
+        <div class="proj">
+          <div class="proj-head">
+            <div class="proj-num error">!</div>
+            <div class="proj-info">
+              <div class="proj-name">${esc(project.name)}</div>
+              <div class="proj-summary">Could not load feed — <span class="mono">${esc(error)}</span></div>
+            </div>
           </div>
-          <div class="ts-row2">${projsAffected.map((n) => `<span class="impacted-pill">${esc(n)}</span>`).join("")}</div>
+        </div>`);
+      continue;
+    }
+
+    const inWindow = runs.filter((r) => !cutoff || r._date.getTime() >= cutoff);
+    const failedRuns = inWindow.filter((r) => r.failed > 0);
+    const failedTestsCount = failedRuns.reduce((s, r) => s + r.failed, 0);
+
+    if (failedRuns.length === 0) {
+      healthy.push({ project, runs: inWindow.length });
+      continue;
+    }
+
+    projectsAffected++;
+    totalFailedRuns += failedRuns.length;
+    totalFailedTests += failedTestsCount;
+
+    // Group by IST date
+    const byDate = new Map();
+    for (const r of failedRuns) {
+      const k = dateKeyIST(r._date);
+      if (!byDate.has(k)) byDate.set(k, []);
+      byDate.get(k).push(r);
+    }
+    const dateKeys = [...byDate.keys()].sort().reverse();
+    totalDowntimeDays += dateKeys.length;
+
+    const showAll = !!expandedDays[idx];
+    const visibleDates = showAll ? dateKeys : dateKeys.slice(0, DEFAULT_VISIBLE_DAYS);
+    const hiddenCount = dateKeys.length - visibleDates.length;
+
+    const daysHtml = visibleDates.map((k) => {
+      const list = byDate.get(k);
+      const rel = relativeDay(k);
+      const totalFailedThisDay = list.reduce((s, r) => s + r.failed, 0);
+      const timesHtml = list.map((r) => {
+        const runKey = `${idx}-${r._id}`;
+        const isOpen = openRuns.has(runKey);
+        return `<span class="time-pill ${isOpen ? "is-open" : ""}" data-run="${esc(runKey)}">${esc(fmtTime(r._date))} <span class="counts"><strong>${r.failed}</strong>/${r.total}</span></span>`;
+      }).join("");
+
+      // Render expanded run details for any open run on this day
+      const detailsHtml = list.filter((r) => openRuns.has(`${idx}-${r._id}`)).map((r) => renderRunDetail(r, idx)).join("");
+
+      return `
+        <div class="day">
+          <div class="day-head">
+            <span class="day-bullet"></span>
+            <span class="day-date">${esc(fmtFullDate(list[0]._date))}</span>
+            ${rel ? `<span class="day-rel ${rel.strong ? "" : "faint"}">${esc(rel.label)}</span>` : ""}
+            <span class="day-counts">${list.length} failed run${list.length === 1 ? "" : "s"}<span class="sub"> · ${totalFailedThisDay} test${totalFailedThisDay === 1 ? "" : "s"}</span></span>
+          </div>
+          <div class="times">${timesHtml}</div>
+          ${detailsHtml}
         </div>`;
     }).join("");
+
+    const showMoreBtn = hiddenCount > 0
+      ? `<div class="show-more"><button data-action="show-more" data-idx="${idx}">Show ${hiddenCount} more downtime day${hiddenCount === 1 ? "" : "s"}</button></div>`
+      : (showAll && dateKeys.length > DEFAULT_VISIBLE_DAYS ? `<div class="show-more"><button data-action="show-more" data-idx="${idx}">Show fewer</button></div>` : "");
+
+    const sev = severity(failedRuns.length, inWindow.length);
+    const everyFailed = failedRuns.length === inWindow.length && inWindow.length > 1;
+    const stripCells = buildStripCells(inWindow, stripDays);
+
+    failingHtml.push(`
+      <div class="proj">
+        <div class="proj-head">
+          <div class="proj-num ${sev === "danger" ? "danger" : "warn"}">${dateKeys.length}</div>
+          <div class="proj-info">
+            <div class="proj-name">${esc(project.name)} <a class="dlink" href="${esc(project.dashboard)}" target="_blank" rel="noopener">↗ open dashboard</a></div>
+            <div class="proj-summary">Down on <strong>${dateKeys.length}</strong> day${dateKeys.length === 1 ? "" : "s"} · <strong>${failedRuns.length}</strong> of ${inWindow.length} run${inWindow.length === 1 ? "" : "s"} failed · ${failedTestsCount} test${failedTestsCount === 1 ? "" : "s"} broken${everyFailed ? `<span class="every">every run failed</span>` : ""}</div>
+          </div>
+        </div>
+        <div class="strip">${stripCells.map((c) => `<div class="${c.cls}" title="${esc(c.tip)}"></div>`).join("")}</div>
+        <div class="strip-axis"><span>${esc(stripCells[0].key)}</span><span>${esc(stripCells[stripCells.length - 1].key)} · today</span></div>
+        <div class="proj-body">
+          ${daysHtml}
+          ${showMoreBtn}
+        </div>
+      </div>`);
   }
 
-  // Default active day: most recent downtime day, if any and none chosen
-  if (activeDayKey == null && dKeys.length > 0) activeDayKey = dKeys[0];
+  // Stats
+  document.getElementById("statsBar").innerHTML = `
+    <div class="stat brand"><span class="ic"></span><div class="text"><span class="l">Window</span><span class="v">${currentWindow}d</span></div></div>
+    <div class="stat ${projectsAffected > 0 ? "danger" : "ok"}"><span class="ic"></span><div class="text"><span class="l">Projects with downtime</span><span class="v">${projectsAffected}<span class="of">/${PROJECTS.length}</span></span></div></div>
+    <div class="stat ${totalFailedRuns > 0 ? "danger" : "ok"}"><span class="ic"></span><div class="text"><span class="l">Failed runs</span><span class="v">${totalFailedRuns}</span></div></div>
+    <div class="stat ${totalFailedTests > 0 ? "danger" : "ok"}"><span class="ic"></span><div class="text"><span class="l">Failed tests</span><span class="v">${totalFailedTests}</span></div></div>
+  `;
 
-  renderDayDetail(dayIndex);
-  bindHandlers(dayIndex);
-}
-
-function renderDayDetail(dayIndex) {
-  const host = document.getElementById("detailHost");
-  if (activeDayKey == null) { host.innerHTML = ""; return; }
-  const day = dayIndex.get(activeDayKey);
-  const date = dateFromKey(activeDayKey);
-  const rel = relativeDay(activeDayKey);
-
-  if (!day || day.failedRuns === 0) {
-    const ranAny = day && day.total > 0;
-    host.innerHTML = `
-      <div class="detail-card">
-        <div class="detail-head">
-          <span class="nm">${esc(fmtFullDate(date))}</span>
-          ${rel ? `<span class="rel">${esc(rel.label)}</span>` : ""}
-          <span class="summary ok">${ranAny ? `All ${day.total} run${day.total === 1 ? "" : "s"} passed ✓` : "No runs that day"}</span>
-          <button class="close" data-action="close-detail" title="Close">×</button>
-        </div>
-      </div>`;
-    bindDetail();
-    return;
+  // Healthy strip
+  let healthyHtml = "";
+  if (healthy.length) {
+    const items = healthy.map((h) => `<span class="h-pill">${esc(h.project.name)} <span class="num">${h.runs} run${h.runs === 1 ? "" : "s"}</span></span>`).join("");
+    healthyHtml = `<div class="healthy"><span class="h-label">All passing · ${healthy.length}</span>${items}</div>`;
   }
 
-  // Group failed runs by project
-  const projHtml = PROJECTS.map((p, idx) => {
-    const runs = day.byProj.get(idx);
-    if (!runs) return "";
-    const failed = runs.filter((r) => r.failed > 0);
-    if (failed.length === 0) return "";
-    const failedTests = failed.reduce((s, r) => s + r.failed, 0);
-    const allRunsFailed = failed.length === runs.length;
-    return `
-      <div class="imp-proj">
-        <div class="imp-head">
-          <div class="imp-name"><span class="stat-dot ${allRunsFailed ? "danger" : "warn"}"></span>${esc(p.name)}</div>
-          <span class="imp-summary"><strong>${failed.length}</strong> of ${runs.length} run${runs.length === 1 ? "" : "s"} failed · ${failedTests} test${failedTests === 1 ? "" : "s"}</span>
-          <a class="imp-link" href="${esc(p.dashboard)}" target="_blank" rel="noopener">↗ dashboard</a>
-        </div>
-        ${failed.map(renderRun).join("")}
-      </div>`;
-  }).join("");
+  let header = "";
+  if (failingHtml.length > 0) header = `<div class="section-label">Projects with downtime <span class="count">· ${projectsAffected}</span></div>`;
 
-  host.innerHTML = `
-    <div class="detail-card">
-      <div class="detail-head">
-        <span class="nm">${esc(fmtFullDate(date))}</span>
-        ${rel ? `<span class="rel">${esc(rel.label)}</span>` : ""}
-        <span class="summary"><strong>${day.failedRuns}</strong> of ${day.total} runs failed · ${day.projectsWithFailures.size} project${day.projectsWithFailures.size === 1 ? "" : "s"} affected</span>
-        <button class="close" data-action="close-detail" title="Close">×</button>
-      </div>
-      <div class="impacted">${projHtml}</div>
-    </div>`;
-  bindDetail();
+  document.getElementById("content").innerHTML =
+    healthyHtml +
+    header +
+    (failingHtml.length ? failingHtml.join("") : `<div class="proj"><div class="empty-line ok">🎉 No downtime in this window across any project.</div></div>`);
+
+  bindHandlers();
 }
 
-function renderRun(r) {
-  const time = fmtTime(r._date);
+function renderRunDetail(r, projIdx) {
   let extra = "";
   if (r.avgLatencyMs != null) extra = `avg latency ${(r.avgLatencyMs / 1000).toFixed(1)}s`;
   else if (r.timeSavedPercent != null) extra = `time saved ${r.timeSavedPercent}%`;
   else if (r.avgLatency != null) extra = `avg latency ${(r.avgLatency / 1000).toFixed(1)}s`;
 
-  let preview = "";
-  if (r.failedItems && r.failedItems.length) {
-    const visible = r.failedItems.slice(0, PREVIEW_FAILS);
-    const hidden = r.failedItems.slice(PREVIEW_FAILS);
-    const item = (f, hide) => `<li${hide ? ' class="hidden-fail" style="display:none;"' : ""}>
-      <div><span class="ftitle">${esc(f.title)}</span>${f.module ? ` <span class="fmod">${esc(f.module)}</span>` : ""}</div>
+  let body;
+  if (!r.failedItems || r.failedItems.length === 0) {
+    body = `<div class="fno-detail">This feed doesn't expose per-test detail — ${r.failed} test${r.failed === 1 ? "" : "s"} failed in this run.</div>`;
+  } else {
+    body = `<ul class="fails-list">${r.failedItems.slice(0, 30).map((f) => `<li>
+      <div><span class="ftitle">${esc(f.title)}</span>${f.module ? `<span class="fmod">${esc(f.module)}</span>` : ""}</div>
       ${f.error ? `<div class="ferr">${esc(f.error)}</div>` : ""}
-    </li>`;
-    const visibleHtml = visible.map((f) => item(f, false)).join("");
-    const hiddenHtml = hidden.map((f) => item(f, true)).join("");
-    const more = hidden.length ? `<div class="fails-more" data-action="toggle-more">▾ Show ${hidden.length} more</div>` : "";
-    preview = `<div class="fails-preview"><ul>${visibleHtml}${hiddenHtml}</ul>${more}</div>`;
+    </li>`).join("")}${r.failedItems.length > 30 ? `<li class="fno-detail">+${r.failedItems.length - 30} more failed item${r.failedItems.length - 30 === 1 ? "" : "s"}…</li>` : ""}</ul>`;
   }
+
   return `
-    <div class="run">
-      <div class="run-head">
-        <span class="run-time">${esc(time)}</span>
-        <span class="run-counts"><span class="x">${r.failed}</span><span class="of"> / ${r.total}</span> failed</span>
-        <span class="run-pass">${r.passRate}% pass</span>
-        ${extra ? `<span class="run-extra">${esc(extra)}</span>` : ""}
+    <div class="run-detail is-open">
+      <div class="run-detail-row">
+        <span class="label">Run @ ${esc(fmtTime(r._date))}</span>
+        <span class="pass">${r.passRate}% pass</span>
+        ${extra ? `<span class="extra">${esc(extra)}</span>` : ""}
       </div>
-      ${preview}
+      ${body}
     </div>`;
 }
 
-function bindHandlers(dayIndex) {
-  document.querySelectorAll(".cal-day:not(.empty)").forEach((c) => {
-    c.addEventListener("click", () => {
-      const k = c.getAttribute("data-key");
-      activeDayKey = activeDayKey === k ? null : k;
+function bindHandlers() {
+  document.querySelectorAll(".time-pill").forEach((p) => {
+    p.addEventListener("click", () => {
+      const k = p.getAttribute("data-run");
+      if (openRuns.has(k)) openRuns.delete(k); else openRuns.add(k);
       render();
-      if (activeDayKey) setTimeout(() => document.getElementById("detailHost").scrollIntoView({ behavior: "smooth", block: "start" }), 50);
     });
   });
-  document.querySelectorAll(".ts-item").forEach((it) => {
-    it.addEventListener("click", () => {
-      const k = it.getAttribute("data-key");
-      activeDayKey = k;
-      render();
-      setTimeout(() => document.getElementById("detailHost").scrollIntoView({ behavior: "smooth", block: "start" }), 50);
-    });
-  });
-}
-
-function bindDetail() {
-  document.querySelectorAll('[data-action="close-detail"]').forEach((b) => {
-    b.addEventListener("click", () => { activeDayKey = null; render(); });
-  });
-  document.querySelectorAll('[data-action="toggle-more"]').forEach((b) => {
+  document.querySelectorAll('[data-action="show-more"]').forEach((b) => {
     b.addEventListener("click", () => {
-      const ul = b.parentElement.querySelector("ul");
-      const hidden = ul.querySelectorAll(".hidden-fail");
-      const isShown = hidden.length && hidden[0].style.display !== "none";
-      hidden.forEach((li) => { li.style.display = isShown ? "none" : "block"; });
-      b.textContent = isShown ? `▾ Show ${hidden.length} more` : `▴ Hide`;
+      const idx = +b.getAttribute("data-idx");
+      expandedDays[idx] = !expandedDays[idx];
+      render();
     });
   });
 }
@@ -648,10 +544,11 @@ function esc(s) {
 async function load() {
   const refreshBtn = document.getElementById("refreshBtn");
   refreshBtn.classList.add("spinning");
-  document.getElementById("calCard").innerHTML = '<div class="loading"><div class="spinner"></div>Loading project feeds…</div>';
+  document.getElementById("content").innerHTML = '<div class="loading"><div class="spinner"></div>Loading project feeds…</div>';
   document.getElementById("lastFetched").textContent = "…";
   cache = await fetchAll();
   document.getElementById("lastFetched").textContent = new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata", day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit", hour12: true }) + " IST";
+  expandedDays = {}; openRuns = new Set();
   render();
   setTimeout(() => refreshBtn.classList.remove("spinning"), 400);
 }
@@ -661,7 +558,7 @@ document.querySelectorAll(".pill").forEach((p) => {
     document.querySelectorAll(".pill").forEach((x) => x.classList.remove("active"));
     p.classList.add("active");
     currentWindow = +p.getAttribute("data-days");
-    activeDayKey = null;
+    expandedDays = {}; openRuns = new Set();
     render();
   });
 });
