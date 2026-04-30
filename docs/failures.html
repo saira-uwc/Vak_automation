@@ -3,218 +3,348 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>QA Downtime Report</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<title>QA Downtime Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
 <style>
-  * { box-sizing: border-box; }
   :root {
-    --bg-base: #0a0e1a;
-    --bg-grad: radial-gradient(ellipse 80% 50% at 30% -10%, rgba(124,58,237,0.13), transparent 55%),
-               radial-gradient(ellipse 60% 40% at 100% 0%, rgba(220,38,38,0.10), transparent 55%),
-               #0a0e1a;
-    --surface: #111727;
-    --surface-2: #161e30;
-    --surface-3: #1c2640;
-    --line: #1f2a44;
-    --line-2: #2a3856;
-    --text: #f1f5f9;
-    --text-2: #cbd5e1;
-    --muted: #94a3b8;
-    --faint: #64748b;
-    --brand: #a78bfa;
-    --brand-2: #c4b5fd;
-    --brand-glow: rgba(167,139,250,0.22);
-    --ok: #10b981;
-    --ok-soft: rgba(16,185,129,0.10);
-    --ok-line: rgba(16,185,129,0.30);
-    --warn: #f59e0b;
-    --warn-soft: rgba(245,158,11,0.10);
-    --warn-line: rgba(245,158,11,0.32);
-    --err: #ef4444;
-    --err-bright: #f87171;
-    --err-soft: rgba(239,68,68,0.10);
-    --err-line: rgba(239,68,68,0.32);
-    --shadow-card: 0 1px 0 rgba(255,255,255,0.03) inset, 0 0 0 1px var(--line);
+    --bg-primary: #0c0d14;
+    --bg-secondary: #141522;
+    --bg-card: #1a1b2a;
+    --bg-card-hover: #1f2037;
+    --border: #26283a;
+    --text-primary: #f8fafc;
+    --text-muted: #9ca3af;
+    --text-dimmed: #6b7280;
+    --accent: #8b5cf6;
+    --accent-soft: rgba(139, 92, 246, 0.2);
+    --green: #22c55e;
+    --green-soft: rgba(34, 197, 94, 0.15);
+    --red: #ef4444;
+    --red-soft: rgba(239, 68, 68, 0.15);
+    --amber: #f59e0b;
+    --amber-soft: rgba(245, 158, 11, 0.15);
+    --radius: 16px;
+    --radius-sm: 8px;
+    --shadow: 0 10px 30px rgba(0,0,0,.35);
   }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
-    margin: 0; padding: 0;
-    background: var(--bg-grad); background-attachment: fixed;
-    color: var(--text);
-    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    font-size: 14px; line-height: 1.55;
-    -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+    font-family: 'Inter', system-ui, Arial, sans-serif;
+    background: radial-gradient(ellipse at 20% 0%, #1a1830 0%, #0c0d14 50%, #090a10 100%);
+    color: var(--text-primary);
+    min-height: 100vh;
+    line-height: 1.5;
   }
-  .mono { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace; }
-  .wrap { max-width: 920px; margin: 0 auto; padding: 22px 22px 80px; }
 
-  /* === Header === */
-  .topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 4px 0 16px; border-bottom: 1px solid var(--line); margin-bottom: 16px; flex-wrap: wrap; }
-  .topbar h1 { margin: 0; font-size: 22px; font-weight: 800; letter-spacing: -0.02em; background: linear-gradient(180deg,#fff,#cbd5e1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: flex; align-items: center; gap: 10px; }
-  .topbar h1 .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--err-bright); box-shadow: 0 0 0 4px rgba(239,68,68,0.18), 0 0 14px var(--err); animation: pulse 2.4s ease-in-out infinite; }
-  @keyframes pulse { 0%,100% { box-shadow: 0 0 0 3px rgba(239,68,68,0.12), 0 0 12px var(--err); } 50% { box-shadow: 0 0 0 6px rgba(239,68,68,0.20), 0 0 20px var(--err); } }
-  .topbar .right { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-  .last-fetched { font-size: 11px; color: var(--faint); }
-  .last-fetched .v { color: var(--text-2); font-weight: 500; font-variant-numeric: tabular-nums; }
-  .pills { display: flex; gap: 2px; background: var(--surface); border: 1px solid var(--line); padding: 2px; border-radius: 8px; }
-  .pill { background: transparent; border: 0; color: var(--muted); padding: 5px 11px; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.15s; font-family: inherit; }
-  .pill:hover { color: var(--text); background: rgba(255,255,255,0.04); }
-  .pill.active { background: linear-gradient(180deg, rgba(167,139,250,0.22), rgba(167,139,250,0.08)); color: var(--brand-2); box-shadow: 0 0 0 1px rgba(167,139,250,0.4) inset; }
-  .refresh { background: var(--surface); border: 1px solid var(--line); color: var(--muted); padding: 5px 11px; border-radius: 8px; font-size: 11px; font-weight: 600; cursor: pointer; font-family: inherit; display: inline-flex; align-items: center; gap: 5px; transition: all 0.15s; }
-  .refresh:hover { color: var(--text); border-color: var(--line-2); }
-  .refresh .arrow { display: inline-block; transition: transform 0.4s ease; }
-  .refresh.spinning .arrow { animation: spin 0.6s linear infinite; }
+  /* === Header (matches common theme) === */
+  .header {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(12, 13, 20, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 28px;
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 12px;
+  }
+  .header-left { display: flex; align-items: center; gap: 14px; }
+  .logo {
+    width: 36px; height: 36px; border-radius: 10px;
+    background: linear-gradient(135deg, var(--accent), #6d28d9);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 16px; color: #fff;
+  }
+  .header h1 { font-size: 17px; font-weight: 700; }
+  .header-sub { font-size: 12px; color: var(--text-muted); }
+  .header-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .last-run {
+    font-size: 12px; color: var(--text-muted);
+    background: var(--bg-card); padding: 6px 12px; border-radius: 20px;
+    border: 1px solid var(--border);
+  }
+  .last-run strong { color: var(--text-primary); font-weight: 600; }
+  .pills { display: flex; gap: 4px; background: var(--bg-card); border: 1px solid var(--border); padding: 3px; border-radius: 20px; }
+  .pill-btn {
+    background: transparent; border: 0; color: var(--text-muted);
+    padding: 5px 12px; border-radius: 16px; font-size: 12px; font-weight: 600;
+    cursor: pointer; transition: all .15s; font-family: inherit;
+  }
+  .pill-btn:hover { color: var(--text-primary); }
+  .pill-btn.active { background: var(--accent-soft); color: var(--accent); }
+  .btn-refresh {
+    background: var(--accent); color: #fff; border: none;
+    padding: 7px 14px; border-radius: var(--radius-sm);
+    font-size: 12px; font-weight: 600; cursor: pointer;
+    transition: opacity .2s; display: inline-flex; align-items: center; gap: 6px;
+  }
+  .btn-refresh:hover { opacity: 0.9; }
+  .btn-refresh .arrow { display: inline-block; transition: transform .4s; }
+  .btn-refresh.spinning .arrow { animation: spin .6s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  /* === Stats === */
-  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 18px; }
-  .stat { background: var(--surface); border-radius: 10px; padding: 12px 14px; box-shadow: var(--shadow-card); display: flex; align-items: center; gap: 12px; min-width: 0; }
-  .stat .ic { width: 8px; height: 8px; border-radius: 50%; background: var(--faint); flex-shrink: 0; }
-  .stat .text { display: flex; flex-direction: column; min-width: 0; }
-  .stat .l { font-size: 10px; font-weight: 700; letter-spacing: 0.6px; color: var(--faint); text-transform: uppercase; }
-  .stat .v { font-size: 22px; font-weight: 800; line-height: 1.05; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; margin-top: 2px; }
-  .stat .v .of { font-size: 13px; font-weight: 600; color: var(--faint); margin-left: 4px; }
-  .stat.danger .v { color: var(--err-bright); }
-  .stat.danger .ic { background: var(--err); box-shadow: 0 0 8px var(--err); }
-  .stat.ok .v { color: var(--ok); }
-  .stat.ok .ic { background: var(--ok); box-shadow: 0 0 8px var(--ok); }
-  .stat.brand .v { color: var(--brand-2); }
-  .stat.brand .ic { background: var(--brand); box-shadow: 0 0 8px var(--brand); }
-  @media (max-width: 720px) { .stats { grid-template-columns: repeat(2, 1fr); } }
+  /* === Main === */
+  .main { padding: 24px 28px 60px; max-width: 1240px; margin: 0 auto; }
+
+  /* === Stats grid (matches common theme) === */
+  .stats-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;
+    margin-bottom: 24px;
+  }
+  .stat-card {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 20px;
+    box-shadow: var(--shadow); transition: transform .2s, border-color .2s;
+  }
+  .stat-card:hover { transform: translateY(-2px); border-color: var(--accent); }
+  .stat-label {
+    font-size: 12px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: .5px; color: var(--text-muted); margin-bottom: 8px;
+  }
+  .stat-value { font-size: 28px; font-weight: 700; }
+  .stat-value.green { color: var(--green); }
+  .stat-value.red { color: var(--red); }
+  .stat-value.amber { color: var(--amber); }
+  .stat-value.accent { color: var(--accent); }
+  .stat-sub { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
 
   /* === Healthy strip === */
-  .healthy { background: linear-gradient(180deg, rgba(16,185,129,0.05), rgba(16,185,129,0.01)); border: 1px solid var(--ok-line); border-radius: 12px; padding: 11px 16px; margin-bottom: 18px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-  .healthy .h-label { font-size: 11px; font-weight: 700; letter-spacing: 0.6px; color: var(--ok); text-transform: uppercase; }
-  .healthy .h-pill { background: var(--surface); border: 1px solid var(--ok-line); color: var(--text-2); padding: 5px 12px; border-radius: 999px; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; gap: 7px; }
-  .healthy .h-pill::before { content: "✓"; color: var(--ok); font-weight: 800; }
-  .healthy .h-pill .num { color: var(--faint); font-weight: 500; font-size: 11px; }
-
-  /* === Project sections === */
-  .section-label {
-    font-size: 11px; font-weight: 700; letter-spacing: 1px; color: var(--faint);
-    text-transform: uppercase; margin: 24px 0 12px; padding-left: 4px;
+  .healthy {
+    background: var(--bg-card); border: 1px solid var(--green);
+    border-radius: var(--radius); padding: 14px 18px;
+    margin-bottom: 24px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+    box-shadow: var(--shadow);
   }
-  .section-label .count { color: var(--err-bright); margin-left: 6px; }
+  .healthy-label { font-size: 12px; font-weight: 700; color: var(--green); text-transform: uppercase; letter-spacing: .5px; }
+  .healthy-pill {
+    background: var(--green-soft); color: var(--green);
+    padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .healthy-pill::before { content: "✓"; font-weight: 700; }
+  .healthy-pill .num { color: var(--text-muted); font-weight: 500; font-size: 11px; }
 
-  .proj { background: var(--surface); border-radius: 14px; box-shadow: var(--shadow-card); margin-bottom: 14px; overflow: hidden; }
+  /* === Section title (matches common theme) === */
+  .section-title {
+    font-size: 16px; font-weight: 700; margin: 28px 0 16px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .section-title::before {
+    content: ''; width: 4px; height: 20px;
+    background: var(--accent); border-radius: 2px;
+  }
+  .section-title .count {
+    color: var(--text-muted); font-weight: 500; font-size: 13px;
+    margin-left: 4px;
+  }
 
-  .proj-head { padding: 16px 20px 14px; display: flex; align-items: flex-start; gap: 16px; border-bottom: 1px solid var(--line); }
+  /* === Project card === */
+  .proj {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--radius); margin-bottom: 16px; overflow: hidden;
+    box-shadow: var(--shadow); transition: border-color .2s;
+  }
+  .proj:hover { border-color: var(--bg-card-hover); }
+  .proj.danger:hover { border-color: var(--red); }
+  .proj.warn:hover { border-color: var(--amber); }
+
+  .proj-head {
+    padding: 18px 22px; display: flex; align-items: center; gap: 16px;
+    border-bottom: 1px solid var(--border); background: var(--bg-secondary);
+    flex-wrap: wrap;
+  }
   .proj-num {
-    flex-shrink: 0; width: 44px; height: 44px; border-radius: 12px;
+    flex-shrink: 0; width: 48px; height: 48px; border-radius: 12px;
     display: flex; align-items: center; justify-content: center;
-    font-family: "JetBrains Mono", monospace; font-size: 18px; font-weight: 800;
-    letter-spacing: -0.02em;
+    font-family: 'Fira Code', monospace; font-size: 20px; font-weight: 700;
   }
-  .proj-num.danger { background: linear-gradient(180deg, rgba(239,68,68,0.20), rgba(239,68,68,0.05)); color: var(--err-bright); border: 1px solid var(--err-line); box-shadow: inset 0 0 18px rgba(239,68,68,0.16); }
-  .proj-num.warn { background: linear-gradient(180deg, rgba(245,158,11,0.18), rgba(245,158,11,0.04)); color: var(--warn); border: 1px solid var(--warn-line); }
-  .proj-num.error { background: var(--surface-2); color: var(--muted); border: 1px solid var(--line); }
+  .proj-num.danger { background: var(--red-soft); color: var(--red); border: 1px solid rgba(239,68,68,0.32); }
+  .proj-num.warn { background: var(--amber-soft); color: var(--amber); border: 1px solid rgba(245,158,11,0.32); }
+  .proj-num.error { background: var(--bg-card); color: var(--text-muted); border: 1px solid var(--border); }
   .proj-info { flex: 1; min-width: 0; }
-  .proj-name { font-size: 17px; font-weight: 800; color: var(--text); letter-spacing: -0.01em; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-  .proj-name .dlink { font-size: 11px; font-weight: 600; color: var(--brand); text-decoration: none; padding: 3px 8px; border-radius: 5px; }
-  .proj-name .dlink:hover { background: var(--brand-glow); }
-  .proj-summary { font-size: 13px; color: var(--muted); margin-top: 4px; }
-  .proj-summary strong { color: var(--err-bright); font-weight: 700; }
-  .proj-summary .every { color: var(--err-bright); font-weight: 700; padding: 1px 7px; background: var(--err-soft); border-radius: 4px; margin-left: 6px; font-size: 11px; }
-
-  /* Compact 30-day strip per project */
-  .strip { display: flex; gap: 2px; align-items: stretch; padding: 12px 20px 10px; }
-  .strip-cell { flex: 1; min-width: 7px; height: 18px; border-radius: 3px; background: #1a2236; transition: transform 0.12s; }
-  .strip-cell.has-run.all-pass { background: linear-gradient(180deg, #10b981, #059669); }
-  .strip-cell.has-run.some-fail { background: linear-gradient(180deg, #f59e0b, #d97706); }
-  .strip-cell.has-run.all-fail { background: linear-gradient(180deg, #ef4444, #b91c1c); }
-  .strip-cell.is-today { box-shadow: 0 0 0 1.5px var(--brand); z-index: 1; }
-  .strip-cell:hover { transform: scaleY(1.3); }
-  .strip-axis { display: flex; justify-content: space-between; padding: 0 20px 10px; font-size: 10px; color: var(--faint); font-weight: 500; }
-
-  /* Body: list of downtime days */
-  .proj-body { padding: 4px 20px 18px; }
-
-  .day { padding: 12px 0; border-top: 1px solid var(--line); }
-  .day:first-child { border-top: 0; padding-top: 6px; }
-  .day-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 10px; flex-wrap: wrap; }
-  .day-bullet { width: 8px; height: 8px; border-radius: 50%; background: var(--err); box-shadow: 0 0 7px var(--err); flex-shrink: 0; align-self: center; }
-  .day-date { font-size: 14px; font-weight: 700; color: var(--text); letter-spacing: -0.01em; }
-  .day-rel {
-    font-size: 9px; font-weight: 700; color: var(--brand-2); letter-spacing: 0.6px; text-transform: uppercase;
-    background: var(--brand-glow); padding: 2px 7px; border-radius: 999px;
+  .proj-name {
+    font-size: 17px; font-weight: 700; color: var(--text-primary);
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
   }
-  .day-rel.faint { color: var(--faint); background: rgba(148,163,184,0.08); }
-  .day-counts { margin-left: auto; font-size: 12px; color: var(--err-bright); font-weight: 700; }
-  .day-counts .sub { color: var(--faint); font-weight: 500; margin-left: 2px; }
+  .proj-name .dlink {
+    font-size: 12px; font-weight: 600; color: var(--accent);
+    text-decoration: none; padding: 3px 9px; border-radius: 6px;
+    background: var(--accent-soft); transition: opacity .15s;
+  }
+  .proj-name .dlink:hover { opacity: 0.85; }
+  .proj-summary { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+  .proj-summary .num { color: var(--text-primary); font-weight: 700; }
+  .proj-summary .num.red { color: var(--red); }
+  .every-fail-tag {
+    color: var(--red); font-weight: 700; padding: 2px 8px;
+    background: var(--red-soft); border-radius: 6px; font-size: 11px;
+    margin-left: 8px; text-transform: uppercase; letter-spacing: .3px;
+  }
 
-  /* Time pills + drilldown */
-  .times { display: flex; gap: 6px; flex-wrap: wrap; padding-left: 22px; }
+  /* Strip (compact 30-day) */
+  .strip-wrap { padding: 14px 22px 0; }
+  .strip-axis-top {
+    font-size: 11px; font-weight: 600; color: var(--text-dimmed);
+    text-transform: uppercase; letter-spacing: .5px; margin-bottom: 8px;
+  }
+  .strip { display: flex; gap: 3px; align-items: stretch; }
+  .strip-cell {
+    flex: 1; min-width: 8px; height: 22px; border-radius: 4px;
+    background: var(--border); transition: transform .12s;
+  }
+  .strip-cell.has-run.all-pass { background: var(--green); }
+  .strip-cell.has-run.some-fail { background: var(--amber); }
+  .strip-cell.has-run.all-fail { background: var(--red); }
+  .strip-cell.is-today { box-shadow: 0 0 0 2px var(--accent); z-index: 1; }
+  .strip-cell:hover { transform: scaleY(1.3); }
+  .strip-axis {
+    display: flex; justify-content: space-between; padding-top: 6px;
+    font-size: 10px; color: var(--text-dimmed); font-weight: 500;
+  }
+
+  /* Body: downtime day list */
+  .proj-body { padding: 12px 22px 22px; }
+
+  .day { padding: 14px 0; border-top: 1px solid var(--border); }
+  .day:first-child { border-top: 0; padding-top: 8px; }
+  .day-head { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .day-bullet {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: var(--red); box-shadow: 0 0 8px var(--red);
+    flex-shrink: 0;
+  }
+  .day-date { font-size: 14px; font-weight: 700; color: var(--text-primary); }
+  .day-rel {
+    font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 12px;
+    background: var(--accent-soft); color: var(--accent);
+    text-transform: uppercase; letter-spacing: .3px;
+  }
+  .day-rel.faint { background: var(--bg-card-hover); color: var(--text-muted); }
+  .day-counts {
+    margin-left: auto; font-size: 12px; color: var(--red); font-weight: 700;
+    background: var(--red-soft); padding: 4px 10px; border-radius: 12px;
+  }
+  .day-counts .sub { color: var(--text-muted); font-weight: 500; margin-left: 3px; }
+
+  /* Time pills */
+  .times { display: flex; gap: 8px; flex-wrap: wrap; padding-left: 22px; }
   .time-pill {
     display: inline-flex; align-items: center; gap: 8px;
-    background: var(--surface-2); border: 1px solid var(--err-line);
-    color: var(--err-bright); padding: 6px 12px;
-    border-radius: 7px; font-family: "JetBrains Mono", monospace;
-    font-weight: 600; font-size: 12px; cursor: pointer;
-    transition: all 0.12s; user-select: none;
+    background: var(--bg-secondary); border: 1px solid var(--border);
+    color: var(--text-primary); padding: 8px 14px;
+    border-radius: 10px; cursor: pointer;
+    transition: all .15s; user-select: none;
   }
-  .time-pill:hover { border-color: var(--err); background: rgba(239,68,68,0.10); }
-  .time-pill.is-open { background: rgba(239,68,68,0.12); border-color: var(--err); }
-  .time-pill .counts { font-family: "Inter", sans-serif; color: var(--text); font-weight: 500; font-size: 11px; }
-  .time-pill .counts strong { color: var(--err-bright); font-weight: 800; }
+  .time-pill:hover { border-color: var(--accent); }
+  .time-pill.is-open { border-color: var(--accent); background: var(--bg-card-hover); }
+  .time-pill .t-time {
+    font-family: 'Fira Code', monospace; font-weight: 600;
+    color: var(--red); font-size: 12px;
+  }
+  .time-pill .t-counts { font-size: 12px; color: var(--text-muted); font-weight: 500; }
+  .time-pill .t-counts strong { color: var(--red); font-weight: 700; }
+  .time-pill .t-chevron { color: var(--text-dimmed); font-size: 10px; transition: transform .15s; }
+  .time-pill.is-open .t-chevron { transform: rotate(90deg); color: var(--accent); }
 
+  /* Run detail (uses run-card style) */
   .run-detail {
-    display: none; margin: 10px 0 4px 22px;
-    padding: 12px 14px; background: var(--surface-2); border: 1px solid var(--line); border-radius: 8px;
+    margin: 12px 0 6px 22px;
+    background: var(--bg-secondary); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); padding: 14px 16px;
   }
-  .run-detail.is-open { display: block; }
-  .run-detail-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; font-size: 12px; margin-bottom: 8px; }
-  .run-detail-row .label { font-size: 10px; font-weight: 700; color: var(--faint); letter-spacing: 0.6px; text-transform: uppercase; }
-  .run-detail-row .pass { font-size: 11px; color: var(--faint); }
-  .run-detail-row .extra { font-size: 11px; color: var(--muted); padding: 2px 7px; background: var(--surface-3); border-radius: 4px; }
+  .run-detail-row {
+    display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+    font-size: 12px; margin-bottom: 10px; padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .run-detail-row .label {
+    font-size: 10px; font-weight: 700; color: var(--text-dimmed);
+    letter-spacing: .5px; text-transform: uppercase;
+  }
+  .run-detail-row .pass-rate { font-family: 'Fira Code', monospace; color: var(--text-muted); font-size: 11px; }
+  .run-detail-row .extra-chip {
+    font-size: 11px; padding: 3px 9px; border-radius: 12px;
+    background: var(--accent-soft); color: var(--accent);
+    font-family: 'Fira Code', monospace;
+  }
 
   .fails-list { margin: 0; padding: 0; list-style: none; }
-  .fails-list li { padding: 6px 0; border-top: 1px dashed var(--line); }
+  .fails-list li { padding: 8px 0; border-top: 1px dashed var(--border); }
   .fails-list li:first-child { border-top: 0; padding-top: 0; }
-  .ftitle { color: var(--text-2); font-weight: 600; font-size: 12px; }
-  .fmod { color: var(--brand-2); font-size: 9px; margin-left: 6px; padding: 1px 6px; background: var(--brand-glow); border-radius: 4px; font-weight: 600; letter-spacing: 0.2px; }
-  .ferr { color: var(--faint); font-size: 11px; margin-top: 3px; word-break: break-word; line-height: 1.4; font-family: "JetBrains Mono", monospace; max-height: 36px; overflow: hidden; }
-  .fno-detail { color: var(--faint); font-style: italic; font-size: 11px; }
-
-  .show-more {
-    padding: 10px 0 4px; text-align: center;
+  .ftitle { color: var(--text-primary); font-weight: 600; font-size: 13px; }
+  .fmod {
+    color: var(--accent); font-size: 10px; margin-left: 8px;
+    padding: 2px 7px; background: var(--accent-soft); border-radius: 6px;
+    font-weight: 600; letter-spacing: .2px;
   }
+  .ferr {
+    color: var(--text-muted); font-size: 11px; margin-top: 4px;
+    word-break: break-word; line-height: 1.5;
+    font-family: 'Fira Code', monospace; max-height: 38px; overflow: hidden;
+  }
+  .fno-detail {
+    color: var(--text-dimmed); font-style: italic; font-size: 12px;
+    padding: 4px 0;
+  }
+
+  /* Show more button */
+  .show-more { padding: 14px 0 4px; text-align: center; }
   .show-more button {
-    background: var(--surface-2); border: 1px solid var(--line); color: var(--brand-2);
-    padding: 7px 14px; border-radius: 8px; font-size: 11px; font-weight: 700;
-    cursor: pointer; font-family: inherit;
+    background: var(--bg-secondary); color: var(--accent); border: 1px solid var(--border);
+    padding: 8px 16px; border-radius: var(--radius-sm);
+    font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit;
+    transition: all .15s;
   }
-  .show-more button:hover { border-color: var(--line-2); background: var(--surface-3); }
+  .show-more button:hover { border-color: var(--accent); }
 
-  .empty-line { padding: 20px; font-size: 13px; color: var(--muted); text-align: center; }
-  .empty-line.ok { color: var(--ok); font-weight: 600; }
-  .loading { text-align: center; padding: 80px 20px; color: var(--faint); font-size: 13px; }
-  .loading .spinner { display: inline-block; width: 26px; height: 26px; border: 2px solid var(--line-2); border-top-color: var(--brand); border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 12px; }
+  /* Loading & empty */
+  .loading { display: flex; align-items: center; justify-content: center; min-height: 300px; flex-direction: column; gap: 14px; }
+  .spinner { width: 36px; height: 36px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin .8s linear infinite; }
+  .empty-line { padding: 22px; text-align: center; color: var(--text-muted); font-size: 14px; }
+  .empty-line.ok { color: var(--green); font-weight: 600; }
 
-  .footer { margin-top: 30px; text-align: center; font-size: 11px; color: var(--faint); }
+  .footer {
+    margin-top: 32px; text-align: center; font-size: 12px;
+    color: var(--text-dimmed);
+  }
+  .footer a { color: var(--accent); text-decoration: none; }
+  .footer a:hover { text-decoration: underline; }
+
+  @media (max-width: 900px) {
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .header { padding: 12px 16px; }
+    .main { padding: 18px 16px 60px; }
+  }
+  @media (max-width: 600px) {
+    .stats-grid { grid-template-columns: 1fr; }
+  }
 </style>
 </head>
 <body>
-<div class="wrap">
-  <header class="topbar">
-    <h1><span class="dot"></span>QA Downtime Report</h1>
-    <div class="right">
-      <div class="last-fetched">Last fetched: <span class="v" id="lastFetched">…</span></div>
-      <div class="pills">
-        <button class="pill" data-days="7">7d</button>
-        <button class="pill active" data-days="30">30d</button>
-        <button class="pill" data-days="60">60d</button>
-        <button class="pill" data-days="90">90d</button>
-      </div>
-      <button class="refresh" id="refreshBtn"><span class="arrow">↻</span> Refresh</button>
+
+<div class="header">
+  <div class="header-left">
+    <div class="logo">⚠</div>
+    <div>
+      <h1>QA Downtime Tracker</h1>
+      <div class="header-sub">Failed runs across all automation projects</div>
     </div>
-  </header>
+  </div>
+  <div class="header-right">
+    <span class="last-run" id="lastRun">Loading...</span>
+    <div class="pills">
+      <button class="pill-btn" data-days="7">7d</button>
+      <button class="pill-btn active" data-days="30">30d</button>
+      <button class="pill-btn" data-days="60">60d</button>
+      <button class="pill-btn" data-days="90">90d</button>
+    </div>
+    <button class="btn-refresh" id="refreshBtn"><span class="arrow">↻</span> Refresh</button>
+  </div>
+</div>
 
-  <div class="stats" id="statsBar"></div>
-
-  <div id="content"><div class="loading"><div class="spinner"></div>Loading project feeds…</div></div>
-
-  <div class="footer">Click any time pill to see exactly which tests failed in that run</div>
+<div class="main">
+  <div class="stats-grid" id="statsGrid"></div>
+  <div id="content"><div class="loading"><div class="spinner"></div><span style="color:var(--text-muted);font-size:14px;">Loading project feeds...</span></div></div>
+  <div class="footer">Click any time pill to expand the failed tests for that run · <a href="./">Back to Vak Dashboard</a></div>
 </div>
 
 <script>
@@ -233,8 +363,8 @@ const IST_OFFSET_MS = 5.5 * 3600 * 1000;
 const DEFAULT_VISIBLE_DAYS = 5;
 let currentWindow = 30;
 let cache = null;
-let expandedDays = {}; // projectIdx -> bool (show all days)
-let openRuns = new Set(); // "projectIdx-runIdx"
+let expandedDays = {};
+let openRuns = new Set();
 
 function parseToDate(ts) {
   if (!ts) return null;
@@ -381,7 +511,7 @@ function render() {
             <div class="proj-num error">!</div>
             <div class="proj-info">
               <div class="proj-name">${esc(project.name)}</div>
-              <div class="proj-summary">Could not load feed — <span class="mono">${esc(error)}</span></div>
+              <div class="proj-summary">Could not load feed — <span style="font-family:'Fira Code',monospace;">${esc(error)}</span></div>
             </div>
           </div>
         </div>`);
@@ -422,11 +552,14 @@ function render() {
       const timesHtml = list.map((r) => {
         const runKey = `${idx}-${r._id}`;
         const isOpen = openRuns.has(runKey);
-        return `<span class="time-pill ${isOpen ? "is-open" : ""}" data-run="${esc(runKey)}">${esc(fmtTime(r._date))} <span class="counts"><strong>${r.failed}</strong>/${r.total}</span></span>`;
+        return `<span class="time-pill ${isOpen ? "is-open" : ""}" data-run="${esc(runKey)}">
+          <span class="t-time">${esc(fmtTime(r._date))}</span>
+          <span class="t-counts"><strong>${r.failed}</strong>/${r.total} failed</span>
+          <span class="t-chevron">▸</span>
+        </span>`;
       }).join("");
 
-      // Render expanded run details for any open run on this day
-      const detailsHtml = list.filter((r) => openRuns.has(`${idx}-${r._id}`)).map((r) => renderRunDetail(r, idx)).join("");
+      const detailsHtml = list.filter((r) => openRuns.has(`${idx}-${r._id}`)).map((r) => renderRunDetail(r)).join("");
 
       return `
         <div class="day">
@@ -450,16 +583,19 @@ function render() {
     const stripCells = buildStripCells(inWindow, stripDays);
 
     failingHtml.push(`
-      <div class="proj">
+      <div class="proj ${sev}">
         <div class="proj-head">
           <div class="proj-num ${sev === "danger" ? "danger" : "warn"}">${dateKeys.length}</div>
           <div class="proj-info">
             <div class="proj-name">${esc(project.name)} <a class="dlink" href="${esc(project.dashboard)}" target="_blank" rel="noopener">↗ open dashboard</a></div>
-            <div class="proj-summary">Down on <strong>${dateKeys.length}</strong> day${dateKeys.length === 1 ? "" : "s"} · <strong>${failedRuns.length}</strong> of ${inWindow.length} run${inWindow.length === 1 ? "" : "s"} failed · ${failedTestsCount} test${failedTestsCount === 1 ? "" : "s"} broken${everyFailed ? `<span class="every">every run failed</span>` : ""}</div>
+            <div class="proj-summary">Down on <span class="num red">${dateKeys.length}</span> day${dateKeys.length === 1 ? "" : "s"} · <span class="num">${failedRuns.length}</span> of ${inWindow.length} run${inWindow.length === 1 ? "" : "s"} failed · <span class="num">${failedTestsCount}</span> test${failedTestsCount === 1 ? "" : "s"} broken${everyFailed ? `<span class="every-fail-tag">every run failed</span>` : ""}</div>
           </div>
         </div>
-        <div class="strip">${stripCells.map((c) => `<div class="${c.cls}" title="${esc(c.tip)}"></div>`).join("")}</div>
-        <div class="strip-axis"><span>${esc(stripCells[0].key)}</span><span>${esc(stripCells[stripCells.length - 1].key)} · today</span></div>
+        <div class="strip-wrap">
+          <div class="strip-axis-top">Last ${stripDays} days · IST</div>
+          <div class="strip">${stripCells.map((c) => `<div class="${c.cls}" title="${esc(c.tip)}"></div>`).join("")}</div>
+          <div class="strip-axis"><span>${esc(stripCells[0].key)}</span><span>${esc(stripCells[stripCells.length - 1].key)} · today</span></div>
+        </div>
         <div class="proj-body">
           ${daysHtml}
           ${showMoreBtn}
@@ -467,23 +603,41 @@ function render() {
       </div>`);
   }
 
-  // Stats
-  document.getElementById("statsBar").innerHTML = `
-    <div class="stat brand"><span class="ic"></span><div class="text"><span class="l">Window</span><span class="v">${currentWindow}d</span></div></div>
-    <div class="stat ${projectsAffected > 0 ? "danger" : "ok"}"><span class="ic"></span><div class="text"><span class="l">Projects with downtime</span><span class="v">${projectsAffected}<span class="of">/${PROJECTS.length}</span></span></div></div>
-    <div class="stat ${totalFailedRuns > 0 ? "danger" : "ok"}"><span class="ic"></span><div class="text"><span class="l">Failed runs</span><span class="v">${totalFailedRuns}</span></div></div>
-    <div class="stat ${totalFailedTests > 0 ? "danger" : "ok"}"><span class="ic"></span><div class="text"><span class="l">Failed tests</span><span class="v">${totalFailedTests}</span></div></div>
+  // Stats grid (matches common theme)
+  document.getElementById("statsGrid").innerHTML = `
+    <div class="stat-card">
+      <div class="stat-label">Window</div>
+      <div class="stat-value accent">${currentWindow}d</div>
+      <div class="stat-sub">Last ${currentWindow} days · IST</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Projects with downtime</div>
+      <div class="stat-value ${projectsAffected > 0 ? "red" : "green"}">${projectsAffected}<span style="color:var(--text-muted);font-size:18px;font-weight:600;">/${PROJECTS.length}</span></div>
+      <div class="stat-sub">${projectsAffected === 0 ? "all healthy" : "need attention"}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Failed runs</div>
+      <div class="stat-value ${totalFailedRuns > 0 ? "red" : "green"}">${totalFailedRuns}</div>
+      <div class="stat-sub">across all projects</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Failed tests</div>
+      <div class="stat-value ${totalFailedTests > 0 ? "red" : "green"}">${totalFailedTests}</div>
+      <div class="stat-sub">total individual failures</div>
+    </div>
   `;
 
   // Healthy strip
   let healthyHtml = "";
   if (healthy.length) {
-    const items = healthy.map((h) => `<span class="h-pill">${esc(h.project.name)} <span class="num">${h.runs} run${h.runs === 1 ? "" : "s"}</span></span>`).join("");
-    healthyHtml = `<div class="healthy"><span class="h-label">All passing · ${healthy.length}</span>${items}</div>`;
+    const items = healthy.map((h) => `<span class="healthy-pill">${esc(h.project.name)} <span class="num">${h.runs} run${h.runs === 1 ? "" : "s"}</span></span>`).join("");
+    healthyHtml = `<div class="healthy"><span class="healthy-label">All passing · ${healthy.length}</span>${items}</div>`;
   }
 
   let header = "";
-  if (failingHtml.length > 0) header = `<div class="section-label">Projects with downtime <span class="count">· ${projectsAffected}</span></div>`;
+  if (failingHtml.length > 0) {
+    header = `<div class="section-title">Projects with Downtime <span class="count">· ${projectsAffected} of ${PROJECTS.length}</span></div>`;
+  }
 
   document.getElementById("content").innerHTML =
     healthyHtml +
@@ -493,7 +647,7 @@ function render() {
   bindHandlers();
 }
 
-function renderRunDetail(r, projIdx) {
+function renderRunDetail(r) {
   let extra = "";
   if (r.avgLatencyMs != null) extra = `avg latency ${(r.avgLatencyMs / 1000).toFixed(1)}s`;
   else if (r.timeSavedPercent != null) extra = `time saved ${r.timeSavedPercent}%`;
@@ -510,11 +664,11 @@ function renderRunDetail(r, projIdx) {
   }
 
   return `
-    <div class="run-detail is-open">
+    <div class="run-detail">
       <div class="run-detail-row">
         <span class="label">Run @ ${esc(fmtTime(r._date))}</span>
-        <span class="pass">${r.passRate}% pass</span>
-        ${extra ? `<span class="extra">${esc(extra)}</span>` : ""}
+        <span class="pass-rate">${r.passRate}% pass rate</span>
+        ${extra ? `<span class="extra-chip">${esc(extra)}</span>` : ""}
       </div>
       ${body}
     </div>`;
@@ -544,18 +698,18 @@ function esc(s) {
 async function load() {
   const refreshBtn = document.getElementById("refreshBtn");
   refreshBtn.classList.add("spinning");
-  document.getElementById("content").innerHTML = '<div class="loading"><div class="spinner"></div>Loading project feeds…</div>';
-  document.getElementById("lastFetched").textContent = "…";
+  document.getElementById("content").innerHTML = '<div class="loading"><div class="spinner"></div><span style="color:var(--text-muted);font-size:14px;">Loading project feeds...</span></div>';
+  document.getElementById("lastRun").textContent = "Loading...";
   cache = await fetchAll();
-  document.getElementById("lastFetched").textContent = new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata", day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit", hour12: true }) + " IST";
+  document.getElementById("lastRun").innerHTML = `Last fetched <strong>${new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata", day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit", hour12: true })} IST</strong>`;
   expandedDays = {}; openRuns = new Set();
   render();
   setTimeout(() => refreshBtn.classList.remove("spinning"), 400);
 }
 
-document.querySelectorAll(".pill").forEach((p) => {
+document.querySelectorAll(".pill-btn").forEach((p) => {
   p.addEventListener("click", () => {
-    document.querySelectorAll(".pill").forEach((x) => x.classList.remove("active"));
+    document.querySelectorAll(".pill-btn").forEach((x) => x.classList.remove("active"));
     p.classList.add("active");
     currentWindow = +p.getAttribute("data-days");
     expandedDays = {}; openRuns = new Set();
