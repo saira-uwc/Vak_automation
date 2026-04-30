@@ -10,13 +10,33 @@ import base64
 import json
 import hashlib
 import shutil
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 DOCS_DIR = Path(__file__).parent / "docs"
 AUDIO_DIR = DOCS_DIR / "audio"
 DATA_FILE = DOCS_DIR / "data.json"
 TEST_OUTPUT_DIR = Path(__file__).parent / "test_output"
+
+RETENTION_DAYS = 30
+IST = timezone(timedelta(hours=5, minutes=30))
+
+
+def _parse_run_ts(ts: str) -> datetime | None:
+    """Parse a run timestamp into an IST datetime. Returns None if unparseable."""
+    if not ts:
+        return None
+    try:
+        if ts.endswith("Z"):
+            return datetime.fromisoformat(ts.replace("Z", "+00:00")).astimezone(IST)
+        if "IST" in ts:
+            return datetime.strptime(ts.replace(" IST", ""), "%Y-%m-%d %H:%M:%S").replace(tzinfo=IST)
+        dt = datetime.fromisoformat(ts)
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=IST)
+        return dt.astimezone(IST)
+    except (ValueError, TypeError):
+        return None
 
 
 def load_existing_data():
@@ -205,7 +225,11 @@ def generate_dashboard(results: list[dict]):
     # Avoid duplicate run_ids
     runs = [r for r in runs if r["run_id"] != run["run_id"]]
     runs.append(run_summary)
-    runs = runs[-100:]  # keep last 100
+
+    # Keep runs from the last RETENTION_DAYS days (drop older entries).
+    # Runs whose timestamp doesn't parse are kept defensively so we don't lose data.
+    cutoff = datetime.now(IST) - timedelta(days=RETENTION_DAYS)
+    runs = [r for r in runs if (_parse_run_ts(r.get("timestamp", "")) or cutoff) >= cutoff]
 
     data = {
         "current": run,
