@@ -129,6 +129,7 @@ def build_run_summary(results: list[dict], audio_map: dict[str, str]) -> dict:
 
     # Build test details
     tests = []
+    failed_tests_meta = []
     for i, r in enumerate(results):
         lat = r.get("latency_ms", 0)
         if lat == "":
@@ -184,6 +185,17 @@ def build_run_summary(results: list[dict], audio_map: dict[str, str]) -> dict:
             test_entry["translated_text"] = r.get("translated_text", "")
 
         tests.append(test_entry)
+        if r["status"] == "FAIL":
+            failed_tests_meta.append({
+                "id": test_entry["id"],
+                "name": test_entry["name"],
+                "category": test_entry["category"],
+                "test_type": r.get("test_type", ""),
+                "input": r.get("input", ""),
+                "source_lang": r.get("source_lang", ""),
+                "target_lang": r.get("target_lang", ""),
+                "error": (r.get("error", "") or "")[:300],
+            })
 
     return {
         "run_id": run_id,
@@ -197,6 +209,7 @@ def build_run_summary(results: list[dict], audio_map: dict[str, str]) -> dict:
         "total_ms": total_ms,
         "categories": categories,
         "tests": tests,
+        "failed_tests": failed_tests_meta,
     }
 
 
@@ -219,6 +232,7 @@ def generate_dashboard(results: list[dict]):
         "failed": run["failed"],
         "pass_rate": run["pass_rate"],
         "avg_latency": run["avg_latency"],
+        "failed_tests": run.get("failed_tests", []),
     }
 
     runs = existing.get("runs", [])

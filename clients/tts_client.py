@@ -1,6 +1,7 @@
 """TTS / Text-to-Speech client."""
 
 import httpx
+import time
 from pathlib import Path
 from dataclasses import dataclass
 
@@ -17,6 +18,12 @@ class TTSClient:
         self.base_url = base_url.rstrip("/")
         self.api_key = api_key
         self.timeout = timeout
+        self.max_retries = 3
+        self.retry_backoff_seconds = 1.0
+
+    @staticmethod
+    def _is_retryable_status(status_code: int) -> bool:
+        return status_code in {408, 425, 429, 500, 502, 503, 504}
 
     def synthesize(
         self,
@@ -28,22 +35,46 @@ class TTSClient:
         output_path: str | Path | None = None,
     ) -> TTSResult:
         """Convert text to speech audio."""
-        resp = httpx.post(
-            f"{self.base_url}/v1/audio/speech",
-            headers={
-                "Authorization": f"Bearer {self.api_key}",
-                "Content-Type": "application/json",
-            },
-            json={
-                "input": text,
-                "voice": voice,
-                "model": model,
-                "language": language,
-                "response_format": response_format,
-            },
-            timeout=self.timeout,
-        )
-        resp.raise_for_status()
+        headers = {
+            "Authorization": f"Bearer {self.api_key}",
+            "Content-Type": "application/json",
+        }
+        payload = {
+            "input": text,
+            "voice": voice,
+            "model": model,
+            "language": language,
+            "response_format": response_format,
+        }
+        last_error: Exception | None = None
+        resp = None
+        for attempt in range(1, self.max_retries + 1):
+            try:
+                resp = httpx.post(
+                    f"{self.base_url}/v1/audio/speech",
+                    headers=headers,
+                    json=payload,
+                    timeout=self.timeout,
+                )
+                resp.raise_for_status()
+                break
+            except httpx.HTTPStatusError as e:
+                last_error = e
+                status = e.response.status_code if e.response is not None else None
+                can_retry = bool(status and self._is_retryable_status(status))
+                if can_retry and attempt < self.max_retries:
+                    time.sleep(self.retry_backoff_seconds * attempt)
+                    continue
+                raise
+            except (httpx.TimeoutException, httpx.TransportError) as e:
+                last_error = e
+                if attempt < self.max_retries:
+                    time.sleep(self.retry_backoff_seconds * attempt)
+                    continue
+                raise RuntimeError(f"TTS transient failure after retries: {e}") from e
+
+        if resp is None:
+            raise RuntimeError(f"TTS call failed: {last_error}")
 
         saved_path = None
         if output_path:
