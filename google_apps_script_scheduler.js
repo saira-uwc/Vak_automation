@@ -18,6 +18,13 @@
  *      Event source: Time-driven
  *      Type: choose your frequency (e.g., every 6 hours)
  *
+ *    IMPORTANT — avoid firing exactly at xx:58 IST:
+ *    Several automations (Asksam, Website, Widget, Console, Zero Indic suites) are
+ *    often scheduled on the same clock minute (:58). That aligns API load and causes
+ *    intermittent failures on shared ASR/Translate/TTS backends. Prefer an odd minute
+ *    offset for this repo (e.g. :03 or :17 past the hour) so Vak does not collide with
+ *    the herd. The runner also staggers CI when it detects the xx:56–:01 IST window.
+ *
  *    Trigger 2 — Send Email (scheduled, after tests):
  *      Function: triggerSendEmail
  *      Event source: Time-driven

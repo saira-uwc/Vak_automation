@@ -9,6 +9,7 @@ Usage:
 
 import base64
 import json
+import os
 import subprocess
 import sys
 import time
@@ -32,6 +33,36 @@ from generate_dashboard import generate_dashboard
 APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxhP5uUl48vWntyM8K7djZPqNwW32UcwbjPK5iNHItr_N6c8qoUP76dZaCMd3THn62Cbw/exec"
 
 IST = timezone(timedelta(hours=5, minutes=30))
+
+# Many schedulers (including sister automations) fire at xx:58 IST, causing API bursts.
+# Spread CI starts so this repo does not align exactly with that minute.
+def _in_xx58_collision_window(now: datetime) -> bool:
+    """True around :56–:01 each hour when jobs aligned to :58 start or finish."""
+    m = now.minute
+    return m >= 56 or m <= 1
+
+
+def _ci_load_spread_delay_sec() -> float:
+    """Optional delay before any API calls when running in GitHub Actions."""
+    if os.environ.get("GITHUB_ACTIONS") != "true":
+        return 0.0
+    override = os.environ.get("VAK_STAGGER_SEC")
+    if override is not None and override.strip() != "":
+        try:
+            return max(0.0, float(override))
+        except ValueError:
+            pass
+    now = datetime.now(IST)
+    in_peak_window = _in_xx58_collision_window(now)
+    rid = os.environ.get("GITHUB_RUN_ID", "0")
+    try:
+        salt = int(rid) % 90
+    except ValueError:
+        salt = 42
+    if in_peak_window:
+        # Stronger spread during the common :58 IST collision window.
+        return 45.0 + float(salt)  # ~45–134s
+    return 12.0 + float(salt % 48)  # ~12–59s otherwise
 
 
 def timestamp():
@@ -251,6 +282,9 @@ def run_pipeline_tests():
                     raise ValueError("Translation returned empty text")
                 row["translated_text"] = tr_result.translated_text[:500]
 
+                # Brief pause before TTS — reduces burst load when many jobs hit APIs at :58 IST.
+                time.sleep(1.5)
+
                 # Step 3: TTS
                 out_path = TEST_OUTPUT_DIR / f"pipeline_{src}_{tgt}_{audio_file.stem}.wav"
                 t3 = time.time()
@@ -273,6 +307,8 @@ def run_pipeline_tests():
                 row["error"] = str(e)[:300]
 
             results.append(row)
+            # Space out pipeline legs so ASR/TTS are not back-to-back during peak windows.
+            time.sleep(2.0)
 
     return results
 
@@ -322,6 +358,11 @@ def print_report(results: list[dict]):
 
 def main():
     dry_run = "--dry-run" in sys.argv
+
+    delay = _ci_load_spread_delay_sec()
+    if delay > 0:
+        print(f"Load spread: waiting {delay:.0f}s before API tests (avoids xx:IST collision bursts)...")
+        time.sleep(delay)
 
     print("Running individual endpoint tests...")
     individual = run_individual_tests()

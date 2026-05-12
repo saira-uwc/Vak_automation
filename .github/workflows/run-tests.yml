@@ -1,5 +1,10 @@
 name: Run Vak API Tests
 
+# Serialize overlapping API test dispatches; digest/email jobs use a unique group per run so they do not queue behind tests.
+concurrency:
+  group: ${{ (github.event.action == 'daily-digest' || github.event.action == 'send-email') && format('side-{0}', github.run_id) || format('vak-api-tests-{0}', github.ref) }}
+  cancel-in-progress: false
+
 permissions:
   contents: write
 

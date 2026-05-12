@@ -76,14 +76,37 @@ class TTSClient:
         if resp is None:
             raise RuntimeError(f"TTS call failed: {last_error}")
 
+        final_resp = resp
+        content = resp.content
+        # Transient empty/truncated bodies sometimes appear under load; retry a few times.
+        undersized_attempts = 0
+        max_undersized = 2
+        while len(content) <= 1000 and undersized_attempts < max_undersized:
+            undersized_attempts += 1
+            time.sleep(self.retry_backoff_seconds * undersized_attempts)
+            try:
+                resp2 = httpx.post(
+                    f"{self.base_url}/v1/audio/speech",
+                    headers=headers,
+                    json=payload,
+                    timeout=self.timeout,
+                )
+                resp2.raise_for_status()
+                final_resp = resp2
+                content = resp2.content
+            except (httpx.HTTPError, httpx.TimeoutException) as e:
+                raise RuntimeError(
+                    f"TTS undersized retry failed ({len(content)} bytes): {e}"
+                ) from e
+
         saved_path = None
         if output_path:
             saved_path = Path(output_path)
             saved_path.parent.mkdir(parents=True, exist_ok=True)
-            saved_path.write_bytes(resp.content)
+            saved_path.write_bytes(content)
 
         return TTSResult(
-            audio_bytes=resp.content,
+            audio_bytes=content,
             output_path=saved_path,
-            content_type=resp.headers.get("content-type", ""),
+            content_type=final_resp.headers.get("content-type", ""),
         )
