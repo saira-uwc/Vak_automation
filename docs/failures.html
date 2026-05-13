@@ -285,11 +285,47 @@ function relativeDay(key) {
   return null;
 }
 
+// This dashboard is for *downtime* only (API down, gateway, 5xx, timeouts),
+// not functional test failures/assertions.
+function isDowntimeFailure(msg, statusCode) {
+  const s = String(msg || "").toLowerCase();
+  if (statusCode && Number(statusCode) >= 500) return true;
+  if (/\b5\d{2}\b/.test(s)) return true; // contains a 5xx code
+  if (s.includes("bad gateway")) return true;
+  if (s.includes("gateway timeout")) return true;
+  if (s.includes("service unavailable")) return true;
+  if (s.includes("internal server error")) return true;
+  if (s.includes("too many requests") || s.includes("429")) return true; // rate-limit is downtime-ish
+  if (s.includes("connection refused") || s.includes("connection reset")) return true;
+  if (s.includes("dns") || s.includes("enotfound") || s.includes("eai_again")) return true;
+  if (s.includes("tls") || s.includes("ssl")) return true;
+  if (s.includes("transporterror") || s.includes("transport error")) return true;
+  if (s.includes("httpx.") || s.includes("http error")) return true;
+  return false;
+}
+
 function normalize(raw, fmt) {
   const out = [];
   if (fmt === "vak") {
     for (const r of raw.runs || []) {
-      out.push({ timestamp: r.timestamp, total: r.total || 0, passed: r.passed || 0, failed: r.failed || 0, passRate: r.pass_rate || 0, avgLatency: r.avg_latency, failedItems: [] });
+      const allFailed = Array.isArray(r.failed_tests) ? r.failed_tests : [];
+      const downtime = allFailed.filter((f) => isDowntimeFailure(f.error));
+      const failedItems = downtime.map((f) => ({
+        title: f.name || f.id || "(unnamed)",
+        module: f.category || f.test_type || "",
+        error: String(f.error || "").split("\n")[0].slice(0, 220),
+        status: "downtime",
+      }));
+      out.push({
+        timestamp: r.timestamp,
+        total: r.total || 0,
+        passed: r.passed || 0,
+        // Only count downtime-class failures here
+        failed: downtime.length,
+        passRate: r.pass_rate || 0,
+        avgLatency: r.avg_latency,
+        failedItems,
+      });
     }
     return out;
   }
@@ -311,7 +347,10 @@ function normalize(raw, fmt) {
         const status = (t.status || "").toLowerCase();
         // Anything that isn't passing or skipped is a failure (failed, timedout, flaky, etc.)
         if (status && status !== "passed" && status !== "pass" && status !== "skipped" && status !== "skip") {
-          failedItems.push({ title: t.title || t.testPoint || t.name || "(unnamed)", module: t.moduleLabel || t.module || t.moduleName || "", error: (t.error || t.comment || "").split("\n")[0].slice(0, 220), status });
+          const err = (t.error || t.comment || "");
+          if (isDowntimeFailure(err)) {
+            failedItems.push({ title: t.title || t.testPoint || t.name || "(unnamed)", module: t.moduleLabel || t.module || t.moduleName || "", error: String(err).split("\n")[0].slice(0, 220), status });
+          }
         }
       }
     }
@@ -319,11 +358,15 @@ function normalize(raw, fmt) {
       for (const s of r.suites) {
         const status = (s.status || "").toLowerCase();
         if (status === "fail" || status === "failed") {
-          failedItems.push({ title: s.name || "(unnamed suite)", module: s.category || "", error: s.failure_reason || "" });
+          const err = s.failure_reason || "";
+          if (isDowntimeFailure(err)) {
+            failedItems.push({ title: s.name || "(unnamed suite)", module: s.category || "", error: String(err).split("\n")[0].slice(0, 220) });
+          }
         }
       }
     }
-    out.push({ timestamp: ts, total, passed, failed, passRate, timeSavedPercent: r.timeSavedPercent, avgLatencyMs: r.avgLatencyMs, failedItems });
+    // Only count downtime failures on this dashboard
+    out.push({ timestamp: ts, total, passed, failed: failedItems.length, passRate, timeSavedPercent: r.timeSavedPercent, avgLatencyMs: r.avgLatencyMs, failedItems });
   }
   return out;
 }
