@@ -206,16 +206,16 @@
     <div class="logo">⚠</div>
     <div>
       <h1>QA Downtime Tracker</h1>
-      <div class="header-sub">Pick a date to see exactly which projects went down and what failed</div>
+      <div class="header-sub">API / system downtime only (5xx, gateway, timeouts) — pick a month, then a day</div>
     </div>
   </div>
   <div class="header-right">
     <span class="last-run" id="lastRun">Loading...</span>
     <div class="pills">
       <button class="pill-btn" data-days="7">7d</button>
-      <button class="pill-btn active" data-days="30">30d</button>
+      <button class="pill-btn" data-days="30">30d</button>
       <button class="pill-btn" data-days="60">60d</button>
-      <button class="pill-btn" data-days="90">90d</button>
+      <button class="pill-btn active" data-days="90">90d</button>
     </div>
     <button class="btn-refresh" id="refreshBtn"><span class="arrow">↻</span> Refresh</button>
   </div>
@@ -224,7 +224,7 @@
 <div class="main">
   <div class="stats-grid" id="statsGrid"></div>
   <div id="content"><div class="loading"><div class="spinner"></div><span style="color:var(--text-muted);font-size:13px;">Loading project feeds...</span></div></div>
-  <div class="footer">Click a date to load that day · Click a run to expand the failed tests · <a href="./">Back to Vak Dashboard</a></div>
+  <div class="footer">Select a month for the monthly summary · Click a day for detail · Email report runs on the 1st (previous month) · <a href="./">Back to Vak Dashboard</a></div>
 </div>
 
 <script>
@@ -240,10 +240,41 @@ const PROJECTS = [
 ];
 
 const IST_OFFSET_MS = 5.5 * 3600 * 1000;
-let currentWindow = 30;
+let currentWindow = 90;
 let cache = null;
 let activeDateKey = null;
+let activeMonthKey = null;
 let openRuns = new Set();
+
+function monthKeyIST(date) {
+  return new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Kolkata", year: "numeric", month: "2-digit" }).format(date);
+}
+function monthLabel(key) {
+  const [y, m] = key.split("-");
+  const d = new Date(`${y}-${m}-01T00:00:00+05:30`);
+  return d.toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata", month: "short", year: "numeric" });
+}
+function defaultMonthKey() {
+  const now = new Date();
+  const day = +new Intl.DateTimeFormat("en-IN", { timeZone: "Asia/Kolkata", day: "numeric" }).format(now);
+  if (day === 1) {
+    const prev = new Date(now.getTime() - 86400000);
+    return monthKeyIST(prev);
+  }
+  return monthKeyIST(now);
+}
+function recentMonthKeys(n) {
+  const keys = [];
+  const d = new Date();
+  for (let i = 0; i < n; i++) {
+    keys.push(monthKeyIST(d));
+    d.setDate(d.getDate() - 28);
+  }
+  return keys;
+}
+function runInMonth(run, monthKey) {
+  return monthKeyIST(run._date) === monthKey;
+}
 
 function parseToDate(ts) {
   if (!ts) return null;
@@ -387,13 +418,14 @@ async function fetchAll() {
   }));
 }
 
-// Build day index: dateKey -> { byProj: Map<idx, runs[]>, totalRuns, failedRuns, failedTests, projectsAffected: Set }
-function buildDayIndex(cutoff) {
+// Build day index: dateKey -> { byProj, totalRuns, failedRuns, failedTests, projectsAffected }
+function buildDayIndex(cutoff, monthKey) {
   const days = new Map();
   for (const entry of cache) {
     if (entry.error) continue;
     for (const r of entry.runs) {
       if (cutoff && r._date.getTime() < cutoff) continue;
+      if (monthKey && !runInMonth(r, monthKey)) continue;
       const k = dateKeyIST(r._date);
       if (!days.has(k)) days.set(k, { byProj: new Map(), totalRuns: 0, failedRuns: 0, failedTests: 0, projectsAffected: new Set() });
       const day = days.get(k);
@@ -416,12 +448,26 @@ function severity(failedRuns, totalRuns) {
   return failedRuns / totalRuns >= 0.5 ? "danger" : "warn";
 }
 
+function buildMonthSummary(monthKey, dayIndex) {
+  let incidents = 0, downtimeRuns = 0;
+  const projs = new Set();
+  for (const d of dayIndex.values()) {
+    incidents += d.failedTests;
+    downtimeRuns += d.failedRuns;
+    for (const p of d.projectsAffected) projs.add(p);
+  }
+  const downtimeDays = [...dayIndex.values()].filter((d) => d.failedRuns > 0).length;
+  return { incidents, downtimeRuns, downtimeDays, projectsAffected: projs.size };
+}
+
 function render() {
   if (!cache) return;
+  if (!activeMonthKey) activeMonthKey = defaultMonthKey();
   const cutoff = currentWindow > 0 ? Date.now() - currentWindow * 86400000 : 0;
-  const dayIndex = buildDayIndex(cutoff);
+  const dayIndex = buildDayIndex(cutoff, activeMonthKey);
+  const monthSummary = buildMonthSummary(activeMonthKey, dayIndex);
 
-  // Aggregate stats
+  // Aggregate stats (selected month only)
   let totalFailedRuns = 0, totalFailedTests = 0;
   const allProjsAffected = new Set();
   const downtimeKeys = [];
@@ -435,31 +481,48 @@ function render() {
   }
   downtimeKeys.sort().reverse();
 
-  // Healthy projects (no failures in window)
+  // Healthy projects (no downtime in selected month)
   const healthy = [];
   for (const e of cache) {
     if (e.error) continue;
-    const inWin = e.runs.filter((r) => !cutoff || r._date.getTime() >= cutoff);
-    if (inWin.length > 0 && inWin.every((r) => r.failed === 0)) healthy.push({ project: e.project, runs: inWin.length });
+    const inMonth = e.runs.filter((r) => runInMonth(r, activeMonthKey));
+    if (inMonth.length > 0 && inMonth.every((r) => r.failed === 0)) healthy.push({ project: e.project, runs: inMonth.length });
   }
+
+  const monthPills = recentMonthKeys(12).map((mk) => {
+    const isActive = mk === activeMonthKey;
+    return `<button type="button" class="pill-btn month-pill ${isActive ? "active" : ""}" data-month="${esc(mk)}">${esc(monthLabel(mk))}</button>`;
+  }).join("");
+
+  const monthBanner = monthSummary.incidents === 0
+    ? `<div class="healthy" style="border-color:var(--green-line);margin-bottom:14px;"><span class="healthy-label">${esc(monthLabel(activeMonthKey))} summary</span><span class="healthy-pill">No API downtime this month</span></div>`
+    : `<div class="datestrip-wrap" style="margin-bottom:14px;border-color:rgba(239,68,68,0.35);">
+        <div class="datestrip-head"><span class="datestrip-title">${esc(monthLabel(activeMonthKey))} — downtime highlight</span></div>
+        <p style="margin:0;font-size:14px;color:var(--text-primary);line-height:1.6;">
+          This month: <strong style="color:var(--red);">${monthSummary.incidents}</strong> outage incident(s) ·
+          <strong style="color:var(--red);">${monthSummary.downtimeRuns}</strong> affected run(s) ·
+          <strong>${monthSummary.downtimeDays}</strong> day(s) with downtime ·
+          <strong>${monthSummary.projectsAffected}</strong> project(s) impacted
+        </p>
+      </div>`;
 
   // Stats row
   document.getElementById("statsGrid").innerHTML = `
     <div class="stat-card">
       <span class="stat-ic accent"></span>
-      <div class="stat-text"><div class="stat-label">Window</div><div class="stat-value accent">${currentWindow}d</div><div class="stat-sub">last ${currentWindow} days · IST</div></div>
+      <div class="stat-text"><div class="stat-label">Month</div><div class="stat-value accent" style="font-size:18px;">${esc(monthLabel(activeMonthKey))}</div><div class="stat-sub">IST calendar month</div></div>
     </div>
     <div class="stat-card">
-      <span class="stat-ic ${downtimeKeys.length > 0 ? "danger" : "ok"}"></span>
-      <div class="stat-text"><div class="stat-label">Downtime days</div><div class="stat-value ${downtimeKeys.length > 0 ? "red" : "green"}">${downtimeKeys.length}</div><div class="stat-sub">days with any failure</div></div>
+      <span class="stat-ic ${monthSummary.downtimeDays > 0 ? "danger" : "ok"}"></span>
+      <div class="stat-text"><div class="stat-label">Downtime days</div><div class="stat-value ${monthSummary.downtimeDays > 0 ? "red" : "green"}">${monthSummary.downtimeDays}</div><div class="stat-sub">days with any outage</div></div>
     </div>
     <div class="stat-card">
-      <span class="stat-ic ${totalFailedRuns > 0 ? "danger" : "ok"}"></span>
-      <div class="stat-text"><div class="stat-label">Failed runs</div><div class="stat-value ${totalFailedRuns > 0 ? "red" : "green"}">${totalFailedRuns}</div><div class="stat-sub">across all projects</div></div>
+      <span class="stat-ic ${monthSummary.downtimeRuns > 0 ? "danger" : "ok"}"></span>
+      <div class="stat-text"><div class="stat-label">Affected runs</div><div class="stat-value ${monthSummary.downtimeRuns > 0 ? "red" : "green"}">${monthSummary.downtimeRuns}</div><div class="stat-sub">runs with API/system errors</div></div>
     </div>
     <div class="stat-card">
-      <span class="stat-ic ${allProjsAffected.size > 0 ? "danger" : "ok"}"></span>
-      <div class="stat-text"><div class="stat-label">Projects affected</div><div class="stat-value ${allProjsAffected.size > 0 ? "red" : "green"}">${allProjsAffected.size}<span class="of">/${PROJECTS.length}</span></div><div class="stat-sub">at least one failed run</div></div>
+      <span class="stat-ic ${monthSummary.projectsAffected > 0 ? "danger" : "ok"}"></span>
+      <div class="stat-text"><div class="stat-label">Projects down</div><div class="stat-value ${monthSummary.projectsAffected > 0 ? "red" : "green"}">${monthSummary.projectsAffected}<span class="of">/${PROJECTS.length}</span></div><div class="stat-sub">had at least one outage</div></div>
     </div>
   `;
 
@@ -540,7 +603,7 @@ function render() {
             <div class="pblock-num ${sev}">${failed.length}</div>
             <div>
               <div class="pblock-name">${esc(p.name)}</div>
-              <div class="pblock-summary"><span class="red">${failed.length}</span> of ${runs.length} run${runs.length === 1 ? "" : "s"} failed · <span class="num">${failedTests}</span> test${failedTests === 1 ? "" : "s"} broken</div>
+              <div class="pblock-summary"><span class="red">${failed.length}</span> of ${runs.length} run${runs.length === 1 ? "" : "s"} with downtime · <span class="num">${failedTests}</span> outage incident${failedTests === 1 ? "" : "s"}</div>
             </div>
             <a class="pblock-link" href="${esc(p.dashboard)}" target="_blank" rel="noopener">↗ open dashboard</a>
           </div>
@@ -553,7 +616,7 @@ function render() {
         <div class="day-panel-head">
           <span class="dp-title">${esc(fmtFullDate(date))}</span>
           ${rel ? `<span class="dp-rel-tag ${rel.strong ? "" : "faint"}">${esc(rel.label)}</span>` : ""}
-          <span class="dp-summary"><strong>${day.failedRuns}</strong> failed run${day.failedRuns === 1 ? "" : "s"} · <span class="num">${day.projectsAffected.size}</span> project${day.projectsAffected.size === 1 ? "" : "s"} affected · <span class="num">${day.failedTests}</span> test${day.failedTests === 1 ? "" : "s"} broken</span>
+          <span class="dp-summary"><strong>${day.failedRuns}</strong> downtime run${day.failedRuns === 1 ? "" : "s"} · <span class="num">${day.projectsAffected.size}</span> project${day.projectsAffected.size === 1 ? "" : "s"} · <span class="num">${day.failedTests}</span> outage incident${day.failedTests === 1 ? "" : "s"}</span>
         </div>
         <div class="day-panel-body">${projsHtml}</div>
       </div>`;
@@ -562,7 +625,18 @@ function render() {
   let dayPanelHeader = "";
   if (downtimeKeys.length > 0) dayPanelHeader = `<div class="section-title">Selected Day Detail</div>`;
 
+  const monthStripHtml = `
+    <div class="datestrip-wrap">
+      <div class="datestrip-head">
+        <span class="datestrip-title">Monthly view</span>
+        <span class="datestrip-help">pick a month · ${monthSummary.incidents} outage(s) in ${esc(monthLabel(activeMonthKey))}</span>
+      </div>
+      <div class="pills" style="flex-wrap:wrap;gap:6px;background:transparent;border:0;padding:0;">${monthPills}</div>
+    </div>`;
+
   document.getElementById("content").innerHTML =
+    monthStripHtml +
+    monthBanner +
     healthyHtml +
     datestripHtml +
     (downtimeKeys.length > 0 ? dayPanelHeader : "") +
@@ -573,7 +647,7 @@ function render() {
 
 function renderFailsList(r) {
   if (!r.failedItems || r.failedItems.length === 0) {
-    return `<div class="fno-detail">This feed doesn't expose per-test detail — ${r.failed} test${r.failed === 1 ? "" : "s"} failed in this run.</div>`;
+    return `<div class="fno-detail">No per-incident detail in feed — ${r.failed} downtime incident${r.failed === 1 ? "" : "s"} in this run.</div>`;
   }
   const items = r.failedItems.slice(0, 30).map((f) => `<li>
     <div><span class="ftitle">${esc(f.title)}</span>${f.module ? `<span class="fmod">${esc(f.module)}</span>` : ""}</div>
@@ -584,6 +658,14 @@ function renderFailsList(r) {
 }
 
 function bindHandlers() {
+  document.querySelectorAll(".month-pill").forEach((p) => {
+    p.addEventListener("click", () => {
+      activeMonthKey = p.getAttribute("data-month");
+      activeDateKey = null;
+      openRuns = new Set();
+      render();
+    });
+  });
   document.querySelectorAll(".date-pill").forEach((p) => {
     p.addEventListener("click", () => {
       activeDateKey = p.getAttribute("data-key");
@@ -611,14 +693,14 @@ async function load() {
   document.getElementById("lastRun").textContent = "Loading...";
   cache = await fetchAll();
   document.getElementById("lastRun").innerHTML = `Last fetched <strong>${new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata", day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit", hour12: true })} IST</strong>`;
-  activeDateKey = null; openRuns = new Set();
+  activeDateKey = null; activeMonthKey = defaultMonthKey(); openRuns = new Set();
   render();
   setTimeout(() => refreshBtn.classList.remove("spinning"), 400);
 }
 
-document.querySelectorAll(".pill-btn").forEach((p) => {
+document.querySelectorAll(".pill-btn[data-days]").forEach((p) => {
   p.addEventListener("click", () => {
-    document.querySelectorAll(".pill-btn").forEach((x) => x.classList.remove("active"));
+    document.querySelectorAll(".pill-btn[data-days]").forEach((x) => x.classList.remove("active"));
     p.classList.add("active");
     currentWindow = +p.getAttribute("data-days");
     activeDateKey = null; openRuns = new Set();

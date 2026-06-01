@@ -2,7 +2,7 @@ name: Run Vak API Tests
 
 # Serialize overlapping API test dispatches; digest/email jobs use a unique group per run so they do not queue behind tests.
 concurrency:
-  group: ${{ (github.event.action == 'daily-digest' || github.event.action == 'send-email') && format('side-{0}', github.run_id) || format('vak-api-tests-{0}', github.ref) }}
+  group: ${{ (github.event.action == 'daily-digest' || github.event.action == 'send-email' || github.event.action == 'monthly-downtime') && format('side-{0}', github.run_id) || format('vak-api-tests-{0}', github.ref) }}
   cancel-in-progress: false
 
 permissions:
@@ -10,7 +10,7 @@ permissions:
 
 on:
   repository_dispatch:
-    types: [run-tests, send-email, daily-digest]
+    types: [run-tests, send-email, daily-digest, monthly-downtime]
   workflow_dispatch:
     inputs:
       send_email:
@@ -21,7 +21,7 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    if: github.event.action != 'send-email' && github.event.action != 'daily-digest'
+    if: github.event.action != 'send-email' && github.event.action != 'daily-digest' && github.event.action != 'monthly-downtime'
 
     steps:
       - uses: actions/checkout@v4
@@ -109,3 +109,24 @@ jobs:
           EMAIL_WEB_APP_URL: ${{ secrets.EMAIL_WEB_APP_URL }}
           EMAIL_RECIPIENTS: ${{ secrets.EMAIL_RECIPIENTS }}
         run: python daily_health_report.py
+
+  monthly-downtime:
+    runs-on: ubuntu-latest
+    if: github.event.action == 'monthly-downtime'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Send monthly downtime report (previous calendar month)
+        env:
+          EMAIL_WEB_APP_URL: ${{ secrets.EMAIL_WEB_APP_URL }}
+          EMAIL_RECIPIENTS: ${{ secrets.EMAIL_RECIPIENTS }}
+        run: python monthly_downtime_report.py

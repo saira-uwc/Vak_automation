@@ -90,3 +90,16 @@ function triggerSendEmail() {
 function triggerDailyDigest() {
   postDispatch("daily-digest");
 }
+
+/**
+ * Trigger: Send monthly downtime report (previous calendar month).
+ * Runs on the 1st — e.g. 1 Jun emails the full May outage summary.
+ *
+ * Add a Time-driven trigger:
+ *   Function: triggerMonthlyDowntime
+ *   Event source: Time-driven
+ *   Type: Month timer → 1st day of month, morning (e.g. 9am–10am IST)
+ */
+function triggerMonthlyDowntime() {
+  postDispatch("monthly-downtime");
+}
