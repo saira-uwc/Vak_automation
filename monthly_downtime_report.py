@@ -485,9 +485,14 @@ def render_html(
 </body></html>"""
 
     if runs == 0:
-        subject = f"QA Downtime - {month_label} - All clear"
+        subject = f"{month_label} Monthly Downtime Summary — no outages this month"
     else:
-        subject = f"QA Downtime - {month_label} - down {runs} {times_word}, {projs} project(s)"
+        proj_word = "project" if projs == 1 else "projects"
+        subject = (
+            f"{month_label} Monthly Downtime Summary — "
+            f"down {runs} {times_word} over {days} day{'s' if days != 1 else ''}, "
+            f"{projs} {proj_word} affected"
+        )
     return html, subject
 
 
