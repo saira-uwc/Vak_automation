@@ -399,7 +399,9 @@ def main():
 
         if not dry_run:
             push_to_sheet(all_results)
-            push_dashboard()
+            # CI workflow commits docs/ — avoid double-push race with the Actions git step.
+            if os.environ.get("GITHUB_ACTIONS") != "true":
+                push_dashboard()
         else:
             print("[Dry run - skipping Google Sheets push]")
     except Exception:

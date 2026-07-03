@@ -58,10 +58,23 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add docs/ test_output/
-          git diff --cached --quiet && echo "No dashboard changes" && exit 0
+          git pull --rebase origin main
+          git add docs/
+          if git diff --cached --quiet; then
+            echo "No dashboard changes"
+            exit 0
+          fi
           git commit -m "Auto-update dashboard ($(date '+%Y-%m-%d %H:%M UTC'))"
-          git push
+          for attempt in 1 2 3; do
+            if git push origin main; then
+              echo "Dashboard pushed."
+              exit 0
+            fi
+            echo "Push failed (attempt $attempt/3), rebasing..."
+            git pull --rebase origin main
+          done
+          echo "Dashboard push failed after retries"
+          exit 1
 
       - name: Send failure email (only if any test failed)
         if: always() && steps.tests.outcome != 'cancelled'
