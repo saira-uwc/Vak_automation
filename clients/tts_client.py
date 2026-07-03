@@ -78,6 +78,17 @@ class TTSClient:
 
         final_resp = resp
         content = resp.content
+        content_type = resp.headers.get("content-type", "")
+        # If the response is not audio, parse the error body even on 200
+        if "audio" not in content_type:
+            try:
+                err_body = resp.json()
+                raise RuntimeError(f"TTS API returned non-audio response: {err_body}")
+            except ValueError:
+                raise RuntimeError(
+                    f"TTS API returned non-audio response ({content_type}): "
+                    f"{content[:300].decode(errors='replace')}"
+                )
         # Transient empty/truncated bodies sometimes appear under load; retry a few times.
         undersized_attempts = 0
         max_undersized = 2
@@ -92,6 +103,16 @@ class TTSClient:
                     timeout=self.timeout,
                 )
                 resp2.raise_for_status()
+                ct2 = resp2.headers.get("content-type", "")
+                if "audio" not in ct2:
+                    try:
+                        err_body = resp2.json()
+                        raise RuntimeError(f"TTS retry returned non-audio: {err_body}")
+                    except ValueError:
+                        raise RuntimeError(
+                            f"TTS retry returned non-audio ({ct2}): "
+                            f"{resp2.content[:300].decode(errors='replace')}"
+                        )
                 final_resp = resp2
                 content = resp2.content
             except (httpx.HTTPError, httpx.TimeoutException) as e:

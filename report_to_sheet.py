@@ -103,6 +103,8 @@ def run_individual_tests():
             row["output"] = r.text[:500]
             row["status"] = "PASS" if r.text else "FAIL"
             row["latency_ms"] = latency
+            if not r.text:
+                row["error"] = "ASR returned empty transcription"
         except Exception as e:
             row["status"] = "FAIL"
             row["error"] = str(e)[:300]
@@ -138,7 +140,9 @@ def run_individual_tests():
             row["output"] = r.translated_text[:500]
             row["status"] = "PASS" if r.translated_text else "FAIL"
             row["latency_ms"] = r.processing_time_ms
-            if r.target_proxy:
+            if not r.translated_text:
+                row["error"] = "Translation returned empty result"
+            elif r.target_proxy:
                 row["error"] = f"Proxy: {r.target_proxy[:200]}"
         except Exception as e:
             row["status"] = "FAIL"
@@ -208,6 +212,8 @@ def run_individual_tests():
             row["latency_ms"] = latency
             row["output_size"] = f"{len(r.audio_bytes)} bytes"
             row["audio_b64"] = base64.b64encode(r.audio_bytes).decode("ascii")
+            if len(r.audio_bytes) <= 1000:
+                row["error"] = f"TTS output too small ({len(r.audio_bytes)} bytes)"
         except Exception as e:
             row["status"] = "FAIL"
             row["error"] = str(e)[:300]
@@ -299,6 +305,8 @@ def run_pipeline_tests():
                 row["output_size"] = f"{len(tts_result.audio_bytes)} bytes"
                 row["audio_b64"] = base64.b64encode(tts_result.audio_bytes).decode("ascii")
                 row["audio_filename"] = out_path.name
+                if len(tts_result.audio_bytes) <= 1000:
+                    row["error"] = f"Pipeline TTS output too small ({len(tts_result.audio_bytes)} bytes)"
 
             except Exception as e:
                 total_latency = round((time.time() - total_t0) * 1000, 1)
@@ -321,13 +329,16 @@ def push_to_sheet(results: list[dict]):
         return False
 
     payload = {"results": results, "script_url": APPS_SCRIPT_URL}
-    resp = httpx.post(APPS_SCRIPT_URL, json=payload, timeout=120, follow_redirects=True)
+    try:
+        resp = httpx.post(APPS_SCRIPT_URL, json=payload, timeout=120, follow_redirects=True)
+    except Exception as e:
+        print(f"\nFailed to push to sheet (network): {e}")
+        return False
     if resp.status_code == 200:
         print(f"\nPushed {len(results)} rows to Google Sheet.")
         return True
-    else:
-        print(f"\nFailed to push to sheet: {resp.status_code} {resp.text[:200]}")
-        return False
+    print(f"\nFailed to push to sheet: {resp.status_code} {resp.text[:200]}")
+    return False
 
 
 def print_report(results: list[dict]):
@@ -356,39 +367,52 @@ def print_report(results: list[dict]):
     print()
 
 
-def main():
-    dry_run = "--dry-run" in sys.argv
-
-    delay = _ci_load_spread_delay_sec()
-    if delay > 0:
-        print(f"Load spread: waiting {delay:.0f}s before API tests (avoids xx:IST collision bursts)...")
-        time.sleep(delay)
-
-    print("Running individual endpoint tests...")
-    individual = run_individual_tests()
-
-    print("Running pipeline tests...")
-    pipeline = run_pipeline_tests()
-
-    all_results = individual + pipeline
-    print_report(all_results)
-
-    if not dry_run:
-        push_to_sheet(all_results)
-    else:
-        print("[Dry run - skipping Google Sheets push]")
-
-    # Save local JSON report
+def _persist_results(all_results: list[dict]) -> None:
+    """Save report + dashboard data — must run even if sheet/git push fails."""
     report_path = TEST_OUTPUT_DIR / "latest_report.json"
     report_path.write_text(json.dumps(all_results, indent=2, ensure_ascii=False))
     print(f"Local report saved: {report_path}")
-
-    # Generate dashboard data
     generate_dashboard(all_results)
 
-    # Auto-push dashboard to GitHub Pages
-    if not dry_run:
-        push_dashboard()
+
+def main():
+    dry_run = "--dry-run" in sys.argv
+    all_results: list[dict] = []
+
+    try:
+        delay = _ci_load_spread_delay_sec()
+        if delay > 0:
+            print(f"Load spread: waiting {delay:.0f}s before API tests (avoids xx:IST collision bursts)...")
+            time.sleep(delay)
+
+        print("Running individual endpoint tests...")
+        individual = run_individual_tests()
+
+        print("Running pipeline tests...")
+        pipeline = run_pipeline_tests()
+
+        all_results = individual + pipeline
+        print_report(all_results)
+
+        # Persist first so CI can commit dashboard + send email even if sheet push fails.
+        _persist_results(all_results)
+
+        if not dry_run:
+            push_to_sheet(all_results)
+            push_dashboard()
+        else:
+            print("[Dry run - skipping Google Sheets push]")
+    except Exception:
+        if all_results:
+            print("\n⚠  Run interrupted after partial results — saving dashboard anyway.")
+            _persist_results(all_results)
+        traceback.print_exc()
+        sys.exit(1)
+
+    failed = sum(1 for r in all_results if r["status"] == "FAIL")
+    if failed:
+        print(f"\n{failed} test(s) failed — CI will mark this run as failed.")
+        sys.exit(1)
 
 
 def push_dashboard():
