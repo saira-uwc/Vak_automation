@@ -25,6 +25,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -58,7 +60,6 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git pull --rebase origin main
           git add docs/
           if git diff --cached --quiet; then
             echo "No dashboard changes"
@@ -66,12 +67,12 @@ jobs:
           fi
           git commit -m "Auto-update dashboard ($(date '+%Y-%m-%d %H:%M UTC'))"
           for attempt in 1 2 3; do
-            if git push origin main; then
+            if git pull --rebase origin main && git push origin main; then
               echo "Dashboard pushed."
               exit 0
             fi
-            echo "Push failed (attempt $attempt/3), rebasing..."
-            git pull --rebase origin main
+            echo "Push failed (attempt $attempt/3), retrying..."
+            sleep 3
           done
           echo "Dashboard push failed after retries"
           exit 1
