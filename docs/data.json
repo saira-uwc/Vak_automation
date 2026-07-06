@@ -1,14 +1,14 @@
 {
   "current": {
-    "run_id": "add16860",
-    "timestamp": "2026-07-03 08:31:48 IST",
+    "run_id": "a97b1b82",
+    "timestamp": "2026-07-06 16:04:14 IST",
     "total": 16,
     "passed": 16,
     "failed": 0,
     "errors": 0,
     "pass_rate": 100.0,
-    "avg_latency": 9173,
-    "total_ms": 146762,
+    "avg_latency": 8653,
+    "total_ms": 138442,
     "categories": [
       {
         "name": "ASR",
@@ -17,9 +17,9 @@
         "fail": 0,
         "error": 0,
         "pass_rate": 100.0,
-        "avg_latency": 8845,
-        "min_latency": 8845,
-        "max_latency": 8845
+        "avg_latency": 8102,
+        "min_latency": 8102,
+        "max_latency": 8102
       },
       {
         "name": "Translate",
@@ -28,9 +28,9 @@
         "fail": 0,
         "error": 0,
         "pass_rate": 100.0,
-        "avg_latency": 69,
-        "min_latency": 61,
-        "max_latency": 78
+        "avg_latency": 91,
+        "min_latency": 70,
+        "max_latency": 174
       },
       {
         "name": "TTS",
@@ -39,9 +39,9 @@
         "fail": 0,
         "error": 0,
         "pass_rate": 100.0,
-        "avg_latency": 2033,
-        "min_latency": 2011,
-        "max_latency": 2058
+        "avg_latency": 1758,
+        "min_latency": 1003,
+        "max_latency": 2187
       },
       {
         "name": "Pipeline",
@@ -50,9 +50,9 @@
         "fail": 0,
         "error": 0,
         "pass_rate": 100.0,
-        "avg_latency": 26267,
-        "min_latency": 23195,
-        "max_latency": 30747
+        "avg_latency": 24887,
+        "min_latency": 20522,
+        "max_latency": 29743
       }
     ],
     "tests": [
@@ -61,7 +61,7 @@
         "name": "ASR - doctor.mp3",
         "category": "ASR",
         "status": "PASS",
-        "duration_ms": 8845.4,
+        "duration_ms": 8101.9,
         "audio_bytes": 0,
         "output_format": "-",
         "audio_url": "",
@@ -106,7 +106,7 @@
         "name": "Translate hi→bn",
         "category": "Translate",
         "status": "PASS",
-        "duration_ms": 61.0,
+        "duration_ms": 70.0,
         "audio_bytes": 0,
         "output_format": "-",
         "audio_url": "",
@@ -121,7 +121,7 @@
         "name": "Translate en→doi",
         "category": "Translate",
         "status": "PASS",
-        "duration_ms": 67.0,
+        "duration_ms": 78.0,
         "audio_bytes": 0,
         "output_format": "-",
         "audio_url": "",
@@ -136,7 +136,7 @@
         "name": "Translate en→ta",
         "category": "Translate",
         "status": "PASS",
-        "duration_ms": 67.0,
+        "duration_ms": 78.0,
         "audio_bytes": 0,
         "output_format": "-",
         "audio_url": "",
@@ -151,7 +151,7 @@
         "name": "Translate en→te",
         "category": "Translate",
         "status": "PASS",
-        "duration_ms": 67.0,
+        "duration_ms": 78.0,
         "audio_bytes": 0,
         "output_format": "-",
         "audio_url": "",
@@ -166,7 +166,7 @@
         "name": "Supported Languages",
         "category": "Translate",
         "status": "PASS",
-        "duration_ms": 62.5,
+        "duration_ms": 173.6,
         "audio_bytes": 0,
         "output_format": "-",
         "audio_url": "",
@@ -181,8 +181,8 @@
         "name": "TTS - tts_report_en.wav",
         "category": "TTS",
         "status": "PASS",
-        "duration_ms": 2057.7,
-        "audio_bytes": 81738,
+        "duration_ms": 2186.7,
+        "audio_bytes": 94400,
         "output_format": "wav",
         "audio_url": "audio/tts_report_en.wav",
         "error": "",
@@ -196,8 +196,8 @@
         "name": "TTS - tts_report_hi.wav",
         "category": "TTS",
         "status": "PASS",
-        "duration_ms": 2011.4,
-        "audio_bytes": 85304,
+        "duration_ms": 1002.9,
+        "audio_bytes": 87260,
         "output_format": "wav",
         "audio_url": "audio/tts_report_hi.wav",
         "error": "",
@@ -211,8 +211,8 @@
         "name": "TTS - tts_report_emotion.wav",
         "category": "TTS",
         "status": "PASS",
-        "duration_ms": 2029.5,
-        "audio_bytes": 88160,
+        "duration_ms": 2083.1,
+        "audio_bytes": 87634,
         "output_format": "wav",
         "audio_url": "audio/tts_report_emotion.wav",
         "error": "",
@@ -226,8 +226,8 @@
         "name": "Pipeline hi→en",
         "category": "Pipeline",
         "status": "PASS",
-        "duration_ms": 25052.8,
-        "audio_bytes": 5404234,
+        "duration_ms": 26120.7,
+        "audio_bytes": 5503148,
         "output_format": "wav",
         "audio_url": "audio/pipeline_hi_en_doctor.wav",
         "error": "",
@@ -235,19 +235,19 @@
         "input": "doctor.mp3",
         "source_lang": "hi",
         "target_lang": "en",
-        "asr_latency_ms": 8390.1,
-        "translate_latency_ms": 469.8,
-        "tts_latency_ms": 14692.6,
-        "asr_text": "हेलो मिस्टर फ़िलिप्स टेक अ सीट थैंक यू नाओ व्हाट सीम्स टू बे द प्रॉब्लम आई नॉट फ़ीलिंग वेरी वेल आई गॉट अ टेरबल स्तम्भ एक एंड आई कीप फ़ॉरिंग अप हैव यू हैड अनी डायरिया नो आई हैवेन्ट हॉव लॉन्ग एवेन बीम फ़ीलिंग लाइक दिस सिंस लेट लास्ट नाइट डू नो इफ यू आर अलर्जिक टू एनीथिंग नो नॉट द आई नो ऑफ़ व्हाट एवेन यू एटन रिसेंटली वेल माय टू चिल्ड्रन कुक डिनर फॉर माय वाइफ एंड मी लास्ट नाइट इट वाज आवर्ड इन अनवर्सरी इस सी एंड दे वांटेड टू सरप्राइज अस वाज अ नाइस थॉट व्हाट डिड यू हैव वॉल आई नॉट शर व्हाट इट वाज एक्चु",
-        "translated_text": "Hello Mr. Phillips Take a seat Thank you Now What Seems to Be the Problem I'm Not Feeling Very Well I Got a Terrible Column One And I Keep Forring Up Have You Head and diarrhea no i have had long eve beam feeling like this sin late last night do not know if you are allergic to anything no not the i know of what eve You recently ate Well My Two Children Cook Dinner for My Wife and Me Last Night It Was Awarded in Anniversary This C&D Wanted to Surprise As Was a Nice Thought What did you have I did"
+        "asr_latency_ms": 8010.4,
+        "translate_latency_ms": 580.8,
+        "tts_latency_ms": 16029.4,
+        "asr_text": "हेलो मिस्टर फ़िलिप्स टेक अ सीट थैंक यू नाओ व्हाट सीम्स टू बे द प्रॉब्लम आई नॉट फ़ीलिंग वेरी वेल आई गॉट अ टेरबल स्तम्भ एक एंड आई कीप फ़ॉरिंग अप हैव यू हैड अनी डायरिया नो आई हैवेन्ट हॉ लॉन्ग एवेन बीम फ़ीलिंग लाइक दिस सिंस लेट लास्ट नाइट डू नो इफ यू आर अलर्जिक टू एनीथिंग नो नॉट द आई नो ऑफ़ व्हाट एवेन यू एटन रिसेंटली वेल माय टू चिल्ड्रन कुक डिनर फॉर माय वाइफ एंड मी लास्ट नाइट इट वाज आवर्ड इन अनवर्सरी इस सी एंड दे वांटेड टू सरप्राइज अस वाज अ नाइस थॉट व्हाट डिड यू हैव वॉल आई नॉट शर व्हाट इट वाज एक्चुअ",
+        "translated_text": "Hello Mr. Phillips Take a seat Thank you Now What Seems to Be the Problem I'm Not Feeling Very Well I Got a Terrible Column One And I Keep Forring Up Have You Head and diarrhea no i haven't had ho long even beam feeling like this sin late last night do not know if you are allergic to anything no not the i know of what even You recently ate Well My Two Children Cook Dinner for My Wife and Me Last Night It Was Awarded in Anniversary This C&D Wanted to Surprise As Was a Nice Thought What did you ha"
       },
       {
         "id": "T013",
         "name": "Pipeline hi→mr",
         "category": "Pipeline",
         "status": "PASS",
-        "duration_ms": 30747.4,
-        "audio_bytes": 9098460,
+        "duration_ms": 29743.1,
+        "audio_bytes": 8757462,
         "output_format": "wav",
         "audio_url": "audio/pipeline_hi_mr_doctor.wav",
         "error": "",
@@ -255,19 +255,19 @@
         "input": "doctor.mp3",
         "source_lang": "hi",
         "target_lang": "mr",
-        "asr_latency_ms": 9147.6,
-        "translate_latency_ms": 1847.0,
-        "tts_latency_ms": 18252.6,
-        "asr_text": "हेलो मिस्टर फ़िलिप्स टेक अ सीट थैंक यू नाओ व्हाट सीम्स टू बे द प्रॉब्लम आई नॉट फ़ीलिंग वेरी वेल आई गॉट अ टेरबल स्तम्भ एक एंड आई कीप फ़ॉरिंग अप हैव यू हैड अनी डायरिया नो आई हैवेन्ट हॉव लॉन्ग एवेन बीम फ़ीलिंग लाइक दिस सिंस लेट लास्ट नाइट डू नो इफ यू आर एलर्जिक टू एनीथिंग नो नॉट द आई नो ऑफ़ व्हाट एवेन यू एटन रिसेंटली वेल माय टू चिल्ड्रन कुक डिनर फॉर माय वाइफ एंड मी लास्ट नाइट इट वाज आवर्ड इन अनवर्सरी इस सी एंड दे वांटेड टू सरप्राइज अस वाज अ नाइस थॉट व्हाट डिड यू हैव वल आई नॉट शुर व्हाट इट वाज एक्चु",
-        "translated_text": "नमस्कार, मिस्टर फिलिप्स, सीट घ्या. धन्यवाद. मला काय वाटते? हेड अँड डायरिया नो आय हेव्हेंट हॉव लॉंग एव्हन बीम फीलिंग लाइक दिस सन्स लेट लास्ट नाइट डू नो इफ यू आर अलेर्जिक टू एनिथिंग नो नॉट द आय नो ऑफ व्हाट एव्हन आपण अलीकडेच माझ्या मुलांसाठी डिनर तयार केले आहे, माझ्या पत्नी आणि मी गेल्या रात्री ते पुरस्कार मिळवले आहेत, याबद्दल आश्चर्यचकित व्हा काय केले तुम्ही, मला खात्री नाही, काय केले ते, खरोखरच, समान प्रकारचे आहे, एकसारखे खाद्यपदार्थ आणि पास्ता डिश, मी बराच वेळ स्वयंपाक केला आहे, म्हणून मला काही "
+        "asr_latency_ms": 7956.0,
+        "translate_latency_ms": 1934.7,
+        "tts_latency_ms": 18352.1,
+        "asr_text": "हेलो मिस्टर फ़िलिप्स टेक अ सीट थैंक यू नाओ व्हाट सीम्स टू बे द प्रॉब्लम आई नॉट फ़ीलिंग वेरी वेल आई गॉट अ टेरबल स्तम्भ एक एंड आई कीप फ़ॉरिंग अप हैव यू हैड अनी डायरिया नो आई हैवेन्ट हॉव लॉन्ग एवेन बीम फ़ीलिंग लाइक दिस सिंस लेट लास्ट नाइट डू नो इफ यू आर एलर्जिक टू एनीथिंग नो नॉट द आई नो ऑफ़ व्हाट एवेन यू एटन रीसेंटली वेल माय टू चिल्ड्रन कुक डिनर फॉर माय वाइफ एंड मी लास्ट नाइट इट वाज आवर्ड इन अनवर्सरी इस सी एंड दे वांटेड टू सरप्राइज अस वाज अ नाइस थॉट व्हाट डिड यू हैव वल आई नॉट शुर व्हाट इट वाज एक्चु",
+        "translated_text": "नमस्कार, मिस्टर फिलिप्स, सीट घ्या. धन्यवाद. मला काय वाटते? हेड अँड डायरिया नो आय हेव्हेंट हॉव लॉंग एव्हन बीम फीलिंग लाइक दिस सन्स लेट लास्ट नाइट डू नो इफ यू आर अलेर्जिक टू एनिथिंग नो नॉट द आय नो ऑफ व्हाट एव्हन आपण अलीकडेच माझ्या दोन मुलांसाठी डिनर तयार केला आहे, माझ्या पत्नी आणि मी शेवटची रात्र ते पुरस्कारात साजरा केला आहे आणि मला आश्चर्यचकित करायचे आहे काय केले तुम्ही, मला खात्री नाही, काय केले ते, खरोखरच, समान प्रकारचे आहे, एकसारखे खाद्यपदार्थ आणि पास्ता डिश, मी बराच वेळ स्वयंपाक केला आहे, म्ह"
       },
       {
         "id": "T014",
         "name": "Pipeline hi→bn",
         "category": "Pipeline",
         "status": "PASS",
-        "duration_ms": 26819.3,
-        "audio_bytes": 5793394,
+        "duration_ms": 24503.8,
+        "audio_bytes": 6278046,
         "output_format": "wav",
         "audio_url": "audio/pipeline_hi_bn_doctor.wav",
         "error": "",
@@ -275,19 +275,19 @@
         "input": "doctor.mp3",
         "source_lang": "hi",
         "target_lang": "bn",
-        "asr_latency_ms": 8913.3,
-        "translate_latency_ms": 734.3,
-        "tts_latency_ms": 15671.5,
-        "asr_text": "हेलो मिस्टर फ़िलिप्स टेक अ सीट थैंक यू नाओ व्हाट सीम्स टू बे द प्रॉब्लम आई नॉट फ़ीलिंग वेरी वेल आई गॉट अ टेरबल स्तम्भ एक एंड आई कीप फ़ॉरिंग अप हैव यू हैड अनी डायरिया नो आई हैवेन्ट हॉव लॉन्ग एवेन बीम फ़ीलिंग लाइक दिस सिंस लेट लास्ट नाइट डू नो इफ यू आर अलर्जिक टू एनीथिंग नो नॉट द आई नो ऑफ़ व्हाट एवेन यू एटन रीसेंटली वेल माय टू चिल्ड्रन कुक डिनर फॉर माय वाइफ एंड मी लास्ट नाइट इट वाज आवर्ड इन अनवर्सरी इस सी एंड दे वांटेड टू सरप्राइज अस वाज अ नाइस थॉट व्हाट डिड यू हैव वॉल आई नॉट शर व्हाट इट वाज एक्चु",
-        "translated_text": "হ্যালো মিস্টার ফিলিপস, একটা সিট নিন, ধন্যবাদ। এখন কি সমস্যা? আমি খুব ভালো অনুভব করছি না। হেড অ্যান্ড ডায়রিয়া নো আই হ্যাভেনট হাও লং অ্যাভেন বিম ফিলিং লাইক দ্য সিনস লেট লাস্ট নাইট ডু নো ইফ ইউ অ্যালার্জি টু এনথিং নো নো দ্য আই নো অফ হোয়াট অ্যাভেন আপনি সম্প্রতি আমার দুই সন্তানকে ভালভাবে খেয়েছেন, আমার স্ত্রী ও আমার জন্য ডিনার রান্না করেছেন। আপনি কি করেছেন আমি কি শেয়ার করতে পারি না এটি আসলে একই ধরণের একটি খাদ্য এবং পাস্তা ডিশ যা দীর্ঘ সময় রান্না করে দেয় তাই আপনি না আমি দোষী Eat it it was on very"
+        "asr_latency_ms": 9261.9,
+        "translate_latency_ms": 808.8,
+        "tts_latency_ms": 12932.9,
+        "asr_text": "हेलो मिस्टर फ़िलिप्स टेक अ सीट थैंक यू नाओ व्हाट सीम्स टू बे द प्रॉब्लम आई नॉट फ़ीलिंग वेरी वेल आई गॉट अ टेरबल स्तम्भ एक एंड आई कीप फ़ॉरिंग अप हैव यू हैड अनी डायरिया नो आई हैवेन्ट हॉव लॉन्ग एवेन बीम फ़ीलिंग लाइक दिस सिंस लेट लास्ट नाइट डू नो इफ यू आर एलर्जिक टू एनीथिंग नो नॉट द आई नो ऑफ़ व्हाट एवेन यू एटन रीसेंटली वेल माय टू चिल्ड्रन कुक डिनर फॉर माय वाइफ एंड मी लास्ट नाइट इट वाज आवर्ड इन अनवर्सरी इस सी एंड दे वांटेड टू सरप्राइज अस वाज अ नाइस थॉट व्हाट डिड यू हैव वल आई नॉट शुर व्हाट इट वाज एक्चु",
+        "translated_text": "হ্যালো মিস্টার ফিলিপস, একটা সিট নিন, ধন্যবাদ। এখন কি সমস্যা? আমি খুব ভালো অনুভব করছি না। হেড অ্যান্ড ডায়রিয়া নো আই হ্যাভেনট হাও লং অ্যাভেন বিম ফিলিং লাইক দ্য সিনস লেট লাস্ট নাইট ডু নো ইফ ইউ আর অ্যালার্জিক টু এনথিং নো নো দ্য আই নো অফ হোয়াট অ্যাভেন আপনি সম্প্রতি আমার দুই সন্তানের জন্য ডিনার রান্না করেছেন আমার স্ত্রী এবং আমি গত রাতে এটি একটি পুরস্কার পেয়েছি এই সিএন্ডডিটি একটি চমৎকার ধারণা হিসাবে একটি বিস্ময়কর জিনিস চেয়েছিল আপনি কি করেছেন আমি নিশ্চিত নই যে এটি আসলে একই ধরণের খাদ্য এবং পাস্তা ড"
       },
       {
         "id": "T015",
         "name": "Pipeline hi→ta",
         "category": "Pipeline",
         "status": "PASS",
-        "duration_ms": 25522.3,
-        "audio_bytes": 6875996,
+        "duration_ms": 23543.2,
+        "audio_bytes": 6593850,
         "output_format": "wav",
         "audio_url": "audio/pipeline_hi_ta_doctor.wav",
         "error": "",
@@ -295,19 +295,19 @@
         "input": "doctor.mp3",
         "source_lang": "hi",
         "target_lang": "ta",
-        "asr_latency_ms": 9211.8,
-        "translate_latency_ms": 737.1,
-        "tts_latency_ms": 14073.3,
-        "asr_text": "हेलो मिस्टर फ़िलिप्स टेक अ सीट थैंक यू नाओ व्हाट सीम्स टू बे द प्रॉब्लम आई नॉट फ़ीलिंग वेरी वेल आई गॉट अ टेरबल स्तम्भ एक एंड आई कीप फ़ॉरिंग अप हैव यू हैड अनी डायरिया नो आई हैवेन्ट हॉव लॉन्ग एवेन बीम फ़ीलिंग लाइक दिस सिंस लेट लास्ट नाइट डू नो इफ यू आर अलर्जिक टू एनीथिंग नो नॉट द आई नो ऑफ व्हाट एवेन यू एटन रीसेंटली वेल माय टू चिल्ड्रन कुक डिनर फॉर माय वाइफ एंड मी लास्ट नाइट इट वाज आवर्ड इन अनवर्सरी इस सी एंड दे वांटेड टू सरप्राइज अस वाज अ नाइस थॉट व्हाट डिड यू हैव वल आई नॉट शुर व्हाट इट वाज एक्चुअ",
-        "translated_text": "வணக்கம் திரு பிலிப்ஸ், ஒரு இருக்கை எடுத்துக்கொள்ளுங்கள். நன்றி. இப்போது என்ன பிரச்சனை? நான் நன்றாக உணரவில்லை. ஹெட் அன் டயரியா நோ ஐ ஹேவ் எவ் லொங் ஏவன் பீம் ஃபீலிங் லைக் திஸ் சின்ஸ் லேட் லாஸ்ட் நைட் டூ நோ ஐ யு ஆர் அலெர்ஜிக் டு என்ஹிதிங் நோ நோ ஐ ஹேவ் எவ் லொங் ஏவன் நீங்கள் சமீபத்தில் என் குழந்தைகளுக்கு உணவு சமைத்தீர்கள் என் மனைவி மற்றும் நான் கடைசி இரவு அதை விருதுக்கு அழைத்தோம் ஆண்டுவிழா இந்த சி & டி விரும்பினார் ஆச்சரியமாக இருந்தது ஒரு நல்ல யோசனை என்ன செய்தீர்கள் என்று எனக்கு தெரியவில்லை, அது உண்மை"
+        "asr_latency_ms": 7653.4,
+        "translate_latency_ms": 873.9,
+        "tts_latency_ms": 13515.7,
+        "asr_text": "हेलो मिस्टर फ़िलिप्स टेक अ सीट थैंक यू नाओ व्हाट सीम्स टू बे द प्रॉब्लम आई नॉट फ़ीलिंग वेरी वेल आई गॉट अ टेरबल स्तम्भ एक एंड आई कीप फ़ॉरिंग अप हैव यू हैड अनी डायरिया नो आई हैवेन्ट हॉ लॉन्ग एवेन बीम फ़ीलिंग लाइक दिस सिंस लेट लास्ट नाइट डू नो इफ यू आर एलर्जिक टू एनीथिंग नो नॉट द आई नो ऑफ़ व्हाट एवेन यू एटन रिसेंटली वेल माय टू चिल्ड्रन कुक डिनर फॉर माय वाइफ एंड मी लास्ट नाइट इट वाज आवर्ड इन अनवर्सरी इस सी एंड दे वांटेड टू सरप्राइज अस वाज अ नाइस थॉट व्हाट डिड यू हैव वॉल आई नॉट शर व्हाट इट वाज एक्चुअ",
+        "translated_text": "வணக்கம் திரு பிலிப்ஸ், ஒரு இருக்கை எடுத்துக்கொள்ளுங்கள். நன்றி. இப்போது என்ன பிரச்சனை? நான் நன்றாக உணரவில்லை. ஹெட் அன் டயரியா நோ ஐ ஹேவென்ட் ஹோ லாங் ஏவன் பீம் ஃபீலிங் லைக் திஸ் சின்ஸ் லேட் லாஸ்ட் நைட் டூ நோ ஐ யு ஆர் அலர்ஜிக் டு என்ஹித்ஹிங் நோ நோ ஐ ஹேவென்ட் ஹோ லாங் ஏவன் நீங்கள் சமீபத்தில் என் குழந்தைகளுக்கு உணவு சமைத்தீர்கள் என் மனைவி மற்றும் நான் கடைசி இரவு அதை ஆண்டுவிழாவில் விருது பெற்றோம் இந்த சி & டி விரும்பியவர் ஆச்சரியமாக இருந்தார் நீங்கள் என்ன செய்தீர்கள் என்று நான் சொல்லவில்லை, அது உண்மையி"
       },
       {
         "id": "T016",
         "name": "Pipeline hi→te",
         "category": "Pipeline",
         "status": "PASS",
-        "duration_ms": 23195.4,
-        "audio_bytes": 6753536,
+        "duration_ms": 20522.5,
+        "audio_bytes": 6167704,
         "output_format": "wav",
         "audio_url": "audio/pipeline_hi_te_doctor.wav",
         "error": "",
@@ -315,489 +315,16 @@
         "input": "doctor.mp3",
         "source_lang": "hi",
         "target_lang": "te",
-        "asr_latency_ms": 8859.3,
-        "translate_latency_ms": 1739.0,
-        "tts_latency_ms": 11096.9,
-        "asr_text": "हेलो मिस्टर फ़िलिप्स टेक अ सीट थैंक यू नाओ व्हाट सीम्स टू बे द प्रॉब्लम आई नॉट फ़ीलिंग वेरी वेल आई गॉट अ टेरबल स्तम्भ एक एंड आई कीप फ़ॉरिंग अप हैव यू हैड अनी डायरिया नो आई हैवेन्ट हॉव लॉन्ग एवेन बीम फ़ीलिंग लाइक दिस सिंस लेट लास्ट नाइट डू नो इफ यू आर अलर्जिक टू एनीथिंग नो नॉट द आई नो ऑफ़ व्हाट एवेन यू एटन रीसेंटली वेल माय टू चिल्ड्रन कुक डिनर फॉर माय वाइफ एंड मी लास्ट नाइट इट वाज आवर्ड इन अनवर्सरी इस सी एंड दे वांटेड टू सरप्राइज अस वाज अ नाइस थॉट व्हाट डिड यू हैव वल आई नॉट शुर व्हाट इट वाज एक्चु",
-        "translated_text": "హలో మిస్టర్ ఫిలిప్స్ టేక్ ఎ సీట్ థాంక్స్ యు నో వాట్ సీమ్స్ టూ బీ ది ప్రోబ్లం ఐ నో ఫీలింగ్ వెరీ వెల్ ఐ గట్ ఎ టెర్రర్ కోల్బమ్ వన్ అండ్ ఐ కీప్ ఫోర్రింగ్ అప్ హవ్ యు హెడ్ అండ్ డైరియా నో ఐ హేవెంట్ హోవ్ లాంగ్ ఎవెన్స్ బీమ్ ఫీలింగ్ లైక్ ది సిన్స్ లేట్ లాస్ట్ నైట్ డూ నో ఐ యు ఆర్ అలెర్జిక్ టు ఎనిథింగ్ నో నో ఐ నో ఆఫ్ వాట్ ఎవెన్స్ మీరు ఇటీవల నా పిల్లలకు వంటకం తయారు చేశారు నా భార్య మరియు నాకు చివరి రాత్రి అది వార్ వార్ అవార్డు వార్షికోత్సవం ఈ సీ & డి వొంటెడ్ టు సర్ప్రైజ్ అస్ వాజ్ ఒక నైస్ థాట్ మీరు ఏమి చేశారో "
+        "asr_latency_ms": 8137.3,
+        "translate_latency_ms": 837.8,
+        "tts_latency_ms": 10047.2,
+        "asr_text": "हेलो मिस्टर फ़िलिप्स टेक अ सीट थैंक यू नाओ व्हाट सीम्स टू बे द प्रॉब्लम आई नॉट फ़ीलिंग वेरी वेल आई गॉट अ टेरबल स्तम्भ एक एंड आई कीप फ़ॉरिंग अप हैव यू हैड अनी डायरिया नो आई हैवेन्ट हॉव लॉन्ग एवेन बीम फ़ीलिंग लाइक दिस सिंस लेट लास्ट नाइट डू नो इफ यू आर अलर्जिक टू एनीथिंग नो नॉट द आई नो ऑफ़ व्हाट एवेन यू एटन रीसेंटली वेल माय टू चिल्ड्रन कुक डिनर फॉर माय वाइफ एंड मी लास्ट नाइट इट वाज आवर्ड इन अनवर्सरी इस सी एंड दे वांटेड टू सरप्राइज अस वाज अ नाइस थॉट व्हाट डिड यू हैव वॉल आई नोट शर व्हाट इट वाज एक्चु",
+        "translated_text": "హలో మిస్టర్ ఫిలిప్స్ టేక్ ఎ సీట్ థాంక్స్ యు నో వాట్ సీమ్స్ టూ బీ ది ప్రోబ్లం ఐ నో ఫీలింగ్ వెరీ వెల్ ఐ గట్ ఎ టెర్రర్ కోల్బమ్ వన్ అండ్ ఐ కీప్ ఫోర్రింగ్ అప్ హవ్ యు హెడ్ అండ్ డైరియా నో ఐ హేవెంట్ హోవ్ లాంగ్ ఎవెన్స్ బీమ్ ఫీలింగ్ లైక్ ది సిన్స్ లేట్ లాస్ట్ నైట్ డూ నో ఐ యు ఆర్ అలెర్జిక్ టు ఎనిథింగ్ నో నో ఐ నో ఆఫ్ వాట్ ఎవెన్స్ మీరు ఇటీవల నా పిల్లలకు వంటకం తయారు చేశారు నా భార్య మరియు నాకు చివరి రాత్రి అది వార్ వార్ అవార్డు వార్షికోత్సవం ఈ సీ & డి వొంటెడ్ టు సర్ప్రైజ్ అస్ వాజ్ ఒక నైస్ థాట్ వాట్ డిడ్ యు హవ్"
       }
     ],
     "failed_tests": []
   },
   "runs": [
-    {
-      "run_id": "2ad1d756",
-      "timestamp": "2026-06-03 10:31:51 IST",
-      "total": 16,
-      "passed": 16,
-      "failed": 0,
-      "pass_rate": 100.0,
-      "avg_latency": 9163,
-      "failed_tests": []
-    },
-    {
-      "run_id": "080d85f7",
-      "timestamp": "2026-06-03 12:31:34 IST",
-      "total": 16,
-      "passed": 16,
-      "failed": 0,
-      "pass_rate": 100.0,
-      "avg_latency": 13960,
-      "failed_tests": []
-    },
-    {
-      "run_id": "a0de2d1a",
-      "timestamp": "2026-06-03 14:31:28 IST",
-      "total": 16,
-      "passed": 16,
-      "failed": 0,
-      "pass_rate": 100.0,
-      "avg_latency": 9450,
-      "failed_tests": []
-    },
-    {
-      "run_id": "068f19dc",
-      "timestamp": "2026-06-03 16:31:31 IST",
-      "total": 16,
-      "passed": 12,
-      "failed": 4,
-      "pass_rate": 75.0,
-      "avg_latency": 5138,
-      "failed_tests": [
-        {
-          "id": "T013",
-          "name": "Pipeline hi→mr",
-          "category": "Pipeline",
-          "test_type": "Pipeline",
-          "input": "doctor.mp3",
-          "source_lang": "hi",
-          "target_lang": "mr",
-          "error": "Server error '502 Bad Gateway' for url 'https://genv3.uwc.world/v1/translate'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/502"
-        },
-        {
-          "id": "T014",
-          "name": "Pipeline hi→bn",
-          "category": "Pipeline",
-          "test_type": "Pipeline",
-          "input": "doctor.mp3",
-          "source_lang": "hi",
-          "target_lang": "bn",
-          "error": "Server error '502 Bad Gateway' for url 'https://genv3.uwc.world/v1/translate'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/502"
-        },
-        {
-          "id": "T015",
-          "name": "Pipeline hi→ta",
-          "category": "Pipeline",
-          "test_type": "Pipeline",
-          "input": "doctor.mp3",
-          "source_lang": "hi",
-          "target_lang": "ta",
-          "error": "Server error '502 Bad Gateway' for url 'https://genv3.uwc.world/v1/translate'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/502"
-        },
-        {
-          "id": "T016",
-          "name": "Pipeline hi→te",
-          "category": "Pipeline",
-          "test_type": "Pipeline",
-          "input": "doctor.mp3",
-          "source_lang": "hi",
-          "target_lang": "te",
-          "error": "Server error '502 Bad Gateway' for url 'https://genv3.uwc.world/v1/translate'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/502"
-        }
-      ]
-    },
-    {
-      "run_id": "295eb5b2",
-      "timestamp": "2026-06-03 18:32:02 IST",
-      "total": 16,
-      "passed": 16,
-      "failed": 0,
-      "pass_rate": 100.0,
-      "avg_latency": 10818,
-      "failed_tests": []
-    },
-    {
-      "run_id": "7a7e00a6",
-      "timestamp": "2026-06-03 20:31:41 IST",
-      "total": 16,
-      "passed": 16,
-      "failed": 0,
-      "pass_rate": 100.0,
-      "avg_latency": 9109,
-      "failed_tests": []
-    },
-    {
-      "run_id": "1cb497cf",
-      "timestamp": "2026-06-03 22:31:52 IST",
-      "total": 16,
-      "passed": 16,
-      "failed": 0,
-      "pass_rate": 100.0,
-      "avg_latency": 8955,
-      "failed_tests": []
-    },
-    {
-      "run_id": "e5f43bd9",
-      "timestamp": "2026-06-04 00:31:34 IST",
-      "total": 16,
-      "passed": 16,
-      "failed": 0,
-      "pass_rate": 100.0,
-      "avg_latency": 18505,
-      "failed_tests": []
-    },
-    {
-      "run_id": "a7459265",
-      "timestamp": "2026-06-04 02:31:30 IST",
-      "total": 16,
-      "passed": 16,
-      "failed": 0,
-      "pass_rate": 100.0,
-      "avg_latency": 9324,
-      "failed_tests": []
-    },
-    {
-      "run_id": "d4196cb0",
-      "timestamp": "2026-06-04 04:31:33 IST",
-      "total": 16,
-      "passed": 16,
-      "failed": 0,
-      "pass_rate": 100.0,
-      "avg_latency": 10507,
-      "failed_tests": []
-    },
-    {
-      "run_id": "043f2e44",
-      "timestamp": "2026-06-04 06:31:25 IST",
-      "total": 16,
-      "passed": 16,
-      "failed": 0,
-      "pass_rate": 100.0,
-      "avg_latency": 9139,
-      "failed_tests": []
-    },
-    {
-      "run_id": "a3b8c727",
-      "timestamp": "2026-06-04 08:31:48 IST",
-      "total": 16,
-      "passed": 16,
-      "failed": 0,
-      "pass_rate": 100.0,
-      "avg_latency": 8956,
-      "failed_tests": []
-    },
-    {
-      "run_id": "8a2fe61d",
-      "timestamp": "2026-06-04 10:31:34 IST",
-      "total": 16,
-      "passed": 16,
-      "failed": 0,
-      "pass_rate": 100.0,
-      "avg_latency": 9180,
-      "failed_tests": []
-    },
-    {
-      "run_id": "2550b199",
-      "timestamp": "2026-06-04 12:31:26 IST",
-      "total": 16,
-      "passed": 14,
-      "failed": 2,
-      "pass_rate": 87.5,
-      "avg_latency": 13543,
-      "failed_tests": [
-        {
-          "id": "T015",
-          "name": "Pipeline hi→ta",
-          "category": "Pipeline",
-          "test_type": "Pipeline",
-          "input": "doctor.mp3",
-          "source_lang": "hi",
-          "target_lang": "ta",
-          "error": "Server error '502 Bad Gateway' for url 'https://asr.shunyalabs.ai/v1/audio/transcriptions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/502"
-        },
-        {
-          "id": "T016",
-          "name": "Pipeline hi→te",
-          "category": "Pipeline",
-          "test_type": "Pipeline",
-          "input": "doctor.mp3",
-          "source_lang": "hi",
-          "target_lang": "te",
-          "error": "Server error '502 Bad Gateway' for url 'https://asr.shunyalabs.ai/v1/audio/transcriptions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/502"
-        }
-      ]
-    },
-    {
-      "run_id": "d5284f3c",
-      "timestamp": "2026-06-04 14:31:43 IST",
-      "total": 16,
-      "passed": 16,
-      "failed": 0,
-      "pass_rate": 100.0,
-      "avg_latency": 9798,
-      "failed_tests": []
-    },
-    {
-      "run_id": "dfa5564f",
-      "timestamp": "2026-06-04 16:31:18 IST",
-      "total": 16,
-      "passed": 16,
-      "failed": 0,
-      "pass_rate": 100.0,
-      "avg_latency": 8825,
-      "failed_tests": []
-    },
-    {
-      "run_id": "ff374390",
-      "timestamp": "2026-06-04 18:31:39 IST",
-      "total": 16,
-      "passed": 16,
-      "failed": 0,
-      "pass_rate": 100.0,
-      "avg_latency": 8882,
-      "failed_tests": []
-    },
-    {
-      "run_id": "87f82477",
-      "timestamp": "2026-06-04 20:31:28 IST",
-      "total": 16,
-      "passed": 16,
-      "failed": 0,
-      "pass_rate": 100.0,
-      "avg_latency": 8828,
-      "failed_tests": []
-    },
-    {
-      "run_id": "904b0b73",
-      "timestamp": "2026-06-04 22:31:50 IST",
-      "total": 16,
-      "passed": 16,
-      "failed": 0,
-      "pass_rate": 100.0,
-      "avg_latency": 8983,
-      "failed_tests": []
-    },
-    {
-      "run_id": "042ba23e",
-      "timestamp": "2026-06-05 00:31:54 IST",
-      "total": 16,
-      "passed": 16,
-      "failed": 0,
-      "pass_rate": 100.0,
-      "avg_latency": 11237,
-      "failed_tests": []
-    },
-    {
-      "run_id": "6cbb2683",
-      "timestamp": "2026-06-05 02:31:55 IST",
-      "total": 16,
-      "passed": 14,
-      "failed": 2,
-      "pass_rate": 87.5,
-      "avg_latency": 8530,
-      "failed_tests": [
-        {
-          "id": "T001",
-          "name": "ASR - doctor.mp3",
-          "category": "ASR",
-          "test_type": "Individual",
-          "input": "doctor.mp3",
-          "source_lang": "Hindi",
-          "target_lang": "-",
-          "error": "Server error '502 Bad Gateway' for url 'https://asr.shunyalabs.ai/v1/audio/transcriptions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/502"
-        },
-        {
-          "id": "T012",
-          "name": "Pipeline hi→en",
-          "category": "Pipeline",
-          "test_type": "Pipeline",
-          "input": "doctor.mp3",
-          "source_lang": "hi",
-          "target_lang": "en",
-          "error": "Server error '502 Bad Gateway' for url 'https://asr.shunyalabs.ai/v1/audio/transcriptions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/502"
-        }
-      ]
-    },
-    {
-      "run_id": "77e62a2b",
-      "timestamp": "2026-06-05 04:31:30 IST",
-      "total": 16,
-      "passed": 16,
-      "failed": 0,
-      "pass_rate": 100.0,
-      "avg_latency": 9525,
-      "failed_tests": []
-    },
-    {
-      "run_id": "e547a599",
-      "timestamp": "2026-06-05 06:31:27 IST",
-      "total": 16,
-      "passed": 16,
-      "failed": 0,
-      "pass_rate": 100.0,
-      "avg_latency": 9732,
-      "failed_tests": []
-    },
-    {
-      "run_id": "03058419",
-      "timestamp": "2026-06-05 08:31:42 IST",
-      "total": 16,
-      "passed": 16,
-      "failed": 0,
-      "pass_rate": 100.0,
-      "avg_latency": 9107,
-      "failed_tests": []
-    },
-    {
-      "run_id": "bf2c96d7",
-      "timestamp": "2026-06-05 10:31:37 IST",
-      "total": 16,
-      "passed": 16,
-      "failed": 0,
-      "pass_rate": 100.0,
-      "avg_latency": 8909,
-      "failed_tests": []
-    },
-    {
-      "run_id": "7d191a4e",
-      "timestamp": "2026-06-05 12:31:57 IST",
-      "total": 16,
-      "passed": 16,
-      "failed": 0,
-      "pass_rate": 100.0,
-      "avg_latency": 10029,
-      "failed_tests": []
-    },
-    {
-      "run_id": "8f11bfb1",
-      "timestamp": "2026-06-05 14:31:41 IST",
-      "total": 16,
-      "passed": 16,
-      "failed": 0,
-      "pass_rate": 100.0,
-      "avg_latency": 8683,
-      "failed_tests": []
-    },
-    {
-      "run_id": "63591f2d",
-      "timestamp": "2026-06-05 16:31:47 IST",
-      "total": 16,
-      "passed": 16,
-      "failed": 0,
-      "pass_rate": 100.0,
-      "avg_latency": 9197,
-      "failed_tests": []
-    },
-    {
-      "run_id": "1d7a77ad",
-      "timestamp": "2026-06-05 18:31:59 IST",
-      "total": 16,
-      "passed": 16,
-      "failed": 0,
-      "pass_rate": 100.0,
-      "avg_latency": 9012,
-      "failed_tests": []
-    },
-    {
-      "run_id": "f5b2c6da",
-      "timestamp": "2026-06-05 20:31:52 IST",
-      "total": 16,
-      "passed": 16,
-      "failed": 0,
-      "pass_rate": 100.0,
-      "avg_latency": 8783,
-      "failed_tests": []
-    },
-    {
-      "run_id": "3387da58",
-      "timestamp": "2026-06-05 22:31:50 IST",
-      "total": 16,
-      "passed": 16,
-      "failed": 0,
-      "pass_rate": 100.0,
-      "avg_latency": 10366,
-      "failed_tests": []
-    },
-    {
-      "run_id": "78ccb3e5",
-      "timestamp": "2026-06-06 00:31:55 IST",
-      "total": 16,
-      "passed": 16,
-      "failed": 0,
-      "pass_rate": 100.0,
-      "avg_latency": 13923,
-      "failed_tests": []
-    },
-    {
-      "run_id": "6d85fec6",
-      "timestamp": "2026-06-06 02:31:50 IST",
-      "total": 16,
-      "passed": 16,
-      "failed": 0,
-      "pass_rate": 100.0,
-      "avg_latency": 9463,
-      "failed_tests": []
-    },
-    {
-      "run_id": "8b3d2d76",
-      "timestamp": "2026-06-06 04:31:25 IST",
-      "total": 16,
-      "passed": 16,
-      "failed": 0,
-      "pass_rate": 100.0,
-      "avg_latency": 8721,
-      "failed_tests": []
-    },
-    {
-      "run_id": "cd14bc56",
-      "timestamp": "2026-06-06 06:31:24 IST",
-      "total": 16,
-      "passed": 16,
-      "failed": 0,
-      "pass_rate": 100.0,
-      "avg_latency": 9696,
-      "failed_tests": []
-    },
-    {
-      "run_id": "5bdc6443",
-      "timestamp": "2026-06-06 08:32:01 IST",
-      "total": 16,
-      "passed": 16,
-      "failed": 0,
-      "pass_rate": 100.0,
-      "avg_latency": 8768,
-      "failed_tests": []
-    },
-    {
-      "run_id": "f04a537f",
-      "timestamp": "2026-06-06 10:31:58 IST",
-      "total": 16,
-      "passed": 16,
-      "failed": 0,
-      "pass_rate": 100.0,
-      "avg_latency": 10758,
-      "failed_tests": []
-    },
-    {
-      "run_id": "4eba70bd",
-      "timestamp": "2026-06-06 12:31:42 IST",
-      "total": 16,
-      "passed": 16,
-      "failed": 0,
-      "pass_rate": 100.0,
-      "avg_latency": 9745,
-      "failed_tests": []
-    },
-    {
-      "run_id": "72dda82e",
-      "timestamp": "2026-06-06 14:31:43 IST",
-      "total": 16,
-      "passed": 16,
-      "failed": 0,
-      "pass_rate": 100.0,
-      "avg_latency": 8959,
-      "failed_tests": []
-    },
     {
       "run_id": "c69a788b",
       "timestamp": "2026-06-06 16:31:41 IST",
@@ -4816,6 +4343,16 @@
       "failed": 0,
       "pass_rate": 100.0,
       "avg_latency": 9173,
+      "failed_tests": []
+    },
+    {
+      "run_id": "a97b1b82",
+      "timestamp": "2026-07-06 16:04:14 IST",
+      "total": 16,
+      "passed": 16,
+      "failed": 0,
+      "pass_rate": 100.0,
+      "avg_latency": 8653,
       "failed_tests": []
     }
   ]
