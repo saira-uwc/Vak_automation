@@ -1,14 +1,14 @@
 {
   "current": {
-    "run_id": "db350f7d",
-    "timestamp": "2026-07-19 12:39:10 IST",
+    "run_id": "c7fbbffe",
+    "timestamp": "2026-07-19 14:40:36 IST",
     "total": 16,
     "passed": 10,
     "failed": 6,
     "errors": 6,
     "pass_rate": 62.5,
-    "avg_latency": 123540,
-    "total_ms": 1853105,
+    "avg_latency": 123922,
+    "total_ms": 1858833,
     "categories": [
       {
         "name": "ASR",
@@ -28,9 +28,9 @@
         "fail": 0,
         "error": 0,
         "pass_rate": 100.0,
-        "avg_latency": 94,
+        "avg_latency": 85,
         "min_latency": 70,
-        "max_latency": 200
+        "max_latency": 133
       },
       {
         "name": "TTS",
@@ -39,9 +39,9 @@
         "fail": 0,
         "error": 0,
         "pass_rate": 100.0,
-        "avg_latency": 2140,
-        "min_latency": 2054,
-        "max_latency": 2301
+        "avg_latency": 1750,
+        "min_latency": 1706,
+        "max_latency": 1788
       },
       {
         "name": "Pipeline",
@@ -50,9 +50,9 @@
         "fail": 5,
         "error": 5,
         "pass_rate": 0.0,
-        "avg_latency": 369205,
-        "min_latency": 368977,
-        "max_latency": 369432
+        "avg_latency": 370598,
+        "min_latency": 370242,
+        "max_latency": 371120
       }
     ],
     "tests": [
@@ -136,7 +136,7 @@
         "name": "Translate en→ta",
         "category": "Translate",
         "status": "PASS",
-        "duration_ms": 78.0,
+        "duration_ms": 77.0,
         "audio_bytes": 0,
         "output_format": "-",
         "audio_url": "",
@@ -151,7 +151,7 @@
         "name": "Translate en→te",
         "category": "Translate",
         "status": "PASS",
-        "duration_ms": 77.0,
+        "duration_ms": 78.0,
         "audio_bytes": 0,
         "output_format": "-",
         "audio_url": "",
@@ -166,7 +166,7 @@
         "name": "Supported Languages",
         "category": "Translate",
         "status": "PASS",
-        "duration_ms": 199.7,
+        "duration_ms": 132.9,
         "audio_bytes": 0,
         "output_format": "-",
         "audio_url": "",
@@ -181,8 +181,8 @@
         "name": "TTS - tts_report_en.wav",
         "category": "TTS",
         "status": "PASS",
-        "duration_ms": 2300.6,
-        "audio_bytes": 89458,
+        "duration_ms": 1788.3,
+        "audio_bytes": 94036,
         "output_format": "wav",
         "audio_url": "audio/tts_report_en.wav",
         "error": "",
@@ -196,8 +196,8 @@
         "name": "TTS - tts_report_hi.wav",
         "category": "TTS",
         "status": "PASS",
-        "duration_ms": 2067.1,
-        "audio_bytes": 87178,
+        "duration_ms": 1755.1,
+        "audio_bytes": 87126,
         "output_format": "wav",
         "audio_url": "audio/tts_report_hi.wav",
         "error": "",
@@ -211,8 +211,8 @@
         "name": "TTS - tts_report_emotion.wav",
         "category": "TTS",
         "status": "PASS",
-        "duration_ms": 2053.6,
-        "audio_bytes": 86374,
+        "duration_ms": 1706.2,
+        "audio_bytes": 88586,
         "output_format": "wav",
         "audio_url": "audio/tts_report_emotion.wav",
         "error": "",
@@ -226,7 +226,7 @@
         "name": "Pipeline hi→en",
         "category": "Pipeline",
         "status": "FAIL",
-        "duration_ms": 369259.6,
+        "duration_ms": 371119.7,
         "audio_bytes": 0,
         "output_format": "-",
         "audio_url": "",
@@ -246,7 +246,7 @@
         "name": "Pipeline hi→mr",
         "category": "Pipeline",
         "status": "FAIL",
-        "duration_ms": 369432.1,
+        "duration_ms": 370532.0,
         "audio_bytes": 0,
         "output_format": "-",
         "audio_url": "",
@@ -266,7 +266,7 @@
         "name": "Pipeline hi→bn",
         "category": "Pipeline",
         "status": "FAIL",
-        "duration_ms": 368983.6,
+        "duration_ms": 370241.9,
         "audio_bytes": 0,
         "output_format": "-",
         "audio_url": "",
@@ -286,7 +286,7 @@
         "name": "Pipeline hi→ta",
         "category": "Pipeline",
         "status": "FAIL",
-        "duration_ms": 368976.6,
+        "duration_ms": 370597.8,
         "audio_bytes": 0,
         "output_format": "-",
         "audio_url": "",
@@ -306,7 +306,7 @@
         "name": "Pipeline hi→te",
         "category": "Pipeline",
         "status": "FAIL",
-        "duration_ms": 369373.6,
+        "duration_ms": 370499.7,
         "audio_bytes": 0,
         "output_format": "-",
         "audio_url": "",
@@ -386,16 +386,6 @@
     ]
   },
   "runs": [
-    {
-      "run_id": "312df9e4",
-      "timestamp": "2026-06-19 14:31:56 IST",
-      "total": 16,
-      "passed": 16,
-      "failed": 0,
-      "pass_rate": 100.0,
-      "avg_latency": 9443,
-      "failed_tests": []
-    },
     {
       "run_id": "37e95a90",
       "timestamp": "2026-06-19 16:31:26 IST",
@@ -4599,6 +4589,77 @@
       "failed": 6,
       "pass_rate": 62.5,
       "avg_latency": 123540,
+      "failed_tests": [
+        {
+          "id": "T001",
+          "name": "ASR - doctor.mp3",
+          "category": "ASR",
+          "test_type": "Individual",
+          "input": "doctor.mp3",
+          "source_lang": "Hindi",
+          "target_lang": "-",
+          "error": "ASR transient failure after retries: The read operation timed out"
+        },
+        {
+          "id": "T012",
+          "name": "Pipeline hi→en",
+          "category": "Pipeline",
+          "test_type": "Pipeline",
+          "input": "doctor.mp3",
+          "source_lang": "hi",
+          "target_lang": "en",
+          "error": "ASR transient failure after retries: The read operation timed out"
+        },
+        {
+          "id": "T013",
+          "name": "Pipeline hi→mr",
+          "category": "Pipeline",
+          "test_type": "Pipeline",
+          "input": "doctor.mp3",
+          "source_lang": "hi",
+          "target_lang": "mr",
+          "error": "ASR transient failure after retries: The read operation timed out"
+        },
+        {
+          "id": "T014",
+          "name": "Pipeline hi→bn",
+          "category": "Pipeline",
+          "test_type": "Pipeline",
+          "input": "doctor.mp3",
+          "source_lang": "hi",
+          "target_lang": "bn",
+          "error": "ASR transient failure after retries: The read operation timed out"
+        },
+        {
+          "id": "T015",
+          "name": "Pipeline hi→ta",
+          "category": "Pipeline",
+          "test_type": "Pipeline",
+          "input": "doctor.mp3",
+          "source_lang": "hi",
+          "target_lang": "ta",
+          "error": "ASR transient failure after retries: The read operation timed out"
+        },
+        {
+          "id": "T016",
+          "name": "Pipeline hi→te",
+          "category": "Pipeline",
+          "test_type": "Pipeline",
+          "input": "doctor.mp3",
+          "source_lang": "hi",
+          "target_lang": "te",
+          "error": "ASR transient failure after retries: The read operation timed out"
+        }
+      ]
+    },
+    {
+      "run_id": "c7fbbffe",
+      "timestamp": "2026-07-19 14:40:36 IST",
+      "total": 16,
+      "passed": 10,
+      "failed": 6,
+      "pass_rate": 62.5,
+      "avg_latency": 123922,
       "failed_tests": [
         {
           "id": "T001",
