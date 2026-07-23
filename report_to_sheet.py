@@ -69,6 +69,20 @@ def timestamp():
     return datetime.now(IST).strftime("%Y-%m-%d %H:%M:%S IST")
 
 
+def _response_from_exception(exc: Exception) -> str:
+    """Best-effort capture of API response body when a call fails."""
+    if isinstance(exc, httpx.HTTPStatusError) and exc.response is not None:
+        try:
+            text = exc.response.text.strip()
+            if text:
+                return text[:500]
+        except Exception:
+            pass
+        return f"HTTP {exc.response.status_code}"
+    msg = str(exc).strip()
+    return msg[:500] if msg else ""
+
+
 def run_individual_tests():
     """Run individual endpoint tests, return list of result dicts."""
     results = []
@@ -105,9 +119,11 @@ def run_individual_tests():
             row["latency_ms"] = latency
             if not r.text:
                 row["error"] = "ASR returned empty transcription"
+                row["output"] = "(empty transcription)"
         except Exception as e:
             row["status"] = "FAIL"
             row["error"] = str(e)[:300]
+            row["output"] = _response_from_exception(e)
         results.append(row)
 
     # ── Translate Tests ──
@@ -142,11 +158,13 @@ def run_individual_tests():
             row["latency_ms"] = r.processing_time_ms
             if not r.translated_text:
                 row["error"] = "Translation returned empty result"
+                row["output"] = "(empty translation)"
             elif r.target_proxy:
                 row["error"] = f"Proxy: {r.target_proxy[:200]}"
         except Exception as e:
             row["status"] = "FAIL"
             row["error"] = str(e)[:300]
+            row["output"] = _response_from_exception(e)
         results.append(row)
 
     # ── Supported Languages (health check) ──
@@ -174,9 +192,13 @@ def run_individual_tests():
         row["output"] = str(body)
         row["status"] = "PASS" if body.get("translate_loaded") else "FAIL"
         row["latency_ms"] = latency
+        if not body.get("translate_loaded"):
+            row["error"] = "translate_loaded is false"
+            row["output"] = str(body)[:500]
     except Exception as e:
         row["status"] = "FAIL"
         row["error"] = str(e)[:300]
+        row["output"] = _response_from_exception(e)
     results.append(row)
 
     # ── TTS Tests ──
@@ -214,9 +236,11 @@ def run_individual_tests():
             row["audio_b64"] = base64.b64encode(r.audio_bytes).decode("ascii")
             if len(r.audio_bytes) <= 1000:
                 row["error"] = f"TTS output too small ({len(r.audio_bytes)} bytes)"
+                row["output"] = f"{len(r.audio_bytes)} bytes received"
         except Exception as e:
             row["status"] = "FAIL"
             row["error"] = str(e)[:300]
+            row["output"] = _response_from_exception(e)
         results.append(row)
 
     return results
@@ -307,12 +331,23 @@ def run_pipeline_tests():
                 row["audio_filename"] = out_path.name
                 if len(tts_result.audio_bytes) <= 1000:
                     row["error"] = f"Pipeline TTS output too small ({len(tts_result.audio_bytes)} bytes)"
+                    row["output"] = f"{len(tts_result.audio_bytes)} bytes received"
 
             except Exception as e:
                 total_latency = round((time.time() - total_t0) * 1000, 1)
                 row["status"] = "FAIL"
                 row["latency_ms"] = total_latency
                 row["error"] = str(e)[:300]
+                # Keep any partial pipeline outputs + API body for dashboard proof
+                parts = []
+                if row.get("asr_text"):
+                    parts.append(f"ASR: {row['asr_text'][:200]}")
+                if row.get("translated_text"):
+                    parts.append(f"Translate: {row['translated_text'][:200]}")
+                api_body = _response_from_exception(e)
+                if api_body and api_body not in (row.get("error") or ""):
+                    parts.append(f"API: {api_body[:250]}")
+                row["output"] = " | ".join(parts) if parts else api_body
 
             results.append(row)
             # Space out pipeline legs so ASR/TTS are not back-to-back during peak windows.

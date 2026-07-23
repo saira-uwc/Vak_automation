@@ -142,11 +142,21 @@ def build_run_summary(results: list[dict], audio_map: dict[str, str]) -> dict:
             notes = ""
             if r.get("asr_text"):
                 notes = f"ASR: {r['asr_text'][:80]}"
+            # Prefer explicit output (includes API body on failure), else partial pipeline texts
+            response = (r.get("output") or "").strip()
+            if not response:
+                parts = []
+                if r.get("asr_text"):
+                    parts.append(f"ASR: {r['asr_text'][:200]}")
+                if r.get("translated_text"):
+                    parts.append(f"Translate: {r['translated_text'][:200]}")
+                response = " | ".join(parts)
         else:
             test_name = r.get("test_name", r.get("endpoint", ""))
             category = r.get("endpoint", "Unknown")
             output_size = r.get("output_size", "")
             notes = r.get("output", "")[:100] if r.get("output") else ""
+            response = (r.get("output") or "").strip()
 
         # Parse output size to bytes
         size_bytes = 0
@@ -171,6 +181,7 @@ def build_run_summary(results: list[dict], audio_map: dict[str, str]) -> dict:
             "audio_url": audio_url,
             "error": r.get("error", ""),
             "notes": notes,
+            "response": response[:500],
             "input": r.get("input", ""),
             "source_lang": r.get("source_lang", ""),
             "target_lang": r.get("target_lang", ""),
@@ -195,6 +206,7 @@ def build_run_summary(results: list[dict], audio_map: dict[str, str]) -> dict:
                 "source_lang": r.get("source_lang", ""),
                 "target_lang": r.get("target_lang", ""),
                 "error": (r.get("error", "") or "")[:300],
+                "response": (response or "")[:500],
             })
 
     return {

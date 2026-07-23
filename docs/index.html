@@ -439,7 +439,7 @@ td a:hover { color: #a78bfa; text-decoration: underline; }
             <tr>
               <th>ID</th><th>Test Name</th><th>Category</th>
               <th>Status</th><th>Latency</th><th>Audio Size</th>
-              <th>Format</th><th>Audio</th><th>Notes</th>
+              <th>Format</th><th>Audio</th><th>Notes</th><th>Response</th>
             </tr>
           </thead>
           <tbody id="testTableBody"></tbody>
@@ -619,6 +619,14 @@ function renderFilteredTable(tests) {
       ? `<a href="${t.audio_url}" target="_blank">&#9654; Play</a>`
       : '<span style="color:var(--text-dimmed)">-</span>';
     const notes = t.error || t.notes || '';
+    // For failures only: show the received/generated response besides the error note
+    const response = (t.status === 'FAIL') ? (t.response || t.notes || '') : '';
+    const notesCell = notes
+      ? `<td style="color:${t.status === 'FAIL' ? 'var(--red)' : 'var(--text-dimmed)'};font-size:12px;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${escAttr(notes)}">${escHtml(notes)}</td>`
+      : `<td style="color:var(--text-dimmed)">-</td>`;
+    const responseCell = response
+      ? `<td style="color:var(--text-muted);font-size:12px;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${escAttr(response)}">${escHtml(response)}</td>`
+      : `<td style="color:var(--text-dimmed)">-</td>`;
     return `<tr>
       <td class="mono">${t.id}</td>
       <td>${t.name}</td>
@@ -628,9 +636,17 @@ function renderFilteredTable(tests) {
       <td class="mono">${size}</td>
       <td style="color:var(--text-muted)">${t.output_format}</td>
       <td>${audioLink}</td>
-      <td style="color:var(--text-dimmed);font-size:12px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${notes.replace(/"/g,'&quot;')}">${notes}</td>
+      ${notesCell}
+      ${responseCell}
     </tr>`;
   }).join('');
+}
+
+function escHtml(s) {
+  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function escAttr(s) {
+  return escHtml(s).replace(/"/g,'&quot;');
 }
 
 function filterTable() {
@@ -668,6 +684,7 @@ function renderPipeline(run) {
         ${t.asr_text ? `<div style="margin-bottom:6px"><span class="label">ASR Output:</span><br><span class="value">${truncate(t.asr_text,120)}</span></div>` : ''}
         ${t.translated_text ? `<div style="margin-bottom:6px"><span class="label">Translation:</span><br><span class="value">${truncate(t.translated_text,120)}</span></div>` : ''}
         ${t.error ? `<div style="margin-bottom:6px"><span class="label" style="color:var(--red)">Error:</span><br><span class="value" style="color:var(--red)">${truncate(t.error,150)}</span></div>` : ''}
+        ${t.status === 'FAIL' && t.response ? `<div style="margin-bottom:6px"><span class="label">Received response:</span><br><span class="value">${truncate(t.response,200)}</span></div>` : ''}
       </div>
       <div class="pipeline-step-latency">
         ${t.asr_latency_ms ? `<span class="lat-chip">ASR: ${t.asr_latency_ms}ms</span>` : ''}

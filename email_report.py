@@ -111,11 +111,13 @@ def generate_email_html(data: dict, results: list[dict]) -> tuple[str, str]:
                 name = ft.get("test_name", ft.get("endpoint", ""))
                 module = ft.get("endpoint", "Unknown")
             error = ft.get("error", "")[:150]
+            response = (ft.get("response") or ft.get("output") or ft.get("notes") or "")[:150]
             failed_rows += f"""
             <tr>
               <td style="padding:10px 16px;border-bottom:1px solid #f0f0f0;font-size:13px;">{name}</td>
               <td style="padding:10px 16px;border-bottom:1px solid #f0f0f0;text-align:center;color:#f59e0b;font-weight:600;font-size:13px;">{module}</td>
               <td style="padding:10px 16px;border-bottom:1px solid #f0f0f0;font-size:12px;color:#666;word-break:break-all;">{error}</td>
+              <td style="padding:10px 16px;border-bottom:1px solid #f0f0f0;font-size:12px;color:#444;word-break:break-all;">{response or "-"}</td>
             </tr>"""
 
     failed_section = ""
@@ -131,6 +133,7 @@ def generate_email_html(data: dict, results: list[dict]) -> tuple[str, str]:
                 <th style="padding:10px 16px;text-align:left;font-size:13px;font-weight:600;color:#666;">Test Name</th>
                 <th style="padding:10px 16px;text-align:center;font-size:13px;font-weight:600;color:#666;">Module</th>
                 <th style="padding:10px 16px;text-align:left;font-size:13px;font-weight:600;color:#666;">Error</th>
+                <th style="padding:10px 16px;text-align:left;font-size:13px;font-weight:600;color:#666;">Received Response</th>
               </tr>
             </thead>
             <tbody>{failed_rows}</tbody>
