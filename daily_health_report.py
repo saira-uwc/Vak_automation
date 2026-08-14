@@ -50,24 +50,25 @@ PROJECTS = [
         "runs_url": "https://saira-uwc.github.io/Vak_automation/data.json",
         "format": "vak",
     },
-    {
-        "name": "Concurrent (Zero Indic)",
-        "dashboard": "https://yamini-pal-singh.github.io/automation-testing/Concurrent-Report.html",
-        "runs_url": "https://yamini-pal-singh.github.io/automation-testing/concurrent-runs.json",
-        "format": "playwright",
-    },
-    {
-        "name": "Long Audio (Zero Indic)",
-        "dashboard": "https://yamini-pal-singh.github.io/automation-testing/Long-Audio-Report.html",
-        "runs_url": "https://yamini-pal-singh.github.io/automation-testing/long-audio-runs.json",
-        "format": "playwright",
-    },
-    {
-        "name": "Playground",
-        "dashboard": "https://yamini-pal-singh.github.io/playground-testing/Playground-Report.html",
-        "runs_url": "https://yamini-pal-singh.github.io/playground-testing/playground-runs.json",
-        "format": "playwright",
-    },
+    # Temporarily hidden — dashboards returning 404
+    # {
+    #     "name": "Concurrent (Zero Indic)",
+    #     "dashboard": "https://yamini-pal-singh.github.io/automation-testing/Concurrent-Report.html",
+    #     "runs_url": "https://yamini-pal-singh.github.io/automation-testing/concurrent-runs.json",
+    #     "format": "playwright",
+    # },
+    # {
+    #     "name": "Long Audio (Zero Indic)",
+    #     "dashboard": "https://yamini-pal-singh.github.io/automation-testing/Long-Audio-Report.html",
+    #     "runs_url": "https://yamini-pal-singh.github.io/automation-testing/long-audio-runs.json",
+    #     "format": "playwright",
+    # },
+    # {
+    #     "name": "Playground",
+    #     "dashboard": "https://yamini-pal-singh.github.io/playground-testing/Playground-Report.html",
+    #     "runs_url": "https://yamini-pal-singh.github.io/playground-testing/playground-runs.json",
+    #     "format": "playwright",
+    # },
 ]
 
 
